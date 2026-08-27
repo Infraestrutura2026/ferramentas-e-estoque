@@ -24,53 +24,53 @@ const fornecedoresModule = {
     const pg = utils.paginate(items, this.pagina, 10);
 
     container.innerHTML = `
-      <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
-        <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#2a2a2a]">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
           <div class="flex items-center gap-3">
-            <h2 class="text-lg font-bold text-white">Fornecedores</h2>
-            <span class="text-xs text-gray-500">${items.length} cadastrado(s)</span>
+            <h2 class="text-lg font-bold text-slate-900">Fornecedores</h2>
+            <span class="text-xs text-slate-500">${items.length} cadastrado(s)</span>
           </div>
           <div class="flex items-center gap-2">
             <div class="relative">
-              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
               <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar fornecedor..."
-                class="pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none w-56"
+                class="pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none w-56"
                 oninput="fornecedoresModule.setBusca(this.value)">
             </div>
-            <button onclick="fornecedoresModule.abrirModal()" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition">
+            <button onclick="fornecedoresModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
               <i class="fas fa-plus mr-1"></i> Novo
             </button>
           </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead><tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Fornecedor</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Categorias</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Contato</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Telefone</th>
-              <th class="px-4 py-3 text-center font-semibold text-gray-400">Status</th>
-              <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
+            <thead><tr class="bg-slate-50 border-b border-slate-200">
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Fornecedor</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Categorias</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Contato</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Telefone</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-600">Status</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-600">Ações</th>
             </tr></thead>
             <tbody>
               ${pg.rows.map(f => `
-                <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition">
+                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
                   <td class="px-4 py-3">
-                    <p class="font-medium text-white">${utils.escapeHtml(f.nome || '—')}</p>
-                    <p class="text-[11px] text-gray-500">${utils.escapeHtml(f.cnpj || '')}</p>
+                    <p class="font-medium text-slate-900">${utils.escapeHtml(f.nome || '—')}</p>
+                    <p class="text-[11px] text-slate-500">${utils.escapeHtml(f.cnpj || '')}</p>
                   </td>
-                  <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(f.categoria || '—')}</td>
+                  <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(f.categoria || '—')}</td>
                   <td class="px-4 py-3">
-                    <p class="text-gray-300">${utils.escapeHtml(f.contato || '—')}</p>
-                    <p class="text-[11px] text-gray-500">${utils.escapeHtml(f.email || '')}</p>
+                    <p class="text-slate-700">${utils.escapeHtml(f.contato || '—')}</p>
+                    <p class="text-[11px] text-slate-500">${utils.escapeHtml(f.email || '')}</p>
                   </td>
-                  <td class="px-4 py-3 text-gray-400 whitespace-nowrap">${utils.escapeHtml(f.telefone || '—')}</td>
+                  <td class="px-4 py-3 text-slate-600 whitespace-nowrap">${utils.escapeHtml(f.telefone || '—')}</td>
                   <td class="px-4 py-3 text-center">${utils.statusBadge(f.status || 'Ativo')}</td>
                   <td class="px-4 py-3 text-center whitespace-nowrap">
-                    <button onclick="fornecedoresModule.abrirModal('${utils.escapeHtml(f.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                    <button onclick="fornecedoresModule.excluir('${utils.escapeHtml(f.id)}')" class="text-red-400 hover:text-red-300 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="fornecedoresModule.abrirModal('${utils.escapeHtml(f.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                    <button onclick="fornecedoresModule.excluir('${utils.escapeHtml(f.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                   </td>
-                </tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Nenhum fornecedor encontrado.</td></tr>'}
+                </tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Nenhum fornecedor encontrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -172,8 +172,8 @@ const pedidosModule = {
     const pg = utils.paginate(items, this.pagina, 10);
 
     const kpi = (label, valor, cor) => `
-      <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-        <p class="text-xs text-gray-500 uppercase font-semibold">${label}</p>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <p class="text-xs text-slate-500 uppercase font-semibold">${label}</p>
         <p class="text-2xl font-bold ${cor}">${valor}</p>
       </div>`;
 
@@ -185,65 +185,65 @@ const pedidosModule = {
     container.innerHTML = `
       <div class="space-y-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          ${kpi('Total de Pedidos', todos.length, 'text-white')}
-          ${kpi('Pendentes', pendentes, 'text-amber-400')}
-          ${kpi('Entregues', entregues, 'text-green-400')}
-          ${kpi('Valor Total', 'R$ ' + valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }), 'text-white')}
+          ${kpi('Total de Pedidos', todos.length, 'text-slate-900')}
+          ${kpi('Pendentes', pendentes, 'text-amber-600')}
+          ${kpi('Entregues', entregues, 'text-emerald-600')}
+          ${kpi('Valor Total', 'R$ ' + valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }), 'text-slate-900')}
         </div>
 
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
-          <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#2a2a2a]">
-            <h2 class="text-lg font-bold text-white">Pedidos de Compra</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
+            <h2 class="text-lg font-bold text-slate-900">Pedidos de Compra</h2>
             <div class="flex items-center gap-2">
               <div class="relative">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
                 <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar item ou fornecedor..."
-                  class="pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none w-56"
+                  class="pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none w-56"
                   oninput="pedidosModule.setBusca(this.value)">
               </div>
               <select onchange="pedidosModule.setFiltroStatus(this.value)"
-                class="px-3 py-2 text-sm border border-[#333333] rounded-lg bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500">
+                class="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500">
                 <option value="">Todos</option>
                 <option value="pendente" ${this.filtroStatus === 'pendente' ? 'selected' : ''}>Pendentes</option>
                 <option value="entregue" ${this.filtroStatus === 'entregue' ? 'selected' : ''}>Entregues</option>
               </select>
-              <button onclick="pedidosModule.abrirModal()" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition">
+              <button onclick="pedidosModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
                 <i class="fas fa-plus mr-1"></i> Novo
               </button>
             </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
-              <thead><tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-                <th class="px-4 py-3 text-left font-semibold text-gray-400">Data</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-400">Item</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-400">Fornecedor</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Qtd</th>
-                <th class="px-4 py-3 text-right font-semibold text-gray-400">Valor Total</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Previsão</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Status</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
+              <thead><tr class="bg-slate-50 border-b border-slate-200">
+                <th class="px-4 py-3 text-left font-semibold text-slate-600">Data</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-600">Item</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-600">Fornecedor</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-600">Qtd</th>
+                <th class="px-4 py-3 text-right font-semibold text-slate-600">Valor Total</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-600">Previsão</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-600">Status</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-600">Ações</th>
               </tr></thead>
               <tbody>
                 ${pg.rows.map(p => {
                   const atrasado = isAtrasado(p);
                   const valor = parseFloat(String(p.valorTotal).replace(',', '.')) || 0;
-                  return `<tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition ${atrasado ? 'bg-red-900/10' : ''}">
-                    <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${utils.formatDate(p.data)}</td>
-                    <td class="px-4 py-3 font-medium text-white">${utils.escapeHtml(p.item || '—')}</td>
-                    <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(p.fornecedor || '—')}</td>
+                  return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition ${atrasado ? 'bg-red-50' : ''}">
+                    <td class="px-4 py-3 text-slate-500 whitespace-nowrap">${utils.formatDate(p.data)}</td>
+                    <td class="px-4 py-3 font-medium text-slate-900">${utils.escapeHtml(p.item || '—')}</td>
+                    <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(p.fornecedor || '—')}</td>
                     <td class="px-4 py-3 text-center font-mono">${utils.escapeHtml(p.quantidade || '—')} ${utils.escapeHtml(p.unidade || '')}</td>
-                    <td class="px-4 py-3 text-right font-mono text-gray-300">R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                    <td class="px-4 py-3 text-center ${atrasado ? 'text-red-400 font-bold' : 'text-gray-400'}">${utils.formatDate(p.previsaoEntrega)}</td>
+                    <td class="px-4 py-3 text-right font-mono text-slate-700">R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td class="px-4 py-3 text-center ${atrasado ? 'text-red-600 font-bold' : 'text-slate-600'}">${utils.formatDate(p.previsaoEntrega)}</td>
                     <td class="px-4 py-3 text-center">${atrasado
-                      ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-900/30 text-red-400 border border-red-800/50">⏰ ATRASADO</span>'
+                      ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-200">⏰ ATRASADO</span>'
                       : utils.statusBadge(p.status || 'Pendente')}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                      <button onclick="pedidosModule.abrirModal('${utils.escapeHtml(p.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                      <button onclick="pedidosModule.excluir('${utils.escapeHtml(p.id)}')" class="text-red-400 hover:text-red-300 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                      <button onclick="pedidosModule.abrirModal('${utils.escapeHtml(p.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                      <button onclick="pedidosModule.excluir('${utils.escapeHtml(p.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
-                }).join('') || '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">Nenhum pedido encontrado.</td></tr>'}
+                }).join('') || '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Nenhum pedido encontrado.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -335,7 +335,7 @@ const usuariosModule = {
 
   render(container) {
     if (!authModule.isAdmin()) {
-      container.innerHTML = `<div class="p-8 text-center text-gray-500"><i class="fas fa-lock text-3xl mb-2"></i><p>Acesso restrito ao administrador.</p></div>`;
+      container.innerHTML = `<div class="p-8 text-center text-slate-500"><i class="fas fa-lock text-3xl mb-2"></i><p>Acesso restrito ao administrador.</p></div>`;
       return;
     }
 
@@ -348,39 +348,39 @@ const usuariosModule = {
     }));
 
     container.innerHTML = `
-      <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
-        <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#2a2a2a]">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
           <div>
-            <h2 class="text-lg font-bold text-white">Usuários do Sistema</h2>
-            <p class="text-xs text-gray-500 mt-1">Senhas são armazenadas com hash SHA-256. Usuários valem para todos os computadores.</p>
+            <h2 class="text-lg font-bold text-slate-900">Usuários do Sistema</h2>
+            <p class="text-xs text-slate-500 mt-1">Senhas são armazenadas com hash SHA-256. Usuários valem para todos os computadores.</p>
           </div>
-          <button onclick="usuariosModule.abrirModal()" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition">
+          <button onclick="usuariosModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
             <i class="fas fa-user-plus mr-1"></i> Novo Usuário
           </button>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead><tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Usuário</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Nome</th>
-              <th class="px-4 py-3 text-center font-semibold text-gray-400">Nível</th>
-              <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
+            <thead><tr class="bg-slate-50 border-b border-slate-200">
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Usuário</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Nome</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-600">Nível</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-600">Ações</th>
             </tr></thead>
             <tbody>
               ${usuarios.map(u => `
-                <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition">
-                  <td class="px-4 py-3 font-medium text-white">${utils.escapeHtml(u.usuario)}</td>
-                  <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(u.nome)}</td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                  <td class="px-4 py-3 font-medium text-slate-900">${utils.escapeHtml(u.usuario)}</td>
+                  <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(u.nome)}</td>
                   <td class="px-4 py-3 text-center">
                     ${u.nivel === 'admin'
-                      ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-amber-900/30 text-amber-400 border border-amber-800/50"><i class="fas fa-user-shield mr-1"></i>Admin</span>'
-                      : '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-[#1a1a1a] text-gray-400 border border-[#333333]"><i class="fas fa-user mr-1"></i>Operador</span>'}
+                      ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200"><i class="fas fa-user-shield mr-1"></i>Admin</span>'
+                      : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-300"><i class="fas fa-user mr-1"></i>Operador</span>'}
                   </td>
                   <td class="px-4 py-3 text-center whitespace-nowrap">
-                    <button onclick="usuariosModule.abrirModal('${utils.escapeHtml(u.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar/Alterar senha"><i class="fas fa-edit"></i></button>
-                    ${u.usuario !== authModule.getCurrentUser() ? `<button onclick="usuariosModule.excluir('${utils.escapeHtml(u.id)}')" class="text-red-400 hover:text-red-300 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>` : ''}
+                    <button onclick="usuariosModule.abrirModal('${utils.escapeHtml(u.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar/Alterar senha"><i class="fas fa-edit"></i></button>
+                    ${u.usuario !== authModule.getCurrentUser() ? `<button onclick="usuariosModule.excluir('${utils.escapeHtml(u.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>` : ''}
                   </td>
-                </tr>`).join('') || '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Nenhum usuário remoto carregado (usando usuários padrão locais).</td></tr>'}
+                </tr>`).join('') || '<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Nenhum usuário remoto carregado (usando usuários padrão locais).</td></tr>'}
             </tbody>
           </table>
         </div>

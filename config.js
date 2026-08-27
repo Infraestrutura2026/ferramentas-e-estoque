@@ -71,34 +71,34 @@ const configUI = {
   renderConfigPage(container) {
     container.innerHTML = `
       <div class="max-w-2xl mx-auto space-y-6">
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-6">
-          <h2 class="text-lg font-bold text-white mb-2">⚙️ Configuração do Sistema</h2>
-          <p class="text-sm text-gray-500 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h2 class="text-lg font-bold text-slate-900 mb-2">⚙️ Configuração do Sistema</h2>
+          <p class="text-sm text-slate-500 mb-6">
             A URL do Google Apps Script já está configurada no sistema. <br>
             Se precisar alterar, edite o arquivo <code>config.js</code>.
           </p>
 
-          <div class="bg-green-900/20 border border-green-200 rounded-xl p-4">
-            <p class="text-sm text-green-700 font-semibold">✅ URL configurada</p>
-            <p class="text-xs text-green-400 mt-1 font-mono break-all">${this.getBaseUrl()}</p>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+            <p class="text-sm text-emerald-700 font-semibold">✅ URL configurada</p>
+            <p class="text-xs text-emerald-700/90 mt-1 font-mono break-all">${this.getBaseUrl()}</p>
           </div>
         </div>
 
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-6">
-          <h3 class="text-sm font-bold text-gray-300 mb-3">Status das Abas</h3>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-sm font-bold text-slate-700 mb-3">Status das Abas</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             ${Object.keys(CONFIG.SHEETS).map(aba => `
-              <div class="border border-[#2a2a2a] rounded-lg p-3">
-                <p class="text-xs text-gray-500 uppercase font-semibold">${aba}</p>
-                <p class="text-sm font-mono truncate text-gray-300">${CONFIG.SHEETS[aba].substring(0, 40)}...</p>
+              <div class="border border-slate-200 rounded-lg p-3">
+                <p class="text-xs text-slate-500 uppercase font-semibold">${aba}</p>
+                <p class="text-sm font-mono truncate text-slate-700">${CONFIG.SHEETS[aba].substring(0, 40)}...</p>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-6">
-          <h3 class="text-sm font-bold text-gray-300 mb-3">🧪 Testar Conexão</h3>
-          <button onclick="configUI.testConnection()" class="px-4 py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-gray-300 text-sm font-semibold rounded-lg transition">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-sm font-bold text-slate-700 mb-3">🧪 Testar Conexão</h3>
+          <button onclick="configUI.testConnection()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition">
             🧪 Testar Conexão
           </button>
           <div id="cfg-msg" class="hidden text-sm px-3 py-2 rounded-lg mt-3"></div>
@@ -109,7 +109,7 @@ const configUI = {
 
   async testConnection() {
     const msg = document.getElementById('cfg-msg');
-    msg.className = 'text-sm px-3 py-2 rounded-lg bg-amber-900/30 text-amber-400 border border-amber-800/50 font-medium';
+    msg.className = 'text-sm px-3 py-2 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 font-medium';
     msg.textContent = '🔄 Testando conexão...';
     msg.classList.remove('hidden');
 
@@ -119,10 +119,10 @@ const configUI = {
       const res = await fetch(CONFIG.SHEETS.estoque, { signal: ctrl.signal, mode: 'cors' });
       const data = await res.json();
       const arr = Array.isArray(data) ? data : (data.data || data.result || data.records || data.values || []);
-      msg.className = 'text-sm px-3 py-2 rounded-lg bg-green-900/30 text-green-400 border border-green-800/50 font-medium';
+      msg.className = 'text-sm px-3 py-2 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 font-medium';
       msg.textContent = `✅ Conexão OK! ${arr.length} registros encontrados em "estoque".`;
     } catch (e) {
-      msg.className = 'text-sm px-3 py-2 rounded-lg bg-red-900/30 text-red-400 border border-red-800/50 font-medium';
+      msg.className = 'text-sm px-3 py-2 rounded-lg bg-red-50 text-red-600 border border-red-200 font-medium';
       msg.textContent = '❌ Falha na conexão: ' + e.message;
     }
   }
