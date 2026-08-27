@@ -22,11 +22,11 @@ const ferramentasModule = {
 
     if (!items.length) {
       container.innerHTML = `
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-8 text-center">
-          <i class="fas fa-tools text-4xl text-gray-400 mb-3"></i>
-          <h3 class="text-lg font-bold text-gray-300">Nenhuma ferramenta cadastrada</h3>
-          <p class="text-sm text-gray-500 mt-1 mb-4">Cadastre a primeira ferramenta usando o botão abaixo.</p>
-          <button onclick="ferramentasModule.abrirModal()" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+          <i class="fas fa-tools text-4xl text-slate-600 mb-3"></i>
+          <h3 class="text-lg font-bold text-slate-700">Nenhuma ferramenta cadastrada</h3>
+          <p class="text-sm text-slate-500 mt-1 mb-4">Cadastre a primeira ferramenta usando o botão abaixo.</p>
+          <button onclick="ferramentasModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
             <i class="fas fa-plus mr-1"></i> Nova Ferramenta
           </button>
         </div>`;
@@ -57,55 +57,55 @@ const ferramentasModule = {
       <div class="space-y-4">
         <!-- KPIs -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Total</p>
-            <p class="text-2xl font-bold text-white">${total}</p>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Total</p>
+            <p class="text-2xl font-bold text-slate-900">${total}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Disponíveis</p>
-            <p class="text-2xl font-bold text-green-400">${disponiveis}</p>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Disponíveis</p>
+            <p class="text-2xl font-bold text-emerald-600">${disponiveis}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Em Uso</p>
-            <p class="text-2xl font-bold text-amber-400">${emUso}</p>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Em Uso</p>
+            <p class="text-2xl font-bold text-amber-600">${emUso}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Manutenção</p>
-            <p class="text-2xl font-bold text-red-400">${manutencao}</p>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Manutenção</p>
+            <p class="text-2xl font-bold text-red-600">${manutencao}</p>
           </div>
           <button onclick="ferramentasModule.abrirModal()"
-            class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-sm font-bold rounded-xl transition shadow">
+            class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow">
             <i class="fas fa-plus mr-1"></i> Nova Ferramenta
           </button>
         </div>
 
         <!-- Filtros -->
-        <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a] space-y-3">
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 space-y-3">
           <div class="flex flex-col md:flex-row gap-3">
             <div class="relative flex-1">
-              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
               <input type="text" id="filtro-ferramentas" value="${utils.escapeHtml(this.filtroAtual)}"
                 placeholder="Buscar por nome, código, local ou responsável..."
-                class="w-full pl-9 pr-3 py-2 border border-[#333333] rounded-lg text-sm bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
                 oninput="ferramentasModule.setFiltro(this.value)">
             </div>
             <select id="cat-ferramentas" onchange="ferramentasModule.setCategoria(this.value)"
-              class="px-3 py-2 border border-[#333333] rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-[#141414]">
+              class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 text-slate-900">
               <option value="todas">Todas as categorias</option>
               ${categorias.map(c => `<option value="${utils.escapeHtml(c)}" ${c === catFiltro ? 'selected' : ''}>${utils.escapeHtml(c)}</option>`).join('')}
             </select>
           </div>
           <div class="flex flex-wrap gap-2">
             <button onclick="ferramentasModule.setCategoria('todas')"
-              class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${catFiltro === 'todas' ? 'bg-[#1a1a1a] text-white border-[#2a2a2a]' : 'bg-[#141414] text-gray-400 border-[#333333] hover:bg-[#0a0a0a]'}">
+              class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${catFiltro === 'todas' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'}">
               Todas
             </button>
             ${categorias.map(cat => {
               const style = utils.getCategoriaStyle(cat);
               const isActive = cat === catFiltro;
               return `<button onclick="ferramentasModule.setCategoria('${utils.escapeHtml(cat).replace(/'/g, "\\'")}')"
-                class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${isActive ? 'ring-2 ring-offset-1 ring-amber-500' : ''}"
-                style="background:${style.bg};color:${style.text};border-color:${style.border}">
+                class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${isActive ? 'ring-1 ring-teal-500 ring-offset-2 ring-offset-white' : ''}"
+                style="background-color:${style.bg};color:${style.text};border-color:${style.border}">
                 ${utils.escapeHtml(cat)}
               </button>`;
             }).join('')}
@@ -113,18 +113,18 @@ const ferramentasModule = {
         </div>
 
         <!-- Tabela -->
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Código</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Ferramenta</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Categoria</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Estado</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Local</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Responsável</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Código</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Ferramenta</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Categoria</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-600">Estado</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Local</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Responsável</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-600">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,27 +132,27 @@ const ferramentasModule = {
                   const estado = item.estado || item.status || 'Disponível';
                   const statusBadge = utils.statusBadge(estado);
                   return `
-                    <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition">
-                      <td class="px-4 py-3 font-mono text-xs text-gray-500">${utils.escapeHtml(item.codigo || item.id || '—')}</td>
-                      <td class="px-4 py-3 font-medium text-white">
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                      <td class="px-4 py-3 font-mono text-xs text-slate-500">${utils.escapeHtml(item.codigo || item.id || '—')}</td>
+                      <td class="px-4 py-3 font-medium text-slate-900">
                         ${utils.escapeHtml(item.nome || item.item || '—')}
-                        ${item.descricao ? `<p class="text-[11px] text-gray-500 font-normal">${utils.escapeHtml(item.descricao)}</p>` : ''}
+                        ${item.descricao ? `<p class="text-[11px] text-slate-500 font-normal">${utils.escapeHtml(item.descricao)}</p>` : ''}
                       </td>
                       <td class="px-4 py-3">${utils.categoriaBadge(item.categoria)}</td>
                       <td class="px-4 py-3 text-center">${statusBadge}</td>
-                      <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.local || '—')}</td>
-                      <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.responsavel || item.usuario || '—')}</td>
+                      <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.local || '—')}</td>
+                      <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.responsavel || item.usuario || '—')}</td>
                       <td class="px-4 py-3 text-center whitespace-nowrap">
-                        <button onclick="ferramentasModule.abrirModal('${utils.escapeHtml(item.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                        <button onclick="ferramentasModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-400 hover:text-red-300 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                        <button onclick="ferramentasModule.abrirModal('${utils.escapeHtml(item.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                        <button onclick="ferramentasModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                       </td>
                     </tr>
                   `;
-                }).join('') || '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Nenhuma ferramenta encontrada com os filtros atuais.</td></tr>'}
+                }).join('') || '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Nenhuma ferramenta encontrada com os filtros atuais.</td></tr>'}
               </tbody>
             </table>
           </div>
-          <div class="px-4 py-3 border-t border-[#2a2a2a] bg-[#0a0a0a]/50 text-xs text-gray-500">
+          <div class="px-4 py-3 border-t border-slate-200 bg-slate-50 text-xs text-slate-500">
             Mostrando ${filtrados.length} de ${items.length} ferramentas
           </div>
         </div>

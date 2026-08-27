@@ -15,18 +15,18 @@ const estoqueModule = {
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-2">
             <div class="relative">
-              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
               <input id="estoqueSearch" type="text" placeholder="Buscar item..." 
-                class="pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 w-64"
+                class="pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none w-64"
                 oninput="estoqueModule.filtrar()">
             </div>
             <select id="estoqueFiltroCategoria" onchange="estoqueModule.filtrar()"
-              class="px-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-amber-500">
+              class="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
               <option value="">Todas categorias</option>
               ${categorias.map(c => `<option value="${utils.escapeHtml(c)}">${utils.escapeHtml(c)}</option>`).join('')}
             </select>
             <select id="estoqueFiltroStatus" onchange="estoqueModule.filtrar()"
-              class="px-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-amber-500">
+              class="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
               <option value="">Todos status</option>
               <option value="ok">✓ Estoque OK</option>
               <option value="critico">⚠ Crítico</option>
@@ -34,24 +34,24 @@ const estoqueModule = {
             </select>
           </div>
           <button onclick="estoqueModule.abrirModalAdicionar()" 
-            class="px-4 py-2 text-sm bg-amber-600 text-black font-bold rounded-lg hover:bg-amber-500 shadow shadow-black/20 transition">
+            class="px-4 py-2 text-sm bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 shadow shadow-black/20 transition">
             <i class="fas fa-plus mr-1"></i> Novo Item
           </button>
         </div>
 
         <!-- Tabela de Estoque -->
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Item</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Categoria</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Qtd. Atual</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Mínimo</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Status</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Local</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Item</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Categoria</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-600">Qtd. Atual</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-600">Mínimo</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-600">Status</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Local</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-600">Ações</th>
                 </tr>
               </thead>
               <tbody id="estoqueTableBody">
@@ -59,7 +59,7 @@ const estoqueModule = {
               </tbody>
             </table>
           </div>
-          <div id="estoqueEmpty" class="hidden p-8 text-center text-gray-500">
+          <div id="estoqueEmpty" class="hidden p-8 text-center text-slate-500">
             <i class="fas fa-box-open text-3xl mb-2"></i>
             <p>Nenhum item encontrado.</p>
           </div>
@@ -70,33 +70,33 @@ const estoqueModule = {
 
   renderRows(items) {
     if (!items.length) {
-      return `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Nenhum item cadastrado.</td></tr>`;
+      return `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Nenhum item cadastrado.</td></tr>`;
     }
     return items.map(item => {
       const qtd = parseFloat(item.quantidadeAtual) || 0;
       const min = parseFloat(item.quantidadeMinima) || 0;
       let statusBadge = '';
       if (qtd === 0) {
-        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-900/30 text-red-400 border border-red-800/50 border border-red-800/50">✕ ESGOTADO</span>`;
+        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-200">✕ ESGOTADO</span>`;
       } else if (qtd <= min) {
-        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-900/30 text-amber-400 border border-amber-800/50 border border-amber-800/50">⚠ CRÍTICO</span>`;
+        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200">⚠ CRÍTICO</span>`;
       } else {
-        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-900/30 text-green-400 border border-green-800/50 border border-green-200">✓ OK</span>`;
+        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">✓ OK</span>`;
       }
 
       const catBadge = utils.categoriaBadge(item.categoria);
 
       return `
-        <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition" data-id="${utils.escapeHtml(item.id)}">
-          <td class="px-4 py-3 font-medium text-white">${utils.escapeHtml(item.nome || item.item || '—')}</td>
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition" data-id="${utils.escapeHtml(item.id)}">
+          <td class="px-4 py-3 font-medium text-slate-900">${utils.escapeHtml(item.nome || item.item || '—')}</td>
           <td class="px-4 py-3">${catBadge}</td>
           <td class="px-4 py-3 text-center font-semibold">${qtd}</td>
-          <td class="px-4 py-3 text-center text-gray-500">${min > 0 ? min : '—'}</td>
+          <td class="px-4 py-3 text-center text-slate-500">${min > 0 ? min : '—'}</td>
           <td class="px-4 py-3 text-center">${statusBadge}</td>
-          <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.local || '—')}</td>
+          <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.local || '—')}</td>
           <td class="px-4 py-3 text-center">
-            <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-            <button onclick="estoqueModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-400 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+            <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+            <button onclick="estoqueModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
       `;
@@ -140,36 +140,36 @@ const estoqueModule = {
     const html = `
       <div class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Nome do Item</label>
-          <input id="inpNome" type="text" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nome do Item</label>
+          <input id="inpNome" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Categoria</label>
-            <select id="inpCategoria" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Categoria</label>
+            <select id="inpCategoria" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
               <option value="">Selecione...</option>
               ${catOptions}
               <option value="__nova__">+ Nova categoria...</option>
             </select>
-            <input id="inpCategoriaNova" type="text" placeholder="Digite nova categoria" class="hidden w-full mt-2 border border-[#333333] rounded-lg px-3 py-2 text-sm">
+            <input id="inpCategoriaNova" type="text" placeholder="Digite nova categoria" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Local</label>
-            <input id="inpLocal" type="text" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Local</label>
+            <input id="inpLocal" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Atual</label>
-            <input id="inpQtd" type="number" min="0" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Qtd. Atual</label>
+            <input id="inpQtd" type="number" min="0" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Mínima</label>
-            <input id="inpMin" type="number" min="0" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Qtd. Mínima</label>
+            <input id="inpMin" type="number" min="0" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Unidade</label>
-            <input id="inpUnidade" type="text" value="un" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Unidade</label>
+            <input id="inpUnidade" type="text" value="un" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
         </div>
       </div>
@@ -251,35 +251,35 @@ const estoqueModule = {
       <div class="space-y-4">
         <input type="hidden" id="editId" value="${utils.escapeHtml(item.id)}">
         <div>
-          <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Nome do Item</label>
-          <input id="editNome" type="text" value="${utils.escapeHtml(item.nome || item.item || '')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nome do Item</label>
+          <input id="editNome" type="text" value="${utils.escapeHtml(item.nome || item.item || '')}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Categoria</label>
-            <select id="editCategoria" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Categoria</label>
+            <select id="editCategoria" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
               ${catOptions}
               <option value="__nova__">+ Nova categoria...</option>
             </select>
-            <input id="editCategoriaNova" type="text" placeholder="Nova categoria" class="hidden w-full mt-2 border border-[#333333] rounded-lg px-3 py-2 text-sm">
+            <input id="editCategoriaNova" type="text" placeholder="Nova categoria" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Local</label>
-            <input id="editLocal" type="text" value="${utils.escapeHtml(item.local || '')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Local</label>
+            <input id="editLocal" type="text" value="${utils.escapeHtml(item.local || '')}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Atual</label>
-            <input id="editQtd" type="number" min="0" value="${parseFloat(item.quantidadeAtual) || 0}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Qtd. Atual</label>
+            <input id="editQtd" type="number" min="0" value="${parseFloat(item.quantidadeAtual) || 0}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Mínima</label>
-            <input id="editMin" type="number" min="0" value="${parseFloat(item.quantidadeMinima) || 0}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Qtd. Mínima</label>
+            <input id="editMin" type="number" min="0" value="${parseFloat(item.quantidadeMinima) || 0}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Unidade</label>
-            <input id="editUnidade" type="text" value="${utils.escapeHtml(item.unidade || 'un')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Unidade</label>
+            <input id="editUnidade" type="text" value="${utils.escapeHtml(item.unidade || 'un')}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
         </div>
       </div>
