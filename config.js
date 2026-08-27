@@ -50,10 +50,11 @@ function buildConfig(base) {
       timestamp:     'cache_timestamp'
     },
     CACHE_TTL_MS: 5 * 60 * 1000,
+    AUTO_SYNC_INTERVAL_MS: 60 * 1000,
     TIMEOUT_MS:   15000,
 
     // ── Versão ──
-    VERSAO: '2.5.0',
+    VERSAO: '2.5.1',
     ORGAO:  'COMPLEXO PENAL DE MARÍLIA — POLÍCIA PENAL',
     EQUIPE: 'Núcleo de Infraestrutura e Logística · ZANONI & MARTINEZ InfraTech'
   };

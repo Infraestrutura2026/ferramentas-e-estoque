@@ -3,7 +3,7 @@
 Sistema web de **controle de estoque** e **empréstimo de ferramentas entre setores**,
 com sincronização online via Google Sheets (Apps Script) e fallback offline em CSV.
 
-**Versão:** 2.5.0 · Polícia Penal — Núcleo de Infraestrutura e Logística
+**Versão:** 2.5.1 · Polícia Penal — Núcleo de Infraestrutura e Logística
 
 ---
 
@@ -104,15 +104,32 @@ ferramentas.js    Módulo Ferramentas (CRUD)
 indicadores.js    Gráficos e indicadores
 cadastros.js      Fornecedores, Pedidos e Usuários (CRUD)
 data/*.csv        Fallback offline das abas (exportações da planilha)
+apps-script/
+  Code.gs         Backend real (Google Apps Script) com LockService
+  README.md       Como implantar o backend
+  appsscript.json Manifesto do projeto Apps Script
+tests/
+  run.js          Testes gerais (sintaxe, CSV, utils, módulos)
+  run-contract.js Testes de contrato do Apps Script
 ```
 
 ## 🧪 Testes
 
-Validações executadas na v2.5.0:
+Validações executadas na v2.5.1 (33 testes):
+
+```bash
+node tests/run.js && node tests/run-contract.js
+```
+
 - Sintaxe de todos os módulos (`node --check`);
 - Parser CSV (CRLF, campos com vírgula entre aspas);
 - Busca com normalização de acentos;
 - Paginação;
 - Hashes de senha conferindo com `usuarios.csv`;
 - POST sem preflight CORS (`text/plain`);
-- Todos os assets respondendo HTTP 200.
+- Todos os assets respondendo HTTP 200;
+- **Backend Apps Script versionado** (`apps-script/Code.gs`);
+- **LockService em toda escrita**;
+- **Contrato GET/POST/DELETE** validado;
+- **Headers padrão** por aba;
+- **Tratamento de `e.postData.contents`** e `text/plain`.
