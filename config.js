@@ -5,12 +5,10 @@
  * NÃO é necessário colar URL na tela de Configuração.
  */
 
-const CONFIG = (() => {
-  // URL do Google Apps Script — já configurada, não precisa alterar
-  const URL_BASE = 'https://script.google.com/macros/s/AKfycby5BtZrK5u--oopYK75iFSGIYeCLCPJ6PNa6ka_zFx_C-4nAaxp_G4ZZ9jKjlh1WPv6oA/exec';
+// URL única do Google Apps Script (fonte de verdade para todo o sistema)
+const URL_BASE_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycby5BtZrK5u--oopYK75iFSGIYeCLCPJ6PNa6ka_zFx_C-4nAaxp_G4ZZ9jKjlh1WPv6oA/exec';
 
-  return buildConfig(URL_BASE);
-})();
+const CONFIG = buildConfig(URL_BASE_APPS_SCRIPT);
 
 function buildConfig(base) {
   const withParam = (aba) => `${base}?aba=${aba}`;
@@ -55,7 +53,7 @@ function buildConfig(base) {
     TIMEOUT_MS:   15000,
 
     // ── Versão ──
-    VERSAO: '2.4.0',
+    VERSAO: '2.5.0',
     ORGAO:  'COMPLEXO PENAL DE MARÍLIA — POLÍCIA PENAL',
     EQUIPE: 'Núcleo de Infraestrutura e Logística · ZANONI & MARTINEZ InfraTech'
   };
@@ -64,7 +62,7 @@ function buildConfig(base) {
 /* ── Helpers para salvar configuração via UI ── */
 const configUI = {
   getBaseUrl() {
-    return 'https://script.google.com/macros/s/AKfycbywszPK8xlMlbK1i1tneojMABjhsN2t4xOfD2-gmPkQW/exec';
+    return URL_BASE_APPS_SCRIPT;
   },
   hasValidUrl() {
     return true;

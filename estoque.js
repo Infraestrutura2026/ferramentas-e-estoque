@@ -17,16 +17,16 @@ const estoqueModule = {
             <div class="relative">
               <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
               <input id="estoqueSearch" type="text" placeholder="Buscar item..." 
-                class="pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-blue-800 w-64"
+                class="pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 w-64"
                 oninput="estoqueModule.filtrar()">
             </div>
             <select id="estoqueFiltroCategoria" onchange="estoqueModule.filtrar()"
-              class="px-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-blue-800">
+              class="px-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-amber-500">
               <option value="">Todas categorias</option>
               ${categorias.map(c => `<option value="${utils.escapeHtml(c)}">${utils.escapeHtml(c)}</option>`).join('')}
             </select>
             <select id="estoqueFiltroStatus" onchange="estoqueModule.filtrar()"
-              class="px-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-blue-800">
+              class="px-3 py-2 text-sm border border-[#333333] rounded-lg focus:ring-2 focus:ring-amber-500">
               <option value="">Todos status</option>
               <option value="ok">✓ Estoque OK</option>
               <option value="critico">⚠ Crítico</option>
@@ -34,7 +34,7 @@ const estoqueModule = {
             </select>
           </div>
           <button onclick="estoqueModule.abrirModalAdicionar()" 
-            class="px-4 py-2 text-sm bg-blue-900 text-white rounded-lg hover:bg-blue-800 shadow shadow-black/20 transition">
+            class="px-4 py-2 text-sm bg-amber-600 text-black font-bold rounded-lg hover:bg-amber-500 shadow shadow-black/20 transition">
             <i class="fas fa-plus mr-1"></i> Novo Item
           </button>
         </div>
@@ -95,7 +95,7 @@ const estoqueModule = {
           <td class="px-4 py-3 text-center">${statusBadge}</td>
           <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.local || '—')}</td>
           <td class="px-4 py-3 text-center">
-            <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="text-blue-400 hover:text-blue-800 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+            <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
             <button onclick="estoqueModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-400 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
@@ -104,14 +104,14 @@ const estoqueModule = {
   },
 
   filtrar() {
-    const search = (document.getElementById('estoqueSearch')?.value || '').toLowerCase();
+    const search = document.getElementById('estoqueSearch')?.value || '';
     const cat = document.getElementById('estoqueFiltroCategoria')?.value || '';
     const status = document.getElementById('estoqueFiltroStatus')?.value || '';
 
     let items = app.data.estoque || [];
 
     if (search) {
-      items = items.filter(i => (i.nome || i.item || '').toLowerCase().includes(search));
+      items = items.filter(i => utils.normalize(i.nome || i.item).includes(utils.normalize(search)));
     }
     if (cat) {
       items = items.filter(i => i.categoria === cat);
@@ -141,12 +141,12 @@ const estoqueModule = {
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Nome do Item</label>
-          <input id="inpNome" type="text" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+          <input id="inpNome" type="text" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Categoria</label>
-            <select id="inpCategoria" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <select id="inpCategoria" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
               <option value="">Selecione...</option>
               ${catOptions}
               <option value="__nova__">+ Nova categoria...</option>
@@ -155,21 +155,21 @@ const estoqueModule = {
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Local</label>
-            <input id="inpLocal" type="text" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="inpLocal" type="text" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Atual</label>
-            <input id="inpQtd" type="number" min="0" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="inpQtd" type="number" min="0" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Mínima</label>
-            <input id="inpMin" type="number" min="0" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="inpMin" type="number" min="0" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Unidade</label>
-            <input id="inpUnidade" type="text" value="un" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="inpUnidade" type="text" value="un" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
         </div>
       </div>
@@ -217,7 +217,7 @@ const estoqueModule = {
     let sheetsOk = false;
     if (app.isSheetsConfigured()) {
       try {
-        const res = await app.post(CONFIG.SHEETS.ESTOQUE, 'add', payload);
+        const res = await app.post(CONFIG.SHEETS.estoque, 'add', payload);
         if (res.success) {
           sheetsOk = true;
           app.showToast('Item salvo no Google Sheets!', 'success');
@@ -236,7 +236,7 @@ const estoqueModule = {
       app.showToast('Item adicionado com sucesso!', 'success');
     }
     app.closeModal();
-    this.render(document.getElementById('main-content'));
+    await app.refreshAba('estoque');
   },
 
   editar(id) {
@@ -252,12 +252,12 @@ const estoqueModule = {
         <input type="hidden" id="editId" value="${utils.escapeHtml(item.id)}">
         <div>
           <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Nome do Item</label>
-          <input id="editNome" type="text" value="${utils.escapeHtml(item.nome || item.item || '')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+          <input id="editNome" type="text" value="${utils.escapeHtml(item.nome || item.item || '')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Categoria</label>
-            <select id="editCategoria" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <select id="editCategoria" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
               ${catOptions}
               <option value="__nova__">+ Nova categoria...</option>
             </select>
@@ -265,21 +265,21 @@ const estoqueModule = {
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Local</label>
-            <input id="editLocal" type="text" value="${utils.escapeHtml(item.local || '')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="editLocal" type="text" value="${utils.escapeHtml(item.local || '')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Atual</label>
-            <input id="editQtd" type="number" min="0" value="${parseFloat(item.quantidadeAtual) || 0}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="editQtd" type="number" min="0" value="${parseFloat(item.quantidadeAtual) || 0}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Qtd. Mínima</label>
-            <input id="editMin" type="number" min="0" value="${parseFloat(item.quantidadeMinima) || 0}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="editMin" type="number" min="0" value="${parseFloat(item.quantidadeMinima) || 0}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Unidade</label>
-            <input id="editUnidade" type="text" value="${utils.escapeHtml(item.unidade || 'un')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-800">
+            <input id="editUnidade" type="text" value="${utils.escapeHtml(item.unidade || 'un')}" class="w-full border border-[#333333] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
           </div>
         </div>
       </div>
@@ -321,7 +321,7 @@ const estoqueModule = {
     let sheetsOk = false;
     if (app.isSheetsConfigured()) {
       try {
-        const res = await app.post(CONFIG.SHEETS.ESTOQUE, 'update', payload);
+        const res = await app.post(CONFIG.SHEETS.estoque, 'update', payload);
         if (res.success) {
           sheetsOk = true;
         } else {
@@ -339,7 +339,7 @@ const estoqueModule = {
       app.showToast('Item atualizado!', 'success');
     }
     app.closeModal();
-    this.render(document.getElementById('main-content'));
+    await app.refreshAba('estoque');
   },
 
   async excluir(id) {
@@ -349,7 +349,7 @@ const estoqueModule = {
 
     if (app.isSheetsConfigured()) {
       try {
-        await app.get(CONFIG.SHEETS.ESTOQUE, 'delete', { id });
+        await app.get(CONFIG.SHEETS.estoque, 'delete', { id });
       } catch (e) {
         console.warn('Erro ao deletar do Sheets:', e);
       }
@@ -357,6 +357,6 @@ const estoqueModule = {
 
     app.data.estoque.splice(idx, 1);
     app.showToast('Item removido.', 'success');
-    this.render(document.getElementById('main-content'));
+    await app.refreshAba('estoque');
   }
 };

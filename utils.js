@@ -9,35 +9,124 @@ const utils = {
   },
 
   escapeHtml(str) {
-    if (!str) return '';
+    if (str === null || str === undefined) return '';
     return String(str)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   },
 
   now() {
     return new Date().toISOString();
   },
 
+  today() {
+    return new Date().toISOString().split('T')[0];
+  },
+
   formatDate(dateStr) {
     if (!dateStr) return '-';
-    const d = new Date(dateStr);
+    const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
     if (isNaN(d)) return dateStr;
     return d.toLocaleDateString('pt-BR');
   },
 
-  parseCSV(text) {
-    const lines = text.trim().split('\n');
-    if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-    return lines.slice(1).map(line => {
-      const obj = {};
-      const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-      headers.forEach((h, i) => { obj[h] = values[i] || ''; });
-      return obj;
-    });
+  /**
+   * Normaliza texto para busca: minúsculas e sem acentos.
+   * "Hidráulica" → "hidraulica"
+   */
+  normalize(str) {
+    return String(str || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  },
+
+  /**
+   * SHA-256 em hexadecimal (usado na autenticação).
+   * Em navegadores sem crypto.subtle, usa fallback simples.
+   */
+  async sha256(text) {
+    try {
+      if (window.crypto && crypto.subtle) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(text)));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+    } catch (e) { /* fallback abaixo */ }
+    // Fallback (não criptográfico) apenas para contextos sem WebCrypto
+    let h = 5381;
+    const s = String(text);
+    for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return 'fb_' + h.toString(16);
+  },
+
+  /* ────────────────────────────────────────────────
+     Formulários genéricos (modais de CRUD)
+     fields: [{ key, label, type: text|number|date|select|textarea,
+                value, options: [{value,label}], required, placeholder }]
+     ──────────────────────────────────────────────── */
+  formHtml(fields) {
+    const inputCls = 'w-full border border-[#333333] rounded-lg px-3 py-2 text-sm bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition';
+    return `<div class="space-y-4">` + fields.map(f => {
+      const req = f.required ? ' <span class="text-red-400">*</span>' : '';
+      const label = `<label class="block text-xs font-semibold text-gray-400 uppercase mb-1">${this.escapeHtml(f.label)}${req}</label>`;
+      let control = '';
+      if (f.type === 'select') {
+        const opts = (f.options || []).map(o =>
+          `<option value="${this.escapeHtml(o.value)}" ${String(o.value) === String(f.value) ? 'selected' : ''}>${this.escapeHtml(o.label)}</option>`
+        ).join('');
+        control = `<select id="fld_${f.key}" class="${inputCls}">${opts}</select>`;
+      } else if (f.type === 'textarea') {
+        control = `<textarea id="fld_${f.key}" rows="2" placeholder="${this.escapeHtml(f.placeholder || '')}" class="${inputCls}">${this.escapeHtml(f.value || '')}</textarea>`;
+      } else {
+        control = `<input id="fld_${f.key}" type="${f.type || 'text'}" value="${this.escapeHtml(f.value ?? '')}" placeholder="${this.escapeHtml(f.placeholder || '')}" class="${inputCls}" ${f.type === 'number' ? 'min="0" step="any"' : ''}>`;
+      }
+      return `<div>${label}${control}</div>`;
+    }).join('') + `</div>`;
+  },
+
+  readForm(fields) {
+    const out = {};
+    for (const f of fields) {
+      const el = document.getElementById('fld_' + f.key);
+      out[f.key] = el ? el.value.trim() : '';
+    }
+    return out;
+  },
+
+  validateForm(fields, values) {
+    for (const f of fields) {
+      if (f.required && !values[f.key]) return `Preencha o campo "${f.label}".`;
+    }
+    return null;
+  },
+
+  /* ────────────────────────────────────────────────
+     Paginação simples de tabelas
+     ──────────────────────────────────────────────── */
+  paginate(items, page, perPage = 15) {
+    const total = items.length;
+    const pages = Math.max(1, Math.ceil(total / perPage));
+    const current = Math.min(Math.max(1, page), pages);
+    const start = (current - 1) * perPage;
+    return { rows: items.slice(start, start + perPage), page: current, pages, total };
+  },
+
+  paginationControls(moduleName, page, pages, total) {
+    if (pages <= 1) return '';
+    const btn = 'px-2.5 py-1 rounded-lg text-xs font-semibold border border-[#333333] hover:bg-[#2a2a2a] transition disabled:opacity-40 disabled:cursor-not-allowed';
+    return `
+      <div class="flex items-center justify-between px-4 py-3 border-t border-[#2a2a2a] bg-[#0a0a0a]/50 text-xs text-gray-500">
+        <span>${total} registro(s)</span>
+        <div class="flex items-center gap-2">
+          <button class="${btn}" ${page <= 1 ? 'disabled' : ''} onclick="${moduleName}.setPage(${page - 1})"><i class="fas fa-chevron-left"></i></button>
+          <span class="text-gray-400 font-semibold">Página ${page} de ${pages}</span>
+          <button class="${btn}" ${page >= pages ? 'disabled' : ''} onclick="${moduleName}.setPage(${page + 1})"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>`;
   },
 
   /**
@@ -56,7 +145,7 @@ const utils = {
       'Pintura':            { bg: '#fce7f3', text: '#9d174d', border: '#f9a8d4', label: 'Pintura' },
       'Limpeza':            { bg: '#ccfbf1', text: '#0f766e', border: '#5eead4', label: 'Limpeza' },
       'Escritório':         { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1', label: 'Escritório' },
-      'Informática':        { bg: '#e0e7ff', text: '#3730a3', border: '#a5b4fc', label: 'Informática' },
+      'Informática':        { bg: '#e0e7ff', text: '#3730a3', border: '#a5b5fc', label: 'Informática' },
       'Segurança':          { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5', label: 'Segurança' },
       'Ferramenta Manual':  { bg: '#fef9c3', text: '#854d0e', border: '#fde047', label: 'Ferramenta Manual' },
       'Ferramenta Elétrica':{ bg: '#cffafe', text: '#155e75', border: '#67e8f9', label: 'Ferramenta Elétrica' },
@@ -88,26 +177,38 @@ const utils = {
   categoriaBadge(categoria) {
     const style = this.getCategoriaStyle(categoria);
     const safeLabel = this.escapeHtml(style.label);
-    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border" 
+    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border"
       style="background-color:${style.bg};color:${style.text};border-color:${style.border}">
       ${safeLabel}
     </span>`;
   },
 
   /**
+   * Badge de status genérico (cores por palavra-chave).
+   */
+  statusBadge(status) {
+    const s = this.normalize(status || '');
+    let cls;
+    if (/atras|cancel|defeito|manut|inativo|esgot/.test(s)) {
+      cls = 'bg-red-900/30 text-red-400 border-red-800/50';
+    } else if (/devol|entregue|conclu|dispon|ativo|ok/.test(s)) {
+      cls = 'bg-green-900/30 text-green-400 border-green-800/50';
+    } else if (/pend|aguard|aberto|uso|emprest/.test(s)) {
+      cls = 'bg-amber-900/30 text-amber-400 border-amber-800/50';
+    } else {
+      cls = 'bg-[#1a1a1a] text-gray-400 border-[#333333]';
+    }
+    return `<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold border ${cls}">${this.escapeHtml(status || '—')}</span>`;
+  },
+
+  /**
    * Retorna array de cores para gráficos (Chart.js) baseado nas categorias presentes.
    */
   getCategoriaChartColors(categorias) {
-    return categorias.map(cat => {
-      const s = this.getCategoriaStyle(cat);
-      return s.bg.replace('hsl', 'hsla').replace(')', ', 0.85)');
-    });
+    return categorias.map(cat => this.getCategoriaStyle(cat).bg);
   },
 
   getCategoriaChartBorders(categorias) {
-    return categorias.map(cat => {
-      const s = this.getCategoriaStyle(cat);
-      return s.border;
-    });
+    return categorias.map(cat => this.getCategoriaStyle(cat).border);
   }
 };

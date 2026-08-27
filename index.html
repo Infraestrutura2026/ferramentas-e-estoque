@@ -92,8 +92,8 @@
             </div>
           </div>
 
-          <button onclick="authModule.doLogin()"
-            class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition shadow-lg shadow-amber-600/20 text-sm uppercase tracking-wide">
+          <button id="login-btn" onclick="authModule.doLogin()"
+            class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition shadow-lg shadow-amber-600/20 text-sm uppercase tracking-wide disabled:opacity-60 disabled:cursor-wait">
             <i class="fas fa-sign-in-alt mr-2"></i>Entrar no Sistema
           </button>
         </div>
@@ -122,7 +122,7 @@
 
         <!-- Footer -->
         <div class="bg-[#0a0a0a] px-8 py-3 border-t border-[#2a2a2a] text-center flex items-center justify-between">
-          <p class="text-[10px] text-gray-600">v2.4.0</p>
+          <p class="text-[10px] text-gray-600">v2.5.0</p>
           <p class="text-[10px] text-gray-600">ZANONI & MARTINEZ InfraTech</p>
         </div>
       </div>
@@ -133,11 +133,12 @@
   <div id="app"></div>
 
   <!-- Scripts -->
-  <script src="config-tatico.js"></script>
-  <script src="utils-tatico.js"></script>
-  <script src="estoque-tatico.js"></script>
-  <script src="ferramentas-tatico.js"></script>
-  <script src="indicadores-tatico.js"></script>
-  <script src="app-tatico.js"></script>
+  <script src="config.js"></script>
+  <script src="utils.js"></script>
+  <script src="estoque.js"></script>
+  <script src="ferramentas.js"></script>
+  <script src="indicadores.js"></script>
+  <script src="cadastros.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
