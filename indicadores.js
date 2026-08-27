@@ -10,7 +10,7 @@ const indicadoresModule = {
   render(container) {
     const items = app.data.estoque || [];
     if (!items.length) {
-      container.innerHTML = `<div class="p-8 text-center text-gray-500"><i class="fas fa-box-open text-3xl mb-2"></i><p>Nenhum dado de estoque disponível.</p></div>`;
+      container.innerHTML = `<div class="p-8 text-center text-slate-500"><i class="fas fa-box-open text-3xl mb-2"></i><p>Nenhum dado de estoque disponível.</p></div>`;
       return;
     }
 
@@ -30,7 +30,7 @@ const indicadoresModule = {
 
     // Saúde = % de itens com estoque acima do mínimo
     const saudePct = total > 0 ? Math.round((ok.length / total) * 100) : 100;
-    const saudeColor = saudePct >= 80 ? 'bg-green-600' : saudePct >= 50 ? 'bg-amber-600' : 'bg-red-600';
+    const saudeColor = saudePct >= 80 ? 'bg-emerald-500' : saudePct >= 50 ? 'bg-amber-500' : 'bg-red-600';
 
     // Agrupar por categoria
     const catMap = {};
@@ -68,67 +68,67 @@ const indicadoresModule = {
       <div class="space-y-6">
         <!-- KPIs -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Total de Itens</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Total de Itens</p>
             <p class="text-2xl font-bold text-white">${total}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Estoque OK</p>
-            <p class="text-2xl font-bold text-green-400">${ok.length}</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Estoque OK</p>
+            <p class="text-2xl font-bold text-emerald-300">${ok.length}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Críticos</p>
-            <p class="text-2xl font-bold text-amber-400">${criticos.length}</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Críticos</p>
+            <p class="text-2xl font-bold text-amber-300">${criticos.length}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Esgotados</p>
-            <p class="text-2xl font-bold text-red-400">${zerados.length}</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Esgotados</p>
+            <p class="text-2xl font-bold text-red-300">${zerados.length}</p>
           </div>
         </div>
 
         <!-- Barra de Saúde -->
-        <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
+        <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-semibold text-gray-300">Saúde do Estoque</span>
-            <span class="text-sm font-bold ${saudePct >= 80 ? 'text-green-400' : saudePct >= 50 ? 'text-amber-400' : 'text-red-400'}">${saudePct}%</span>
+            <span class="text-sm font-semibold text-slate-300">Saúde do Estoque</span>
+            <span class="text-sm font-bold ${saudePct >= 80 ? 'text-emerald-300' : saudePct >= 50 ? 'text-amber-300' : 'text-red-300'}">${saudePct}%</span>
           </div>
-          <div class="w-full bg-[#2a2a2a] rounded-full h-3">
+          <div class="w-full bg-slate-700/50 rounded-full h-3">
             <div class="${saudeColor} h-3 rounded-full transition-all" style="width:${saudePct}%"></div>
           </div>
         </div>
 
         <!-- Gráficos -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <h3 class="text-sm font-bold text-gray-300 mb-3">Itens por Categoria</h3>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <h3 class="text-sm font-bold text-slate-300 mb-3">Itens por Categoria</h3>
             <canvas id="chartCategorias"></canvas>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <h3 class="text-sm font-bold text-gray-300 mb-3">Quantidade por Local</h3>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <h3 class="text-sm font-bold text-slate-300 mb-3">Quantidade por Local</h3>
             <canvas id="chartLocais"></canvas>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <h3 class="text-sm font-bold text-gray-300 mb-3">Top 10 Itens Críticos</h3>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <h3 class="text-sm font-bold text-slate-300 mb-3">Top 10 Itens Críticos</h3>
             <canvas id="chartCriticos"></canvas>
           </div>
         </div>
 
         <!-- Tabela de Alertas -->
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
-          <div class="px-4 py-3 border-b border-[#2a2a2a] flex items-center gap-2">
-            <i class="fas fa-exclamation-triangle text-amber-400"></i>
-            <h3 class="text-sm font-bold text-gray-300">Itens em Alerta (Críticos ou Esgotados)</h3>
+        <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-700/60 flex items-center gap-2">
+            <i class="fas fa-exclamation-triangle text-amber-300"></i>
+            <h3 class="text-sm font-bold text-slate-300">Itens em Alerta (Críticos ou Esgotados)</h3>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Item</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Categoria</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Atual</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Mínimo</th>
-                  <th class="px-4 py-3 text-left font-semibold text-gray-400">Local</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Status</th>
+                <tr class="bg-slate-900 border-b border-slate-700/60">
+                  <th class="px-4 py-3 text-left font-semibold text-slate-400">Item</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-400">Categoria</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-400">Atual</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-400">Mínimo</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-400">Local</th>
+                  <th class="px-4 py-3 text-center font-semibold text-slate-400">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,20 +138,20 @@ const indicadoresModule = {
                   const isZero = q === 0;
                   const catBadge = utils.categoriaBadge(item.categoria);
                   return `
-                    <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition">
+                    <tr class="border-b border-slate-700/40 hover:bg-slate-700/30 transition">
                       <td class="px-4 py-3 font-medium text-white">${utils.escapeHtml(item.nome || item.item || '—')}</td>
                       <td class="px-4 py-3">${catBadge}</td>
-                      <td class="px-4 py-3 text-center font-bold ${isZero ? 'text-red-400' : 'text-amber-400'}">${q}</td>
-                      <td class="px-4 py-3 text-center text-gray-500">${m > 0 ? m : '—'}</td>
-                      <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.local || '—')}</td>
+                      <td class="px-4 py-3 text-center font-bold ${isZero ? 'text-red-300' : 'text-amber-300'}">${q}</td>
+                      <td class="px-4 py-3 text-center text-slate-500">${m > 0 ? m : '—'}</td>
+                      <td class="px-4 py-3 text-slate-400">${utils.escapeHtml(item.local || '—')}</td>
                       <td class="px-4 py-3 text-center">
                         ${isZero 
-                          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-900/30 text-red-400 border border-red-800/50 border border-red-800/50">✕ ESGOTADO</span>`
-                          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-900/30 text-amber-400 border border-amber-800/50 border border-amber-800/50">⚠ CRÍTICO</span>`}
+                          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/10 text-red-300 border border-red-500/20">✕ ESGOTADO</span>`
+                          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">⚠ CRÍTICO</span>`}
                       </td>
                     </tr>
                   `;
-                }).join('') || '<tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">Nenhum item em alerta. Estoque saudável!</td></tr>'}
+                }).join('') || '<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">Nenhum item em alerta. Estoque saudável!</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -179,6 +179,11 @@ const indicadoresModule = {
     // Destruir gráficos anteriores
     Object.values(this.charts).forEach(c => c?.destroy?.());
     this.charts = {};
+
+    // Tema dos gráficos alinhado à paleta do sistema (slate + âmbar)
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(148, 163, 184, 0.12)';
+    Chart.defaults.font.family = 'ui-sans-serif, system-ui, sans-serif';
 
     const catBgColors = categorias.map(cat => utils.getCategoriaStyle(cat).bg);
     const catBorderColors = categorias.map(cat => utils.getCategoriaStyle(cat).border);
@@ -214,8 +219,8 @@ const indicadoresModule = {
           datasets: [{
             label: 'Quantidade',
             data: locValues,
-            backgroundColor: 'rgba(30, 58, 138, 0.75)',
-            borderColor: '#1e3a8a',
+            backgroundColor: 'rgba(245, 158, 11, 0.55)',
+            borderColor: '#f59e0b',
             borderWidth: 1,
             borderRadius: 4
           }]
@@ -233,7 +238,7 @@ const indicadoresModule = {
     if (ctxCrit && topCriticos.length) {
       const critColors = topCriticos.map(item => {
         const q = parseFloat(item.quantidadeAtual) || 0;
-        return q === 0 ? 'rgba(220, 38, 38, 0.8)' : 'rgba(245, 158, 11, 0.8)';
+        return q === 0 ? 'rgba(248, 113, 113, 0.75)' : 'rgba(252, 211, 77, 0.75)';
       });
       this.charts.criticos = new Chart(ctxCrit, {
         type: 'bar',

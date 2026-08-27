@@ -69,10 +69,10 @@ const utils = {
                 value, options: [{value,label}], required, placeholder }]
      ──────────────────────────────────────────────── */
   formHtml(fields) {
-    const inputCls = 'w-full border border-[#333333] rounded-lg px-3 py-2 text-sm bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition';
+    const inputCls = 'w-full border border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-900 text-slate-100 focus:ring-2 focus:ring-amber-500/60 focus:border-amber-500 outline-none transition';
     return `<div class="space-y-4">` + fields.map(f => {
-      const req = f.required ? ' <span class="text-red-400">*</span>' : '';
-      const label = `<label class="block text-xs font-semibold text-gray-400 uppercase mb-1">${this.escapeHtml(f.label)}${req}</label>`;
+      const req = f.required ? ' <span class="text-red-300">*</span>' : '';
+      const label = `<label class="block text-xs font-semibold text-slate-400 uppercase mb-1">${this.escapeHtml(f.label)}${req}</label>`;
       let control = '';
       if (f.type === 'select') {
         const opts = (f.options || []).map(o =>
@@ -117,13 +117,13 @@ const utils = {
 
   paginationControls(moduleName, page, pages, total) {
     if (pages <= 1) return '';
-    const btn = 'px-2.5 py-1 rounded-lg text-xs font-semibold border border-[#333333] hover:bg-[#2a2a2a] transition disabled:opacity-40 disabled:cursor-not-allowed';
+    const btn = 'px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-700 hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed';
     return `
-      <div class="flex items-center justify-between px-4 py-3 border-t border-[#2a2a2a] bg-[#0a0a0a]/50 text-xs text-gray-500">
+      <div class="flex items-center justify-between px-4 py-3 border-t border-slate-700/60 bg-slate-900/50 text-xs text-slate-500">
         <span>${total} registro(s)</span>
         <div class="flex items-center gap-2">
           <button class="${btn}" ${page <= 1 ? 'disabled' : ''} onclick="${moduleName}.setPage(${page - 1})"><i class="fas fa-chevron-left"></i></button>
-          <span class="text-gray-400 font-semibold">Página ${page} de ${pages}</span>
+          <span class="text-slate-400 font-semibold">Página ${page} de ${pages}</span>
           <button class="${btn}" ${page >= pages ? 'disabled' : ''} onclick="${moduleName}.setPage(${page + 1})"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>`;
@@ -131,43 +131,39 @@ const utils = {
 
   /**
    * Retorna estilo (cor de fundo e texto) para uma categoria.
-   * Cores baseadas nas cores do Google Sheets, com paleta profissional institucional.
+   * Paleta harmônica: um matiz por categoria e uma única fórmula HSL
+   * (mesma saturação/lightness) — badges discretos e consistentes.
    */
   getCategoriaStyle(categoria) {
-    const map = {
-      'Hidráulica':         { bg: '#dcfce7', text: '#166534', border: '#86efac', label: 'Hidráulica' },
-      'Elétrica':           { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd', label: 'Elétrica' },
-      'Construção':         { bg: '#ffedd5', text: '#9a3412', border: '#fdba74', label: 'Construção' },
-      'Automotivo':         { bg: '#f3e8ff', text: '#6b21a8', border: '#d8b4fe', label: 'Automotivo' },
-      'Marcenaria':         { bg: '#fef3c7', text: '#92400e', border: '#fcd34d', label: 'Marcenaria' },
-      'Serralheria':        { bg: '#e0f2fe', text: '#075985', border: '#7dd3fc', label: 'Serralheria' },
-      'Jardinagem':         { bg: '#ecfccb', text: '#3f6212', border: '#bef264', label: 'Jardinagem' },
-      'Pintura':            { bg: '#fce7f3', text: '#9d174d', border: '#f9a8d4', label: 'Pintura' },
-      'Limpeza':            { bg: '#ccfbf1', text: '#0f766e', border: '#5eead4', label: 'Limpeza' },
-      'Escritório':         { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1', label: 'Escritório' },
-      'Informática':        { bg: '#e0e7ff', text: '#3730a3', border: '#a5b5fc', label: 'Informática' },
-      'Segurança':          { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5', label: 'Segurança' },
-      'Ferramenta Manual':  { bg: '#fef9c3', text: '#854d0e', border: '#fde047', label: 'Ferramenta Manual' },
-      'Ferramenta Elétrica':{ bg: '#cffafe', text: '#155e75', border: '#67e8f9', label: 'Ferramenta Elétrica' },
-      'Alvenaria':          { bg: '#fed7aa', text: '#7c2d12', border: '#fb923c', label: 'Alvenaria' },
-      'Refrigeração':       { bg: '#e0f2fe', text: '#0c4a6e', border: '#38bdf8', label: 'Refrigeração' },
-      'Mecânica':           { bg: '#f3f4f6', text: '#374151', border: '#9ca3af', label: 'Mecânica' },
-      'Geral':              { bg: '#f3f4f6', text: '#4b5563', border: '#d1d5db', label: 'Geral' },
-      'Entrada':            { bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db', label: 'Entrada' }
+    const HUES = {
+      'Hidráulica': 152,          'Elétrica': 214,           'Construção': 24,
+      'Automotivo': 268,          'Marcenaria': 38,          'Serralheria': 199,
+      'Jardinagem': 90,           'Pintura': 330,            'Limpeza': 172,
+      'Escritório': 215,          'Informática': 234,        'Segurança': 0,
+      'Ferramenta Manual': 45,    'Ferramenta Elétrica': 187,'Alvenaria': 18,
+      'Refrigeração': 203,        'Mecânica': 220,           'Geral': 220,
+      'Entrada': 220
     };
+    // Categorias "neutras" usam saturação baixa (cinza-azulado discreto)
+    const NEUTRAS = ['Escritório', 'Mecânica', 'Geral', 'Entrada'];
 
     const key = String(categoria || '').trim();
-    if (map[key]) return map[key];
-
-    // Fallback: gera cor determinística baseada no nome da categoria
-    const hash = Array.from(key).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const hues = [20, 45, 70, 150, 190, 210, 260, 280, 320, 340];
-    const hue = hues[hash % hues.length];
+    let hue, sat;
+    if (HUES[key] !== undefined) {
+      hue = HUES[key];
+      sat = NEUTRAS.includes(key) ? 12 : 36;
+    } else {
+      // Fallback: matiz determinístico baseado no nome da categoria
+      const hash = Array.from(key).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const hues = [20, 45, 70, 150, 190, 210, 260, 280, 320, 340];
+      hue = hues[hash % hues.length];
+      sat = 36;
+    }
     return {
-      bg: `hsl(${hue}, 85%, 93%)`,
-      text: `hsl(${hue}, 80%, 28%)`,
-      border: `hsl(${hue}, 70%, 75%)`,
-      label: key
+      bg: `hsl(${hue} ${sat}% 91%)`,
+      text: `hsl(${hue} ${sat}% 29%)`,
+      border: `hsl(${hue} ${sat}% 80%)`,
+      label: key || 'Sem categoria'
     };
   },
 
@@ -190,13 +186,13 @@ const utils = {
     const s = this.normalize(status || '');
     let cls;
     if (/atras|cancel|defeito|manut|inativo|esgot/.test(s)) {
-      cls = 'bg-red-900/30 text-red-400 border-red-800/50';
+      cls = 'bg-red-500/10 text-red-300 border-red-500/20';
     } else if (/devol|entregue|conclu|dispon|ativo|ok/.test(s)) {
-      cls = 'bg-green-900/30 text-green-400 border-green-800/50';
+      cls = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
     } else if (/pend|aguard|aberto|uso|emprest/.test(s)) {
-      cls = 'bg-amber-900/30 text-amber-400 border-amber-800/50';
+      cls = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
     } else {
-      cls = 'bg-[#1a1a1a] text-gray-400 border-[#333333]';
+      cls = 'bg-slate-900 text-slate-400 border-slate-700';
     }
     return `<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold border ${cls}">${this.escapeHtml(status || '—')}</span>`;
   },

@@ -212,15 +212,6 @@ const authModule = {
 
   isAdmin() {
     return this.getCurrentRole() === 'admin';
-  },
-
-  fillLogin(username) {
-    const userInput = document.getElementById('login-user');
-    const passInput = document.getElementById('login-pass');
-    if (userInput) userInput.value = username;
-    if (passInput) { passInput.value = ''; passInput.focus(); }
-    const errorDiv = document.getElementById('login-error');
-    if (errorDiv) errorDiv.classList.add('hidden');
   }
 };
 
@@ -526,17 +517,17 @@ const app = {
     const roleLabel = role === 'admin' ? 'Administrador' : 'Operador';
 
     root.innerHTML = `
-      <div class="min-h-screen bg-[#0a0a0a] flex">
+      <div class="min-h-screen bg-slate-900 flex">
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-[#0f0f0f] text-white flex flex-col shadow-xl transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 -translate-x-full">
-          <div class="px-5 py-5 border-b border-[#2a2a2a]">
+        <aside id="sidebar" class="w-64 bg-slate-950 text-white flex flex-col shadow-xl transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 -translate-x-full border-r border-slate-800/60">
+          <div class="px-5 py-5 border-b border-slate-700/60">
             <div class="flex items-center gap-3 mb-1">
-              <div class="w-10 h-10 rounded-lg bg-amber-600 flex items-center justify-center shadow-lg shrink-0">
-                <i class="fas fa-toolbox text-black text-lg"></i>
+              <div class="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center shadow-lg shrink-0">
+                <i class="fas fa-toolbox text-slate-950 text-lg"></i>
               </div>
               <div class="min-w-0">
                 <h1 class="font-bold text-sm leading-tight truncate">Ferramentas & Estoque</h1>
-                <p class="text-[10px] text-gray-500 uppercase tracking-wider truncate">${utils.escapeHtml(orgao)}</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider truncate">${utils.escapeHtml(orgao)}</p>
               </div>
             </div>
           </div>
@@ -554,16 +545,16 @@ const app = {
             ${authModule.isAdmin() ? this._navItem('usuarios', 'fa-users-cog', 'Usuários') : ''}
           </nav>
 
-          <div class="px-3 py-3 border-t border-[#2a2a2a] space-y-2">
-            <button onclick="app.syncAll(true)" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-400 text-white text-sm font-semibold transition shadow">
+          <div class="px-3 py-3 border-t border-slate-700/60 space-y-2">
+            <button onclick="app.syncAll(true)" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-semibold transition shadow">
               <i class="fas fa-sync-alt" id="sync-icon"></i>
               <span>Sincronizar</span>
             </button>
-            <button onclick="authModule.logout()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-900/50 hover:bg-red-900 text-red-300 text-xs font-medium transition border border-red-800/50">
+            <button onclick="authModule.logout()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/20 text-red-300 text-xs font-medium transition border border-red-500/20">
               <i class="fas fa-sign-out-alt"></i>
               <span>Sair</span>
             </button>
-            <p id="sync-status" class="text-[10px] text-gray-500 text-center">Aguardando sincronização...</p>
+            <p id="sync-status" class="text-[10px] text-slate-500 text-center">Aguardando sincronização...</p>
           </div>
         </aside>
 
@@ -573,21 +564,21 @@ const app = {
         <!-- Main -->
         <div class="flex-1 flex flex-col min-w-0">
           <!-- Topbar -->
-          <header class="bg-[#141414] border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-            <button onclick="app._toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-[#1a1a1a] text-gray-400">
+          <header class="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+            <button onclick="app._toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-800 text-slate-400">
               <i class="fas fa-bars"></i>
             </button>
             <div class="flex items-center gap-3 min-w-0">
               <span id="page-title" class="font-bold text-white truncate">Dashboard</span>
-              <span id="sync-badge" class="hidden text-[10px] px-2 py-0.5 rounded-full bg-green-900/30 text-green-400 border border-green-800/50 font-medium whitespace-nowrap">Sincronizado</span>
+              <span id="sync-badge" class="hidden text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-medium whitespace-nowrap">Sincronizado</span>
             </div>
             <div class="flex items-center gap-3 shrink-0">
-              <span class="text-xs text-gray-500 hidden sm:inline">${new Date().toLocaleDateString('pt-BR')}</span>
+              <span class="text-xs text-slate-500 hidden sm:inline">${new Date().toLocaleDateString('pt-BR')}</span>
               <div class="text-right hidden md:block">
-                <p class="text-[10px] text-gray-500 leading-tight">${utils.escapeHtml(usuario)}</p>
-                <p class="text-[10px] text-amber-400 font-semibold leading-tight">${roleLabel}</p>
+                <p class="text-[10px] text-slate-500 leading-tight">${utils.escapeHtml(usuario)}</p>
+                <p class="text-[10px] text-amber-300 font-semibold leading-tight">${roleLabel}</p>
               </div>
-              <div class="w-8 h-8 rounded-full bg-[#1a1a1a] text-amber-400 flex items-center justify-center text-xs font-bold border-2 border-amber-500 shrink-0" title="${utils.escapeHtml(usuario)}">
+              <div class="w-8 h-8 rounded-full bg-slate-800 text-amber-300 flex items-center justify-center text-xs font-bold border border-amber-500/50 shrink-0" title="${utils.escapeHtml(usuario)}">
                 ${utils.escapeHtml(usuario.charAt(0).toUpperCase())}
               </div>
             </div>
@@ -608,7 +599,7 @@ const app = {
 
   _navItem(page, icon, label) {
     return `
-      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-[#1a1a1a] hover:text-white transition">
+      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
         <i class="fas ${icon} w-5 text-center"></i>
         <span>${label}</span>
       </button>
@@ -618,9 +609,9 @@ const app = {
   _updateActiveNav() {
     document.querySelectorAll('.nav-item').forEach(btn => {
       const isActive = btn.dataset.page === this.currentPage;
-      btn.classList.toggle('bg-[#1a1a1a]', isActive);
+      btn.classList.toggle('bg-slate-800', isActive);
       btn.classList.toggle('text-white', isActive);
-      btn.classList.toggle('text-gray-400', !isActive);
+      btn.classList.toggle('text-slate-400', !isActive);
     });
     const titleMap = {
       dashboard: 'Dashboard', indicadores: 'Indicadores',
@@ -657,10 +648,10 @@ const app = {
         badge.classList.remove('hidden');
         if (this.syncErrors.length) {
           badge.textContent = 'Dados locais';
-          badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-900/30 text-amber-400 border border-amber-800/50 font-medium whitespace-nowrap';
+          badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium whitespace-nowrap';
         } else {
           badge.textContent = 'Sincronizado';
-          badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-green-900/30 text-green-400 border border-green-800/50 font-medium whitespace-nowrap';
+          badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-medium whitespace-nowrap';
         }
       }
       if (status) status.textContent = `Última: ${timeStr}`;
@@ -770,10 +761,10 @@ const app = {
     const movs = (app.data.movimentacoes || []).slice(-5).reverse();
 
     const card = (titulo, valor, icone, corIcone, corValor = 'text-white') => `
-      <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-5">
+      <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 p-5">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs text-gray-500 uppercase font-semibold">${titulo}</p>
+            <p class="text-xs text-slate-500 uppercase font-semibold">${titulo}</p>
             <p class="text-2xl font-bold ${corValor} mt-1">${valor}</p>
           </div>
           <div class="w-10 h-10 rounded-lg ${corIcone} flex items-center justify-center">
@@ -785,86 +776,86 @@ const app = {
     container.innerHTML = `
       <div class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          ${card('Itens em Estoque', totalItens, 'fa-boxes', 'bg-blue-900/30 text-blue-400')}
-          ${card('Ferramentas', totalFerramentas, 'fa-tools', 'bg-amber-900/30 text-amber-400')}
-          ${card('Empréstimos Ativos', emprestimosAtivos.length, 'fa-hand-holding', 'bg-green-900/30 text-green-400', emprestimosAtrasados.length ? 'text-red-400' : 'text-white')}
+          ${card('Itens em Estoque', totalItens, 'fa-boxes', 'bg-sky-500/10 text-sky-400')}
+          ${card('Ferramentas', totalFerramentas, 'fa-tools', 'bg-amber-500/10 text-amber-300')}
+          ${card('Empréstimos Ativos', emprestimosAtivos.length, 'fa-hand-holding', 'bg-emerald-500/10 text-emerald-300', emprestimosAtrasados.length ? 'text-red-300' : 'text-white')}
           ${card('Críticos / Esgotados', zerados + criticos, zerados > 0 ? 'fa-exclamation-triangle' : 'fa-exclamation-circle',
-                 zerados > 0 ? 'bg-red-900/30 text-red-400' : 'bg-amber-900/30 text-amber-400',
-                 zerados > 0 ? 'text-red-400' : criticos > 0 ? 'text-amber-400' : 'text-white')}
+                 zerados > 0 ? 'bg-red-500/10 text-red-300' : 'bg-amber-500/10 text-amber-300',
+                 zerados > 0 ? 'text-red-300' : criticos > 0 ? 'text-amber-300' : 'text-white')}
         </div>
 
         ${emprestimosAtrasados.length > 0 ? `
-        <div class="bg-red-900/20 border border-red-800/50 rounded-xl p-4 flex items-start gap-3">
-          <i class="fas fa-clock text-red-400 mt-0.5"></i>
+        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
+          <i class="fas fa-clock text-red-300 mt-0.5"></i>
           <div>
-            <p class="text-sm font-bold text-red-400">${emprestimosAtrasados.length} empréstimo(s) atrasado(s)</p>
-            <p class="text-xs text-red-400 mt-1">Verifique a tela de Empréstimos e providencie a devolução.</p>
+            <p class="text-sm font-bold text-red-300">${emprestimosAtrasados.length} empréstimo(s) atrasado(s)</p>
+            <p class="text-xs text-red-300 mt-1">Verifique a tela de Empréstimos e providencie a devolução.</p>
           </div>
         </div>` : ''}
 
         ${zerados > 0 ? `
-        <div class="bg-red-900/20 border border-red-800/50 rounded-xl p-4 flex items-start gap-3">
-          <i class="fas fa-exclamation-triangle text-red-400 mt-0.5"></i>
+        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
+          <i class="fas fa-exclamation-triangle text-red-300 mt-0.5"></i>
           <div>
-            <p class="text-sm font-bold text-red-400">${zerados} item(s) esgotado(s)</p>
-            <p class="text-xs text-red-400 mt-1">Verifique a tela de Estoque para reposição.</p>
+            <p class="text-sm font-bold text-red-300">${zerados} item(s) esgotado(s)</p>
+            <p class="text-xs text-red-300 mt-1">Verifique a tela de Estoque para reposição.</p>
           </div>
         </div>` : ''}
 
         ${criticos > 0 ? `
-        <div class="bg-amber-900/20 border border-amber-800/50 rounded-xl p-4 flex items-start gap-3">
-          <i class="fas fa-exclamation-circle text-amber-400 mt-0.5"></i>
+        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
+          <i class="fas fa-exclamation-circle text-amber-300 mt-0.5"></i>
           <div>
-            <p class="text-sm font-bold text-amber-400">${criticos} item(s) em nível crítico</p>
-            <p class="text-xs text-amber-400 mt-1">Quantidade abaixo ou igual ao mínimo permitido.</p>
+            <p class="text-sm font-bold text-amber-300">${criticos} item(s) em nível crítico</p>
+            <p class="text-xs text-amber-300 mt-1">Quantidade abaixo ou igual ao mínimo permitido.</p>
           </div>
         </div>` : ''}
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-5">
-            <h3 class="text-sm font-bold text-gray-300 mb-4">Status do Estoque</h3>
+          <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 p-5">
+            <h3 class="text-sm font-bold text-slate-300 mb-4">Status do Estoque</h3>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-400">✅ Normal</span>
+                <span class="text-sm text-slate-400">✅ Normal</span>
                 <span class="text-sm font-bold text-white">${ok}</span>
               </div>
-              <div class="w-full bg-[#1a1a1a] rounded-full h-2">
-                <div class="bg-green-600 h-2 rounded-full" style="width: ${totalItens ? (ok/totalItens*100) : 0}%"></div>
+              <div class="w-full bg-slate-900 rounded-full h-2">
+                <div class="bg-emerald-500 h-2 rounded-full" style="width: ${totalItens ? (ok/totalItens*100) : 0}%"></div>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-400">⚠️ Crítico</span>
-                <span class="text-sm font-bold text-amber-400">${criticos}</span>
+                <span class="text-sm text-slate-400">⚠️ Crítico</span>
+                <span class="text-sm font-bold text-amber-300">${criticos}</span>
               </div>
-              <div class="w-full bg-[#1a1a1a] rounded-full h-2">
-                <div class="bg-amber-600 h-2 rounded-full" style="width: ${totalItens ? (criticos/totalItens*100) : 0}%"></div>
+              <div class="w-full bg-slate-900 rounded-full h-2">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: ${totalItens ? (criticos/totalItens*100) : 0}%"></div>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-400">❌ Esgotado</span>
-                <span class="text-sm font-bold text-red-400">${zerados}</span>
+                <span class="text-sm text-slate-400">❌ Esgotado</span>
+                <span class="text-sm font-bold text-red-300">${zerados}</span>
               </div>
-              <div class="w-full bg-[#1a1a1a] rounded-full h-2">
+              <div class="w-full bg-slate-900 rounded-full h-2">
                 <div class="bg-red-600 h-2 rounded-full" style="width: ${totalItens ? (zerados/totalItens*100) : 0}%"></div>
               </div>
             </div>
           </div>
 
-          <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-5 lg:col-span-2">
-            <h3 class="text-sm font-bold text-gray-300 mb-4">Últimas Movimentações</h3>
+          <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 p-5 lg:col-span-2">
+            <h3 class="text-sm font-bold text-slate-300 mb-4">Últimas Movimentações</h3>
             ${movs.length ? `
               <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                  <thead><tr class="bg-[#1a1a1a] border-b border-[#2a2a2a]">
-                    <th class="px-4 py-2 text-left font-semibold text-gray-400">Data</th>
-                    <th class="px-4 py-2 text-left font-semibold text-gray-400">Tipo</th>
-                    <th class="px-4 py-2 text-left font-semibold text-gray-400">Item</th>
-                    <th class="px-4 py-2 text-center font-semibold text-gray-400">Qtd</th>
+                  <thead><tr class="bg-slate-900 border-b border-slate-700/60">
+                    <th class="px-4 py-2 text-left font-semibold text-slate-400">Data</th>
+                    <th class="px-4 py-2 text-left font-semibold text-slate-400">Tipo</th>
+                    <th class="px-4 py-2 text-left font-semibold text-slate-400">Item</th>
+                    <th class="px-4 py-2 text-center font-semibold text-slate-400">Qtd</th>
                   </tr></thead>
                   <tbody>
                     ${movs.map(m => {
                       const tipo = utils.normalize(m.tipo || m.operacao);
-                      const tipoClass = tipo.includes('entrada') || tipo.includes('compra') ? 'text-green-400' : tipo.includes('saida') || tipo.includes('retirada') ? 'text-red-400' : 'text-gray-400';
-                      return `<tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60">
-                        <td class="px-4 py-2 text-gray-500">${utils.formatDate(m.data || m.dataHora)}</td>
+                      const tipoClass = tipo.includes('entrada') || tipo.includes('compra') ? 'text-emerald-300' : tipo.includes('saida') || tipo.includes('retirada') ? 'text-red-300' : 'text-slate-400';
+                      return `<tr class="border-b border-slate-700/40 hover:bg-slate-700/30">
+                        <td class="px-4 py-2 text-slate-500">${utils.formatDate(m.data || m.dataHora)}</td>
                         <td class="px-4 py-2 font-semibold ${tipoClass}">${utils.escapeHtml(m.tipo || m.operacao || '—')}</td>
                         <td class="px-4 py-2">${utils.escapeHtml(m.itemNome || m.item || m.nome || '—')}</td>
                         <td class="px-4 py-2 text-center font-mono">${utils.escapeHtml(m.quantidade || '—')}</td>
@@ -873,7 +864,7 @@ const app = {
                   </tbody>
                 </table>
               </div>
-            ` : '<p class="text-gray-500 text-center py-8">Nenhuma movimentação recente.</p>'}
+            ` : '<p class="text-slate-500 text-center py-8">Nenhuma movimentação recente.</p>'}
           </div>
         </div>
       </div>
@@ -904,56 +895,56 @@ const app = {
 
     container.innerHTML = `
       <div class="space-y-6">
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-6">
+        <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 p-6">
           <h2 class="text-lg font-bold text-white mb-4">📊 Relatório de Estoque</h2>
           <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="bg-[#0a0a0a] rounded-lg p-4 text-center">
+            <div class="bg-slate-900 rounded-lg p-4 text-center">
               <p class="text-2xl font-bold text-white">${total}</p>
-              <p class="text-xs text-gray-500 uppercase">Total de Itens</p>
+              <p class="text-xs text-slate-500 uppercase">Total de Itens</p>
             </div>
-            <div class="bg-red-900/20 rounded-lg p-4 text-center">
-              <p class="text-2xl font-bold text-red-400">${zerados}</p>
-              <p class="text-xs text-red-400 uppercase">Esgotados</p>
+            <div class="bg-red-500/10 rounded-lg p-4 text-center">
+              <p class="text-2xl font-bold text-red-300">${zerados}</p>
+              <p class="text-xs text-red-300 uppercase">Esgotados</p>
             </div>
-            <div class="bg-amber-900/20 rounded-lg p-4 text-center">
-              <p class="text-2xl font-bold text-amber-400">${criticos}</p>
-              <p class="text-xs text-amber-400 uppercase">Críticos</p>
+            <div class="bg-amber-500/10 rounded-lg p-4 text-center">
+              <p class="text-2xl font-bold text-amber-300">${criticos}</p>
+              <p class="text-xs text-amber-300 uppercase">Críticos</p>
             </div>
           </div>
 
-          <h3 class="text-sm font-bold text-gray-300 mb-3">Por Categoria</h3>
+          <h3 class="text-sm font-bold text-slate-300 mb-3">Por Categoria</h3>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
-              <thead><tr class="bg-[#1a1a1a] border-b border-[#2a2a2a]">
-                <th class="px-4 py-2 text-left font-semibold text-gray-400">Categoria</th>
-                <th class="px-4 py-2 text-center font-semibold text-gray-400">Itens</th>
-                <th class="px-4 py-2 text-center font-semibold text-gray-400">Qtd Total</th>
-                <th class="px-4 py-2 text-center font-semibold text-gray-400">Esgotados</th>
+              <thead><tr class="bg-slate-900 border-b border-slate-700/60">
+                <th class="px-4 py-2 text-left font-semibold text-slate-400">Categoria</th>
+                <th class="px-4 py-2 text-center font-semibold text-slate-400">Itens</th>
+                <th class="px-4 py-2 text-center font-semibold text-slate-400">Qtd Total</th>
+                <th class="px-4 py-2 text-center font-semibold text-slate-400">Esgotados</th>
               </tr></thead>
               <tbody>
                 ${Object.entries(catMap).sort((a, b) => b[1].count - a[1].count).map(([cat, info]) => `
-                  <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60">
+                  <tr class="border-b border-slate-700/40 hover:bg-slate-700/30">
                     <td class="px-4 py-2">${utils.categoriaBadge(cat)}</td>
                     <td class="px-4 py-2 text-center font-medium">${info.count}</td>
                     <td class="px-4 py-2 text-center font-mono">${info.qtd}</td>
                     <td class="px-4 py-2 text-center">
-                      ${info.zerados > 0 ? `<span class="text-red-400 font-bold">${info.zerados}</span>` : '<span class="text-gray-500">—</span>'}
+                      ${info.zerados > 0 ? `<span class="text-red-300 font-bold">${info.zerados}</span>` : '<span class="text-slate-500">—</span>'}
                     </td>
                   </tr>
-                `).join('') || '<tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Sem dados de estoque.</td></tr>'}
+                `).join('') || '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Sem dados de estoque.</td></tr>'}
               </tbody>
             </table>
           </div>
         </div>
 
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-6">
-          <h3 class="text-sm font-bold text-gray-300 mb-3">📥 Exportar Dados (CSV)</h3>
+        <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 p-6">
+          <h3 class="text-sm font-bold text-slate-300 mb-3">📥 Exportar Dados (CSV)</h3>
           <div class="flex flex-wrap gap-3">
             ${abasExportaveis.map(aba => `
-              <button onclick="app._exportCSV('${aba}')" class="px-4 py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-gray-300 text-sm font-medium rounded-lg transition capitalize">
+              <button onclick="app._exportCSV('${aba}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg transition capitalize">
                 <i class="fas fa-file-csv mr-1"></i> ${aba}
               </button>`).join('')}
-            <button onclick="window.print()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-sm font-bold rounded-lg transition">
+            <button onclick="window.print()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold rounded-lg transition">
               <i class="fas fa-print mr-1"></i> Imprimir
             </button>
           </div>
@@ -986,15 +977,15 @@ const app = {
     modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
     modal.innerHTML = `
       <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="app.closeModal()"></div>
-      <div class="relative bg-[#141414] rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col fade-in">
-        <div class="px-5 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+      <div class="relative bg-slate-800/60 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col fade-in">
+        <div class="px-5 py-4 border-b border-slate-700/60 flex items-center justify-between">
           <h3 class="text-base font-bold text-white">${utils.escapeHtml(title)}</h3>
-          <button onclick="app.closeModal()" class="text-gray-500 hover:text-gray-400"><i class="fas fa-times"></i></button>
+          <button onclick="app.closeModal()" class="text-slate-500 hover:text-slate-400"><i class="fas fa-times"></i></button>
         </div>
         <div id="modal-body" class="px-5 py-4 overflow-y-auto flex-1">${bodyHTML}</div>
-        <div class="px-5 py-3 border-t border-[#2a2a2a] bg-[#0a0a0a] flex justify-end gap-2">
-          <button onclick="app.closeModal()" class="px-4 py-2 text-sm text-gray-400 hover:bg-[#2a2a2a] rounded-lg transition">Cancelar</button>
-          <button id="modal-confirm" class="px-4 py-2 text-sm bg-amber-600 text-black hover:bg-amber-500 rounded-lg transition font-medium">${utils.escapeHtml(confirmLabel)}</button>
+        <div class="px-5 py-3 border-t border-slate-700/60 bg-slate-900 flex justify-end gap-2">
+          <button onclick="app.closeModal()" class="px-4 py-2 text-sm text-slate-400 hover:bg-slate-700 rounded-lg transition">Cancelar</button>
+          <button id="modal-confirm" class="px-4 py-2 text-sm bg-amber-500 text-slate-950 hover:bg-amber-500 rounded-lg transition font-medium">${utils.escapeHtml(confirmLabel)}</button>
         </div>
       </div>
     `;
@@ -1013,7 +1004,7 @@ const app = {
 
   /* ── Toast ── */
   showToast(message, type = 'info') {
-    const colors = { success: 'bg-green-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-[#1a1a1a] border border-[#333333]' };
+    const colors = { success: 'bg-emerald-500', error: 'bg-red-600', warning: 'bg-amber-500', info: 'bg-slate-900 border border-slate-700' };
     const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-circle', info: 'fa-info-circle' };
     const toast = document.createElement('div');
     toast.className = `fixed bottom-5 right-5 z-[60] ${colors[type] || colors.info} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 fade-in text-sm font-medium`;
@@ -1137,35 +1128,35 @@ const emprestimosModule = {
     container.innerHTML = `
       <div class="space-y-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Ativos</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Ativos</p>
             <p class="text-2xl font-bold text-white">${ativos.length}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Atrasados</p>
-            <p class="text-2xl font-bold ${atrasados.length ? 'text-red-400' : 'text-white'}">${atrasados.length}</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Atrasados</p>
+            <p class="text-2xl font-bold ${atrasados.length ? 'text-red-300' : 'text-white'}">${atrasados.length}</p>
           </div>
-          <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
-            <p class="text-xs text-gray-500 uppercase font-semibold">Devolvidos</p>
-            <p class="text-2xl font-bold text-green-400">${devolvidos.length}</p>
+          <div class="bg-slate-800/60 rounded-xl p-4 shadow-sm border border-slate-700/60">
+            <p class="text-xs text-slate-500 uppercase font-semibold">Devolvidos</p>
+            <p class="text-2xl font-bold text-emerald-300">${devolvidos.length}</p>
           </div>
           <div class="flex items-stretch">
-            <button onclick="emprestimosModule.abrirNovo()" class="w-full px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-sm font-bold rounded-xl transition shadow">
+            <button onclick="emprestimosModule.abrirNovo()" class="w-full px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold rounded-xl transition shadow">
               <i class="fas fa-plus mr-1"></i> Novo Empréstimo
             </button>
           </div>
         </div>
 
-        <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
-          <div class="p-4 flex flex-wrap items-center gap-3 border-b border-[#2a2a2a]">
+        <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 overflow-hidden">
+          <div class="p-4 flex flex-wrap items-center gap-3 border-b border-slate-700/60">
             <div class="relative flex-1 min-w-[200px]">
-              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
               <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar por ferramenta, responsável ou setor..."
-                class="w-full pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none"
+                class="w-full pl-8 pr-3 py-2 text-sm border border-slate-700 rounded-lg bg-slate-900 text-slate-100 focus:ring-2 focus:ring-amber-500/60 outline-none"
                 oninput="emprestimosModule.setBusca(this.value)">
             </div>
             <select onchange="emprestimosModule.setFiltroStatus(this.value)"
-              class="px-3 py-2 text-sm border border-[#333333] rounded-lg bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500">
+              class="px-3 py-2 text-sm border border-slate-700 rounded-lg bg-slate-900 text-slate-100 focus:ring-2 focus:ring-amber-500/60">
               <option value="">Todos os status</option>
               <option value="ativos" ${this.filtroStatus === 'ativos' ? 'selected' : ''}>Ativos</option>
               <option value="atrasados" ${this.filtroStatus === 'atrasados' ? 'selected' : ''}>Atrasados</option>
@@ -1175,41 +1166,41 @@ const emprestimosModule = {
 
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
-              <thead><tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-                <th class="px-4 py-3 text-left font-semibold text-gray-400">Ferramenta</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-400">Responsável / Setor</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Qtd</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Empréstimo</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Previsão Devolução</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Status</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
+              <thead><tr class="bg-slate-900 border-b border-slate-700/60">
+                <th class="px-4 py-3 text-left font-semibold text-slate-400">Ferramenta</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-400">Responsável / Setor</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-400">Qtd</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-400">Empréstimo</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-400">Previsão Devolução</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-400">Status</th>
+                <th class="px-4 py-3 text-center font-semibold text-slate-400">Ações</th>
               </tr></thead>
               <tbody>
                 ${pg.rows.map(e => {
                   const atrasado = isAtrasado(e);
                   const devolvido = isDevolvido(e);
                   const statusBadge = atrasado
-                    ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-900/30 text-red-400 border border-red-800/50">⏰ ATRASADO</span>'
+                    ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/10 text-red-300 border border-red-500/20">⏰ ATRASADO</span>'
                     : devolvido
-                    ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-green-900/30 text-green-400 border border-green-800/50">✓ DEVOLVIDO</span>'
-                    : '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-amber-900/30 text-amber-400 border border-amber-800/50">EM USO</span>';
+                    ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">✓ DEVOLVIDO</span>'
+                    : '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">EM USO</span>';
                   const idEsc = utils.escapeHtml(e.id || '');
-                  return `<tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition ${atrasado ? 'bg-red-900/10' : ''}">
+                  return `<tr class="border-b border-slate-700/40 hover:bg-slate-700/30 transition ${atrasado ? 'bg-red-500/5' : ''}">
                     <td class="px-4 py-3 font-medium text-white">${utils.escapeHtml(nomeDe(e))}</td>
                     <td class="px-4 py-3">
-                      <p class="text-gray-300">${utils.escapeHtml(e.responsavel || e.solicitante || '—')}</p>
-                      ${e.setor || e.local ? `<p class="text-[11px] text-gray-500">${utils.escapeHtml(e.setor || e.local)}</p>` : ''}
+                      <p class="text-slate-300">${utils.escapeHtml(e.responsavel || e.solicitante || '—')}</p>
+                      ${e.setor || e.local ? `<p class="text-[11px] text-slate-500">${utils.escapeHtml(e.setor || e.local)}</p>` : ''}
                     </td>
                     <td class="px-4 py-3 text-center font-mono">${utils.escapeHtml(e.quantidade || '1')}</td>
-                    <td class="px-4 py-3 text-center text-gray-400">${utils.formatDate(dataDe(e))}</td>
-                    <td class="px-4 py-3 text-center ${atrasado ? 'text-red-400 font-bold' : 'text-gray-400'}">${utils.formatDate(e.previsaoDevolucao)}</td>
+                    <td class="px-4 py-3 text-center text-slate-400">${utils.formatDate(dataDe(e))}</td>
+                    <td class="px-4 py-3 text-center ${atrasado ? 'text-red-300 font-bold' : 'text-slate-400'}">${utils.formatDate(e.previsaoDevolucao)}</td>
                     <td class="px-4 py-3 text-center">${statusBadge}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="text-green-400 hover:text-green-300 mx-1" title="Registrar devolução"><i class="fas fa-undo"></i></button>` : ''}
-                      <button onclick="emprestimosModule.excluir('${idEsc}')" class="text-red-400 hover:text-red-300 mx-1" title="Excluir registro"><i class="fas fa-trash-alt"></i></button>
+                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="text-emerald-300 hover:text-emerald-200 mx-1" title="Registrar devolução"><i class="fas fa-undo"></i></button>` : ''}
+                      <button onclick="emprestimosModule.excluir('${idEsc}')" class="text-red-300 hover:text-red-200 mx-1" title="Excluir registro"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
-                }).join('') || '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Nenhum empréstimo encontrado.</td></tr>'}
+                }).join('') || '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Nenhum empréstimo encontrado.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1235,7 +1226,7 @@ const emprestimosModule = {
       { key: 'motivo', label: 'Motivo / Observação', type: 'textarea' }
     ]);
     app.openModal('Novo Empréstimo de Ferramenta', html + `
-      <div class="mt-2 text-[11px] text-gray-500"><i class="fas fa-info-circle mr-1"></i>Digite o nome da ferramenta para ver as sugestões cadastradas.</div>
+      <div class="mt-2 text-[11px] text-slate-500"><i class="fas fa-info-circle mr-1"></i>Digite o nome da ferramenta para ver as sugestões cadastradas.</div>
     `, () => this.salvar());
 
     // Conecta o datalist ao campo de ferramenta
@@ -1352,40 +1343,40 @@ const historicoModule = {
     const pg = utils.paginate(items, this.pagina, 15);
 
     container.innerHTML = `
-      <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] overflow-hidden">
-        <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#2a2a2a]">
+      <div class="bg-slate-800/60 rounded-xl shadow-sm border border-slate-700/60 overflow-hidden">
+        <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/60">
           <h2 class="text-lg font-bold text-white">Histórico de Movimentações</h2>
           <div class="relative min-w-[220px]">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
             <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar..."
-              class="w-full pl-8 pr-3 py-2 text-sm border border-[#333333] rounded-lg bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none"
+              class="w-full pl-8 pr-3 py-2 text-sm border border-slate-700 rounded-lg bg-slate-900 text-slate-100 focus:ring-2 focus:ring-amber-500/60 outline-none"
               oninput="historicoModule.setBusca(this.value)">
           </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead><tr class="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Data</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Ação</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Item</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Detalhes</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-400">Responsável</th>
+            <thead><tr class="bg-slate-900 border-b border-slate-700/60">
+              <th class="px-4 py-3 text-left font-semibold text-slate-400">Data</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-400">Ação</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-400">Item</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-400">Detalhes</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-400">Responsável</th>
             </tr></thead>
             <tbody>
               ${pg.rows.map(h => {
                 const op = utils.normalize(h.acao);
-                const opClass = op.includes('entrada') || op.includes('compra') ? 'text-green-400'
-                  : op.includes('saida') || op.includes('retirada') ? 'text-red-400'
-                  : op.includes('manut') || op.includes('defeito') ? 'text-amber-400'
-                  : 'text-gray-300';
-                return `<tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60">
-                  <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${utils.formatDate(h.data)}</td>
+                const opClass = op.includes('entrada') || op.includes('compra') ? 'text-emerald-300'
+                  : op.includes('saida') || op.includes('retirada') ? 'text-red-300'
+                  : op.includes('manut') || op.includes('defeito') ? 'text-amber-300'
+                  : 'text-slate-300';
+                return `<tr class="border-b border-slate-700/40 hover:bg-slate-700/30">
+                  <td class="px-4 py-3 text-slate-500 whitespace-nowrap">${utils.formatDate(h.data)}</td>
                   <td class="px-4 py-3 font-semibold ${opClass}">${utils.escapeHtml(h.acao || '—')}</td>
-                  <td class="px-4 py-3 text-white font-medium">${utils.escapeHtml(h.item || '—')}${h.quantidade ? ` <span class="text-gray-500 font-mono text-xs">(×${utils.escapeHtml(h.quantidade)})</span>` : ''}</td>
-                  <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(h.detalhes || '—')}</td>
-                  <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(h.responsavel || '—')}</td>
+                  <td class="px-4 py-3 text-white font-medium">${utils.escapeHtml(h.item || '—')}${h.quantidade ? ` <span class="text-slate-500 font-mono text-xs">(×${utils.escapeHtml(h.quantidade)})</span>` : ''}</td>
+                  <td class="px-4 py-3 text-slate-400">${utils.escapeHtml(h.detalhes || '—')}</td>
+                  <td class="px-4 py-3 text-slate-400">${utils.escapeHtml(h.responsavel || '—')}</td>
                 </tr>`;
-              }).join('') || '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Nenhum histórico encontrado.</td></tr>'}
+              }).join('') || '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Nenhum histórico encontrado.</td></tr>'}
             </tbody>
           </table>
         </div>
