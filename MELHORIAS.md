@@ -3,11 +3,12 @@
 Auditoria realizada em 27/08/2026 sobre o sistema de controle de estoque e
 empréstimo de ferramentas (frontend estático + CSVs locais + Google Sheets via Apps Script).
 
-> ## ✅ Status: implementado na v2.5.0
-> Todos os itens das seções 1, 3 e 4 foram corrigidos/implantados neste branch,
-> além da higienização de senhas (seção 2). Pendências restantes são decisões
-> de equipe: publicar no GitHub Pages (passo a passo no README), trocar as
-> senhas padrão e adicionar o código do Apps Script ao repositório.
+> ## ✅ Status: implementado na v2.5.1
+> Todos os itens das seções 1, 3 e 4 foram corrigidos/implantados,
+> além da higienização de senhas (seção 2) e da integração real com o backend
+> Apps Script (seção 6). Pendências restantes são decisões de equipe: publicar
+> no GitHub Pages (passo a passo no README), trocar as senhas padrão e avaliar
+> autenticação server-side.
 
 ---
 
@@ -119,6 +120,6 @@ empréstimo de ferramentas (frontend estático + CSVs locais + Google Sheets via
 3. ✅ **CRUD de Empréstimos:** registrar, devolver, destacar atrasados.
 4. ✅ **Tela Ferramentas** corrigida (CRUD próprio) e schemas CSV ↔ telas alinhados.
 5. ✅ **Telas de Fornecedores, Pedidos e Usuários** (CRUD completo).
-6. ⏳ **Versionar o código do Apps Script** no repo + `LockService`
-   (contrato esperado documentado no README).
+6. ✅ **Versionar o código do Apps Script** no repo + `LockService`
+   (implementado em `apps-script/Code.gs`, contrato validado em `tests/run-contract.js`).
 7. ⏳ **Autenticação server-side** (evolução futura, se necessário).
