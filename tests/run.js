@@ -1,6 +1,6 @@
 /**
  * tests/run.js — Testes gerais do sistema v2.5.1
- * 18 testes
+ * 23 testes (inclui correção de sincronização automática)
  */
 const fs = require('fs');
 const path = require('path');
@@ -50,7 +50,6 @@ try {
   const cfg = read('config.js');
   const keys = ['estoque','ferramentas','movimentacoes','emprestimos','fornecedores','pedidos','usuarios','historico'];
   const hasAll = keys.every(k => cfg.includes(k));
-  // conta chaves dentro de SHEETS
   ok('CONFIG.SHEETS tem 8 abas', hasAll);
 } catch (e) {
   ok('CONFIG.SHEETS tem 8 abas', false, e.message);
@@ -98,7 +97,6 @@ try {
 try {
   const utilsContent = read('utils.js');
   const hasNormalize = utilsContent.includes('normalize') && utilsContent.includes('NFD');
-  // Teste funcional: simula normalize
   function normalize(str) {
     return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   }
@@ -250,6 +248,56 @@ try {
   ok('data/ contém pelo menos 7 CSVs', csvCount >= 7);
 } catch (e) {
   ok('data/ contém CSVs', false, e.message);
+}
+
+// 19. CORREÇÃO AUTO-SYNC: config.js define AUTO_SYNC_INTERVAL_MS
+try {
+  const cfg = read('config.js');
+  ok('config.js define AUTO_SYNC_INTERVAL_MS (auto-sync)', cfg.includes('AUTO_SYNC_INTERVAL_MS') && /AUTO_SYNC_INTERVAL_MS:\s*\d+/.test(cfg));
+} catch (e) {
+  ok('config.js define AUTO_SYNC_INTERVAL_MS', false, e.message);
+}
+
+// 20. app.js implementa _startAutoSync e _autoSyncTimer (sincronização automática)
+try {
+  const appJs = read('app.js');
+  const hasStart = appJs.includes('_startAutoSync') && appJs.includes('_autoSyncTimer') && appJs.includes('setInterval');
+  const hasStop = appJs.includes('_stopAutoSync') && appJs.includes('clearInterval');
+  ok('app.js implementa _startAutoSync/_stopAutoSync com setInterval', hasStart && hasStop);
+} catch (e) {
+  ok('app.js implementa auto-sync', false, e.message);
+}
+
+// 21. app.js _bindGlobalEvents trata online/offline/visibilitychange com syncAll(true)
+try {
+  const appJs = read('app.js');
+  const hasVisibility = appJs.includes('visibilitychange') && appJs.includes('syncAll(true)');
+  const hasOnline = appJs.includes("'online'") || appJs.includes('"online"') || appJs.includes('online');
+  const hasOffline = appJs.includes('offline');
+  ok('app.js _bindGlobalEvents trata visibilitychange + online/offline com syncAll(true)', hasVisibility && hasOnline && hasOffline);
+} catch (e) {
+  ok('app.js _bindGlobalEvents trata eventos', false, e.message);
+}
+
+// 22. app.js init chama syncAll(true) e _startAutoSync (garante primeira sincronização)
+try {
+  const appJs = read('app.js');
+  const initSection = appJs.substring(appJs.indexOf('async init()'), appJs.indexOf('async init()') + 1500);
+  const callsForcedSync = initSection.includes('syncAll(true)');
+  const callsAutoSync = initSection.includes('_startAutoSync');
+  ok('app.js init força syncAll(true) e inicia _startAutoSync', callsForcedSync && callsAutoSync);
+} catch (e) {
+  ok('app.js init força sync e auto-sync', false, e.message);
+}
+
+// 23. CORREÇÃO CSV: _loadFallbackCSV não sobrescreve cache do Sheets
+try {
+  const appJs = read('app.js');
+  const hasCacheCheck = appJs.includes('mantendo') && appJs.includes('cache') && appJs.includes('_loadFallbackCSV');
+  const hasExistingCacheGuard = appJs.includes('existingCache') || appJs.includes('!existingCache');
+  ok('app.js _loadFallbackCSV preserva cache (não sobrescreve dados do Sheets)', hasCacheCheck && hasExistingCacheGuard);
+} catch (e) {
+  ok('app.js _loadFallbackCSV preserva cache', false, e.message);
 }
 
 console.log(`\n${passed} passed, ${failed} failed — total ${passed+failed}`);

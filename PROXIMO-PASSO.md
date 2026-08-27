@@ -6,14 +6,37 @@
 - **Contrato validado**: `GET ?aba=X`, `POST {action:"add"|"update", aba, ...}`, `GET ?aba=X&action=delete&id=...`
 - **Headers padrão** por aba definidos em `HEADERS_PADRAO` e criação automática via `setup_()`.
 - **Frontend ajustado**: versão bump para `2.5.1` em `config.js` e `index.html`, README atualizado, pasta `apps-script/` documentada.
-- **33 testes**: `node tests/run.js` (18) + `node tests/run-contract.js` (15) cobrindo sintaxe, CSV, utils, segurança de senhas, CORS `text/plain`, `Promise.allSettled`, e contrato do Apps Script.
-- **Documentação**: `apps-script/README.md` com passo a passo de implantação e exemplos `curl`, `appsscript.json` com `oauthScopes`.
+- **33 testes originais**: `node tests/run.js` (18) + `node tests/run-contract.js` (15) cobrindo sintaxe, CSV, utils, segurança de senhas, CORS `text/plain`, `Promise.allSettled`, e contrato do Apps Script.
+
+### 🔧 Correção v2.5.1-hotfix — Sincronização automática
+
+**Problema reportado**: sistema não estava fazendo sincronização automática — ficava preso em cache fresco e sobrescrevia cache do Sheets com CSV antigo.
+
+**Correções aplicadas em `app.js` e `config.js`:**
+- `config.js` agora define `AUTO_SYNC_INTERVAL_MS = 60s`
+- `app.init()` agora chama `syncAll(true)` (forçado) na inicialização + `_startAutoSync()`
+- `_loadFallbackCSV()` corrigido: só carrega CSV se não houver dados em memória/cache, preserva dados do Sheets
+- `syncAll(force)` com log detalhado e detecção de `hasNewData`
+- `_bindGlobalEvents()` agora trata:
+  - `visibilitychange` → `syncAll(true)` quando aba volta a ficar visível
+  - `online` → sincroniza forçado + toast
+  - `offline` → aviso de modo local
+  - `beforeunload` → salva timestamp
+- `_startAutoSync()` / `_stopAutoSync()`:
+  - `setInterval` a cada 60s, só se `document.visibilityState === 'visible'` e `navigator.onLine`
+  - Sincronização extra após 5s do login para garantir dados frescos
+  - Log `[AUTO-SYNC]` no console
+- `app.post()` agora extrai `aba` da URL e inclui no corpo JSON (`{action, aba, ...payload}`) para robustez no Apps Script
+- `app.get()` monta URL corretamente
+
+**Testes atualizados (38):**
+- `tests/run.js` agora com 23 testes (5 novos validando `AUTO_SYNC_INTERVAL_MS`, `_startAutoSync`, `_bindGlobalEvents` com `online`/`offline`/`visibilitychange`, `init` forçando sync, e preservação de cache)
 
 Rodar para confirmar:
 
 ```bash
 node tests/run.js && node tests/run-contract.js
-# deve mostrar 33 testes passando
+# deve mostrar 38 testes passando (23 + 15)
 ```
 
 ## ⏭️ Próximos passos recomendados (v2.6.0)

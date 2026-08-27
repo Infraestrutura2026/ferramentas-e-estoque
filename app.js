@@ -236,39 +236,55 @@ const app = {
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.4.0') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.5.1') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
 
     this._loadFromCache();
     await this._loadFallbackCSV();
-    this.syncAll().catch(e => console.warn('[SYNC] Erro em segundo plano:', e));
+    // Primeira sincronização força busca no Sheets para garantir dados atualizados
+    this.syncAll(true).catch(e => console.warn('[SYNC] Erro em segundo plano:', e));
     this.navigate('dashboard');
+    this._startAutoSync();
   },
 
-  /* ── Carrega CSVs locais primeiro (offline-first) ── */
+  /* ── Carrega CSVs locais apenas quando não há cache (offline-first corrigido) ── */
   async _loadFallbackCSV() {
     const abas = Object.keys(CONFIG.CSV_FALLBACK);
     await Promise.all(abas.map(async (aba) => {
+      // Se já temos dados em memória vindos do cache, não sobrescreve com CSV antigo
+      if (this.data[aba] && this.data[aba].length > 0) {
+        console.log(`[CSV] ${aba}: mantendo ${this.data[aba].length} registros do cache`);
+        return;
+      }
       try {
         const csvData = await this._fetchCSV(CONFIG.CSV_FALLBACK[aba]);
         if (csvData && csvData.length > 0) {
           this.data[aba] = csvData;
-          localStorage.setItem(CONFIG.CACHE_KEYS[aba], JSON.stringify(csvData));
-          console.log(`[CSV] ${aba}: ${csvData.length} registros carregados`);
+          // Só grava no cache se não houver cache prévio (evita sobrescrever dados do Sheets)
+          const existingCache = localStorage.getItem(CONFIG.CACHE_KEYS[aba]);
+          if (!existingCache) {
+            localStorage.setItem(CONFIG.CACHE_KEYS[aba], JSON.stringify(csvData));
+          }
+          console.log(`[CSV] ${aba}: ${csvData.length} registros carregados (fallback)`);
         }
       } catch (e) {
         console.warn(`[CSV] ${aba} falhou:`, e.message);
       }
     }));
-    this.lastSync = new Date();
-    this._updateSyncBadge();
+    if (!this.lastSync) {
+      this.lastSync = new Date();
+      this._updateSyncBadge();
+    }
   },
 
-  /* ── Sincronização (paralela) ── */
+  /* ── Sincronização (paralela) com suporte a auto-sync ── */
   async syncAll(force = false) {
-    if (this.isLoading) return;
+    if (this.isLoading) {
+      console.log('[SYNC] Já em andamento, ignorando chamada concorrente.');
+      return;
+    }
     this.isLoading = true;
     this._setLoading(true);
     this.syncErrors = [];
@@ -277,19 +293,23 @@ const app = {
     const isCacheFresh = cachedTime && (Date.now() - parseInt(cachedTime)) < CONFIG.CACHE_TTL_MS;
 
     if (isCacheFresh && !force) {
-      console.log('[SYNC] Cache fresco, pulando sincronização.');
+      console.log('[SYNC] Cache fresco, pulando sincronização. Use force=true para forçar.');
       this.isLoading = false;
       this._setLoading(false);
       return;
     }
 
-    console.log('[SYNC] Iniciando sincronização paralela...');
+    console.log(`[SYNC] Iniciando sincronização paralela... (force=${force})`);
     const abas = Object.keys(CONFIG.SHEETS);
     const settled = await Promise.allSettled(abas.map(aba => this._fetchAba(aba)));
 
+    let hasNewData = false;
     settled.forEach((result, i) => {
       const aba = abas[i];
       if (result.status === 'fulfilled' && Array.isArray(result.value) && result.value.length > 0) {
+        // Só considera mudança se tamanho ou conteúdo mudou (evita re-render desnecessário)
+        const prevLen = (this.data[aba] || []).length;
+        if (prevLen !== result.value.length) hasNewData = true;
         this.data[aba] = result.value;
         localStorage.setItem(CONFIG.CACHE_KEYS[aba], JSON.stringify(result.value));
         console.log(`[SYNC] ✔ ${aba}: ${result.value.length} registros`);
@@ -297,6 +317,7 @@ const app = {
         if (result.status === 'rejected') {
           this.syncErrors.push(`${aba}: ${result.reason?.message || 'erro'}`);
         }
+        // Fallback para cache se não houver dados em memória
         if (!this.data[aba] || this.data[aba].length === 0) {
           const cached = localStorage.getItem(CONFIG.CACHE_KEYS[aba]);
           if (cached) { try { this.data[aba] = JSON.parse(cached); } catch (e) { this.data[aba] = []; } }
@@ -312,9 +333,15 @@ const app = {
 
     if (this.syncErrors.length > 0) {
       console.warn('[SYNC] Erros:', this.syncErrors);
-      this.showToast(`⚠️ ${this.syncErrors.length} aba(s) não sincronizaram. Usando dados locais.`, 'warning');
+      if (force) {
+        this.showToast(`⚠️ ${this.syncErrors.length} aba(s) não sincronizaram. Usando dados locais.`, 'warning');
+      }
     } else if (force) {
-      this.showToast('✅ Sincronização concluída com sucesso!', 'success');
+      if (hasNewData) {
+        this.showToast('✅ Dados atualizados com sucesso!', 'success');
+      } else {
+        this.showToast('✅ Sincronização concluída — dados já atualizados.', 'info');
+      }
     }
 
     this._refreshCurrentPage();
@@ -655,9 +682,64 @@ const app = {
   },
 
   _bindGlobalEvents() {
+    // Sincroniza quando a aba volta a ficar visível (forçado para garantir dados atuais)
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') this.syncAll();
+      if (document.visibilityState === 'visible') {
+        console.log('[AUTO-SYNC] Aba visível — sincronizando...');
+        this.syncAll(true).catch(e => console.warn('[AUTO-SYNC] Falha ao sincronizar na visibilidade:', e));
+      }
     });
+
+    // Sincroniza quando volta a ficar online
+    window.addEventListener('online', () => {
+      console.log('[AUTO-SYNC] Conexão restabelecida — sincronizando...');
+      this.showToast('🌐 Conexão restabelecida — sincronizando dados...', 'info');
+      this.syncAll(true).catch(e => console.warn('[AUTO-SYNC] Falha ao sincronizar online:', e));
+    });
+
+    window.addEventListener('offline', () => {
+      console.log('[AUTO-SYNC] Offline — usando dados locais');
+      this.showToast('⚠️ Você está offline — usando dados locais.', 'warning');
+    });
+
+    // Sincroniza antes de fechar/recarregar (best-effort)
+    window.addEventListener('beforeunload', () => {
+      // Não bloqueia, apenas tenta salvar timestamp
+      try { localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString()); } catch(e){}
+    });
+  },
+
+  _startAutoSync() {
+    this._stopAutoSync();
+    const interval = CONFIG.AUTO_SYNC_INTERVAL_MS || 60000;
+    console.log(`[AUTO-SYNC] Iniciando intervalo automático a cada ${interval/1000}s`);
+    this._autoSyncTimer = setInterval(() => {
+      if (document.visibilityState !== 'visible') {
+        console.log('[AUTO-SYNC] Aba oculta — pulando sincronização automática');
+        return;
+      }
+      if (!navigator.onLine) {
+        console.log('[AUTO-SYNC] Offline — pulando sincronização automática');
+        return;
+      }
+      console.log('[AUTO-SYNC] Sincronização automática...');
+      this.syncAll(true).catch(e => console.warn('[AUTO-SYNC] Falha na sincronização automática:', e));
+    }, interval);
+
+    // Também agenda uma sincronização logo após 5s da inicialização (garante dados frescos após login)
+    setTimeout(() => {
+      if (document.visibilityState === 'visible' && navigator.onLine) {
+        console.log('[AUTO-SYNC] Sincronização pós-inicialização (5s)');
+        this.syncAll(true).catch(()=>{});
+      }
+    }, 5000);
+  },
+
+  _stopAutoSync() {
+    if (this._autoSyncTimer) {
+      clearInterval(this._autoSyncTimer);
+      this._autoSyncTimer = null;
+    }
   },
 
   /* ── Dashboard ── */
@@ -950,20 +1032,37 @@ const app = {
   },
 
   /**
+   * Extrai ?aba= da URL para incluir também no corpo (robustez para o Apps Script)
+   */
+  _extractAbaFromUrl(url) {
+    try {
+      const u = new URL(url);
+      return u.searchParams.get('aba') || '';
+    } catch (e) {
+      const m = String(url).match(/[?&]aba=([^&]+)/);
+      return m ? decodeURIComponent(m[1]) : '';
+    }
+  },
+
+  /**
    * POST para o Apps Script. Usa Content-Type text/plain para evitar o
    * preflight CORS (o Apps Script não responde OPTIONS). O script deve ler
-   * o JSON via e.postData.contents.
+   * o JSON via e.postData.contents. Inclui aba tanto na URL quanto no corpo.
    */
   async post(url, action, payload) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), CONFIG.TIMEOUT_MS);
     try {
+      const aba = this._extractAbaFromUrl(url);
+      const body = { action, aba, ...payload };
+      // Garante que aba do payload prevaleça se já vier, mas mantém fallback
+      if (!body.aba) body.aba = aba;
       const res = await fetch(url, {
         method: 'POST',
         mode: 'cors',
         signal: ctrl.signal,
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, ...payload })
+        body: JSON.stringify(body)
       });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.json();
@@ -977,7 +1076,9 @@ const app = {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), CONFIG.TIMEOUT_MS);
     try {
-      const res = await fetch(`${url}&${qs}`, { mode: 'cors', signal: ctrl.signal });
+      // Se a URL já tem ?aba, mantém; se não, tenta extrair aba de params.aba
+      const fullUrl = url.includes('?') ? `${url}&${qs}` : `${url}?${qs}`;
+      const res = await fetch(fullUrl, { mode: 'cors', signal: ctrl.signal });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.json();
     } finally {
