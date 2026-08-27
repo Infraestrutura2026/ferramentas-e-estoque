@@ -1,51 +1,54 @@
 /**
  * ferramentas.js — Módulo de Ferramentas
  * =======================================
- * Similar ao estoque, mas dedicado exclusivamente às ferramentas.
- * Com badges coloridos por categoria, filtros e busca.
+ * CRUD dedicado sobre a aba "ferramentas" (colunas: id, nome, codigo,
+ * categoria, descricao, estado, local, responsavel, createdAt, updatedAt).
+ * Com badges coloridos por categoria, filtros, busca com acentos ignorados.
  */
 
 const ferramentasModule = {
   filtroAtual: '',
   categoriaAtiva: 'todas',
+  ABA: 'ferramentas',
+
+  _itens() {
+    if (app.data.ferramentas && app.data.ferramentas.length > 0) return app.data.ferramentas;
+    // Fallback: extrai ferramentas do estoque geral por categoria/palavras-chave
+    return (app.data.estoque || []).filter(i => this._isFerramenta(i));
+  },
 
   render(container) {
-    const items = (app.data.ferramentas || app.data.estoque || [])
-      .filter(i => this._isFerramenta(i));
+    const items = this._itens();
 
     if (!items.length) {
       container.innerHTML = `
         <div class="bg-[#141414] rounded-xl shadow-sm border border-[#2a2a2a] p-8 text-center">
           <i class="fas fa-tools text-4xl text-gray-400 mb-3"></i>
           <h3 class="text-lg font-bold text-gray-300">Nenhuma ferramenta cadastrada</h3>
-          <p class="text-sm text-gray-500 mt-1">Adicione ferramentas na planilha ou verifique a conexão.</p>
+          <p class="text-sm text-gray-500 mt-1 mb-4">Cadastre a primeira ferramenta usando o botão abaixo.</p>
+          <button onclick="ferramentasModule.abrirModal()" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition">
+            <i class="fas fa-plus mr-1"></i> Nova Ferramenta
+          </button>
         </div>`;
       return;
     }
 
-    // Categorias únicas
     const categorias = [...new Set(items.map(i => i.categoria || 'Sem categoria'))].sort();
 
-    // Estatísticas
+    const normEstado = i => utils.normalize(i.estado || i.status || '');
     const total = items.length;
-    const disponiveis = items.filter(i => (parseFloat(i.quantidadeAtual) || 0) > 0).length;
-    const emUso = items.filter(i => {
-      const st = (i.status || '').toLowerCase();
-      return st.includes('uso') || st.includes('emprest') || st.includes('externo');
-    }).length;
-    const manutencao = items.filter(i => {
-      const st = (i.status || '').toLowerCase();
-      return st.includes('manut') || st.includes('defeito');
-    }).length;
+    const disponiveis = items.filter(i => normEstado(i).includes('dispon') || normEstado(i) === '').length;
+    const emUso = items.filter(i => /uso|emprest|externo/.test(normEstado(i))).length;
+    const manutencao = items.filter(i => /manut|defeito/.test(normEstado(i))).length;
 
-    // Filtro
-    const termo = this.filtroAtual.toLowerCase();
+    const termo = utils.normalize(this.filtroAtual);
     const catFiltro = this.categoriaAtiva;
     const filtrados = items.filter(i => {
       const matchTermo = !termo ||
-        (i.nome || i.item || '').toLowerCase().includes(termo) ||
-        (i.codigo || '').toLowerCase().includes(termo) ||
-        (i.local || '').toLowerCase().includes(termo);
+        utils.normalize(i.nome || i.item).includes(termo) ||
+        utils.normalize(i.codigo).includes(termo) ||
+        utils.normalize(i.local).includes(termo) ||
+        utils.normalize(i.responsavel).includes(termo);
       const matchCat = catFiltro === 'todas' || (i.categoria || 'Sem categoria') === catFiltro;
       return matchTermo && matchCat;
     });
@@ -53,7 +56,7 @@ const ferramentasModule = {
     container.innerHTML = `
       <div class="space-y-4">
         <!-- KPIs -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
           <div class="bg-[#141414] rounded-xl p-4 shadow-sm border border-[#2a2a2a]">
             <p class="text-xs text-gray-500 uppercase font-semibold">Total</p>
             <p class="text-2xl font-bold text-white">${total}</p>
@@ -70,6 +73,10 @@ const ferramentasModule = {
             <p class="text-xs text-gray-500 uppercase font-semibold">Manutenção</p>
             <p class="text-2xl font-bold text-red-400">${manutencao}</p>
           </div>
+          <button onclick="ferramentasModule.abrirModal()"
+            class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-sm font-bold rounded-xl transition shadow">
+            <i class="fas fa-plus mr-1"></i> Nova Ferramenta
+          </button>
         </div>
 
         <!-- Filtros -->
@@ -77,9 +84,9 @@ const ferramentasModule = {
           <div class="flex flex-col md:flex-row gap-3">
             <div class="relative flex-1">
               <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-              <input type="text" id="filtro-ferramentas" value="${this.filtroAtual}"
-                placeholder="Buscar por nome, código ou local..."
-                class="w-full pl-9 pr-3 py-2 border border-[#333333] rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+              <input type="text" id="filtro-ferramentas" value="${utils.escapeHtml(this.filtroAtual)}"
+                placeholder="Buscar por nome, código, local ou responsável..."
+                class="w-full pl-9 pr-3 py-2 border border-[#333333] rounded-lg text-sm bg-[#1a1a1a] text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
                 oninput="ferramentasModule.setFiltro(this.value)">
             </div>
             <select id="cat-ferramentas" onchange="ferramentasModule.setCategoria(this.value)"
@@ -96,7 +103,7 @@ const ferramentasModule = {
             ${categorias.map(cat => {
               const style = utils.getCategoriaStyle(cat);
               const isActive = cat === catFiltro;
-              return `<button onclick="ferramentasModule.setCategoria('${utils.escapeHtml(cat)}')"
+              return `<button onclick="ferramentasModule.setCategoria('${utils.escapeHtml(cat).replace(/'/g, "\\'")}')"
                 class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${isActive ? 'ring-2 ring-offset-1 ring-amber-500' : ''}"
                 style="background:${style.bg};color:${style.text};border-color:${style.border}">
                 ${utils.escapeHtml(cat)}
@@ -114,8 +121,7 @@ const ferramentasModule = {
                   <th class="px-4 py-3 text-left font-semibold text-gray-400">Código</th>
                   <th class="px-4 py-3 text-left font-semibold text-gray-400">Ferramenta</th>
                   <th class="px-4 py-3 text-left font-semibold text-gray-400">Categoria</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Qtd</th>
-                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Status</th>
+                  <th class="px-4 py-3 text-center font-semibold text-gray-400">Estado</th>
                   <th class="px-4 py-3 text-left font-semibold text-gray-400">Local</th>
                   <th class="px-4 py-3 text-left font-semibold text-gray-400">Responsável</th>
                   <th class="px-4 py-3 text-center font-semibold text-gray-400">Ações</th>
@@ -123,34 +129,22 @@ const ferramentasModule = {
               </thead>
               <tbody>
                 ${filtrados.map(item => {
-                  const q = parseFloat(item.quantidadeAtual) || 0;
-                  const status = (item.status || 'Disponível').toLowerCase();
-                  const statusClass = status.includes('uso') || status.includes('emprest')
-                    ? 'bg-amber-900/30 text-amber-400 border border-amber-800/50 border-amber-800/50'
-                    : status.includes('manut') || status.includes('defeito')
-                    ? 'bg-red-900/30 text-red-400 border border-red-800/50 border-red-800/50'
-                    : q === 0
-                    ? 'bg-[#1a1a1a] text-gray-500 border-[#2a2a2a]'
-                    : 'bg-green-900/30 text-green-400 border border-green-800/50 border-green-200';
-                  const statusLabel = status.includes('uso') ? 'Em uso'
-                    : status.includes('manut') ? 'Manutenção'
-                    : status.includes('defeito') ? 'Defeito'
-                    : q === 0 ? 'Indisponível'
-                    : 'Disponível';
+                  const estado = item.estado || item.status || 'Disponível';
+                  const statusBadge = utils.statusBadge(estado);
                   return `
                     <tr class="border-b border-[#1f1f1f] hover:bg-[#0a0a0a]/60 transition">
                       <td class="px-4 py-3 font-mono text-xs text-gray-500">${utils.escapeHtml(item.codigo || item.id || '—')}</td>
-                      <td class="px-4 py-3 font-medium text-white">${utils.escapeHtml(item.nome || item.item || '—')}</td>
-                      <td class="px-4 py-3">${utils.categoriaBadge(item.categoria)}</td>
-                      <td class="px-4 py-3 text-center font-bold ${q === 0 ? 'text-red-400' : 'text-gray-300'}">${q}</td>
-                      <td class="px-4 py-3 text-center">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold border ${statusClass}">${statusLabel}</span>
+                      <td class="px-4 py-3 font-medium text-white">
+                        ${utils.escapeHtml(item.nome || item.item || '—')}
+                        ${item.descricao ? `<p class="text-[11px] text-gray-500 font-normal">${utils.escapeHtml(item.descricao)}</p>` : ''}
                       </td>
+                      <td class="px-4 py-3">${utils.categoriaBadge(item.categoria)}</td>
+                      <td class="px-4 py-3 text-center">${statusBadge}</td>
                       <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.local || '—')}</td>
                       <td class="px-4 py-3 text-gray-400">${utils.escapeHtml(item.responsavel || item.usuario || '—')}</td>
-                      <td class="px-4 py-3 text-center">
-                        <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="text-blue-400 hover:text-blue-800 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                        <button onclick="estoqueModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-400 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                      <td class="px-4 py-3 text-center whitespace-nowrap">
+                        <button onclick="ferramentasModule.abrirModal('${utils.escapeHtml(item.id)}')" class="text-blue-400 hover:text-blue-300 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                        <button onclick="ferramentasModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-400 hover:text-red-300 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                       </td>
                     </tr>
                   `;
@@ -178,19 +172,88 @@ const ferramentasModule = {
     if (main) this.render(main);
   },
 
+  _fields(item = {}) {
+    const categorias = [...new Set(this._itens().map(i => i.categoria).filter(Boolean))].sort();
+    return [
+      { key: 'nome', label: 'Nome da Ferramenta', type: 'text', value: item.nome || item.item, required: true },
+      { key: 'codigo', label: 'Código (ex.: F065)', type: 'text', value: item.codigo },
+      { key: 'categoria', label: 'Categoria', type: 'select', value: item.categoria || '',
+        options: [{ value: '', label: 'Selecione...' }, ...categorias.map(c => ({ value: c, label: c }))] },
+      { key: 'descricao', label: 'Descrição', type: 'textarea', value: item.descricao },
+      { key: 'estado', label: 'Estado', type: 'select', value: item.estado || item.status || 'Disponível',
+        options: [
+          { value: 'Disponível', label: 'Disponível' },
+          { value: 'Em uso', label: 'Em uso' },
+          { value: 'Manutenção', label: 'Manutenção' },
+          { value: 'Defeito', label: 'Defeito' }
+        ] },
+      { key: 'local', label: 'Local de guarda', type: 'text', value: item.local },
+      { key: 'responsavel', label: 'Responsável atual', type: 'text', value: item.responsavel }
+    ];
+  },
+
+  abrirModal(id) {
+    const item = id ? this._itens().find(f => f.id === id) : null;
+    const fields = this._fields(item || {});
+    app.openModal(item ? 'Editar Ferramenta' : 'Nova Ferramenta', utils.formHtml(fields),
+      () => this.salvar(fields, item), 'Salvar');
+  },
+
+  async salvar(fields, item) {
+    const v = utils.readForm(fields);
+    const erro = utils.validateForm(fields, v);
+    if (erro) { app.showToast(erro, 'error'); return; }
+
+    const payload = {
+      ...(item || {}),
+      id: item?.id || utils.generateId(),
+      nome: v.nome,
+      item: v.nome,
+      codigo: v.codigo,
+      categoria: v.categoria,
+      descricao: v.descricao,
+      estado: v.estado || 'Disponível',
+      local: v.local,
+      responsavel: v.responsavel,
+      createdAt: item?.createdAt || utils.now(),
+      updatedAt: utils.now()
+    };
+
+    let sheetsOk = false;
+    try {
+      const res = await app.post(CONFIG.SHEETS[this.ABA], item ? 'update' : 'add', payload);
+      sheetsOk = Boolean(res && res.success !== false);
+    } catch (e) {
+      console.warn('[FERRAMENTAS] Falha no Sheets:', e.message);
+    }
+
+    if (item) Object.assign(item, payload);
+    else {
+      if (!app.data[this.ABA]) app.data[this.ABA] = [];
+      app.data[this.ABA].push(payload);
+    }
+
+    app.closeModal();
+    app.showToast(sheetsOk ? 'Ferramenta salva!' : 'Salva localmente (modo offline).', sheetsOk ? 'success' : 'warning');
+    await app.refreshAba(this.ABA);
+  },
+
+  async excluir(id) {
+    if (!confirm('Excluir esta ferramenta?')) return;
+    try { await app.get(CONFIG.SHEETS[this.ABA], 'delete', { id }); } catch (e) { /* ok */ }
+    app.data[this.ABA] = (app.data[this.ABA] || []).filter(f => f.id !== id);
+    app.showToast('Ferramenta removida.', 'success');
+    await app.refreshAba(this.ABA);
+  },
+
   _isFerramenta(item) {
-    // Se houver uma aba dedicada "ferramentas", todos os itens dela são ferramentas
-    if (app.data.ferramentas && app.data.ferramentas.length > 0) return true;
-    // Senão, filtra do estoque geral por categoria ou palavras-chave
-    const cat = (item.categoria || '').toLowerCase();
-    const nome = (item.nome || item.item || '').toLowerCase();
-    const ferramentaCats = ['ferramentas', 'ferramenta', 'manual', 'elétrica', 'pneumática', 'medicao', 'medição'];
+    const cat = utils.normalize(item.categoria);
+    const nome = utils.normalize(item.nome || item.item);
+    const ferramentaCats = ['ferramenta', 'manual', 'eletrica', 'pneumatica', 'medicao'];
     const isFerramentaCat = ferramentaCats.some(c => cat.includes(c));
-    const isFerramentaNome = nome.includes('ferramenta') || nome.includes('furadeira') || nome.includes('serra')
-      || nome.includes('esmeril') || nome.includes('parafusadeira') || nome.includes('torno')
-      || nome.includes('plaina') || nome.includes('soprador') || nome.includes('morsa')
-      || nome.includes('alicate') || nome.includes('chave') || nome.includes('martelo')
-      || nome.includes('serrote') || nome.includes('trena') || nome.includes('nível');
+    const palavras = ['ferramenta', 'furadeira', 'serra', 'esmeril', 'parafusadeira', 'torno',
+      'plaina', 'soprador', 'morsa', 'alicate', 'chave', 'martelo', 'serrote', 'trena', 'nivel'];
+    const isFerramentaNome = palavras.some(p => nome.includes(p));
     return isFerramentaCat || isFerramentaNome;
   }
 };

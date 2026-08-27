@@ -28,9 +28,8 @@ const indicadoresModule = {
       return q > m;
     });
 
-    const totalQtd = items.reduce((s, i) => s + (parseFloat(i.quantidadeAtual) || 0), 0);
-    const totalMin = items.reduce((s, i) => s + (parseFloat(i.quantidadeMinima) || 0), 0);
-    const saudePct = totalMin > 0 ? Math.round((totalQtd / (totalQtd + totalMin)) * 100) : 100;
+    // Saúde = % de itens com estoque acima do mínimo
+    const saudePct = total > 0 ? Math.round((ok.length / total) * 100) : 100;
     const saudeColor = saudePct >= 80 ? 'bg-green-600' : saudePct >= 50 ? 'bg-amber-600' : 'bg-red-600';
 
     // Agrupar por categoria

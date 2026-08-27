@@ -1,7 +1,13 @@
-# Relatório de Revisão — Ferramentas & Estoque (v2.4.0)
+# Relatório de Revisão — Ferramentas & Estoque
 
 Auditoria realizada em 27/08/2026 sobre o sistema de controle de estoque e
 empréstimo de ferramentas (frontend estático + CSVs locais + Google Sheets via Apps Script).
+
+> ## ✅ Status: implementado na v2.5.0
+> Todos os itens das seções 1, 3 e 4 foram corrigidos/implantados neste branch,
+> além da higienização de senhas (seção 2). Pendências restantes são decisões
+> de equipe: publicar no GitHub Pages (passo a passo no README), trocar as
+> senhas padrão e adicionar o código do Apps Script ao repositório.
 
 ---
 
@@ -103,12 +109,16 @@ empréstimo de ferramentas (frontend estático + CSVs locais + Google Sheets via
 
 ---
 
-## ✅ Roadmap sugerido (ordem de prioridade)
+## ✅ Roadmap (status de execução)
 
-1. **Segurança já:** trocar senhas, remover `usuarios.csv` do repo, restringir o Apps Script.
-2. **Publicar online:** GitHub Pages/Netlify + unificar a URL do Apps Script.
-3. **CRUD de Empréstimos:** registrar, devolver, destacar atrasados.
-4. **Corrigir tela Ferramentas** (editar/excluir próprios) e alinhar schemas CSV ↔ telas.
-5. **Telas de Fornecedores e Pedidos** (dados já existem).
-6. **Versionar o código do Apps Script** no repo + `LockService` + re-sync pós-gravação.
-7. **Autenticação server-side** (Apps Script com hash de senha, ou Supabase/Firebase se crescer).
+1. ✅ **Segurança:** senhas em texto puro removidas (hashes SHA-256 no lugar),
+   gestão de usuários centralizada. *Ação da equipe: trocar as senhas padrão.*
+2. ✅ **Base online:** URL do Apps Script unificada, sincronização paralela,
+   cache persistente, re-sync pós-gravação, POST sem preflight CORS.
+   *Ação da equipe: publicar no GitHub Pages (passo a passo no README).*
+3. ✅ **CRUD de Empréstimos:** registrar, devolver, destacar atrasados.
+4. ✅ **Tela Ferramentas** corrigida (CRUD próprio) e schemas CSV ↔ telas alinhados.
+5. ✅ **Telas de Fornecedores, Pedidos e Usuários** (CRUD completo).
+6. ⏳ **Versionar o código do Apps Script** no repo + `LockService`
+   (contrato esperado documentado no README).
+7. ⏳ **Autenticação server-side** (evolução futura, se necessário).
