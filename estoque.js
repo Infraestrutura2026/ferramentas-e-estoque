@@ -217,7 +217,7 @@ const estoqueModule = {
     let sheetsOk = false;
     if (app.isSheetsConfigured()) {
       try {
-        const res = await app.post(CONFIG.SHEETS.ESTOQUE, 'add', payload);
+        const res = await app.post(CONFIG.SHEETS.estoque, 'add', payload);
         if (res.success) {
           sheetsOk = true;
           app.showToast('Item salvo no Google Sheets!', 'success');
@@ -321,7 +321,7 @@ const estoqueModule = {
     let sheetsOk = false;
     if (app.isSheetsConfigured()) {
       try {
-        const res = await app.post(CONFIG.SHEETS.ESTOQUE, 'update', payload);
+        const res = await app.post(CONFIG.SHEETS.estoque, 'update', payload);
         if (res.success) {
           sheetsOk = true;
         } else {
@@ -349,7 +349,7 @@ const estoqueModule = {
 
     if (app.isSheetsConfigured()) {
       try {
-        await app.get(CONFIG.SHEETS.ESTOQUE, 'delete', { id });
+        await app.get(CONFIG.SHEETS.estoque, 'delete', { id });
       } catch (e) {
         console.warn('Erro ao deletar do Sheets:', e);
       }

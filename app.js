@@ -391,7 +391,8 @@ const app = {
   },
 
   _parseCSV(text) {
-    const lines = text.trim().split('\n');
+    // Normaliza quebras de linha (CRLF → LF) para não corromper o último campo
+    const lines = text.replace(/\r\n?/g, '\n').trim().split('\n');
     if (lines.length < 2) return [];
     const headers = this._parseCSVLine(lines[0]);
     const result = [];
