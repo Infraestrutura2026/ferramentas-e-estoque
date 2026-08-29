@@ -535,7 +535,7 @@ const app = {
           <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             ${this._navItem('dashboard', 'fa-tachometer-alt', 'Dashboard')}
             ${this._navItem('indicadores', 'fa-chart-pie', 'Indicadores')}
-            ${this._navItem('emprestimos', 'fa-hand-holding', 'Empréstimos')}
+            ${this._navItem('emprestimos', 'fa-hand-holding', 'Empréstimos de Ferramentas')}
             ${this._navItem('estoque', 'fa-boxes', 'Estoque')}
             ${this._navItem('ferramentas', 'fa-tools', 'Ferramentas')}
             ${this._navItem('historico', 'fa-history', 'Histórico')}
@@ -546,10 +546,6 @@ const app = {
           </nav>
 
           <div class="px-3 py-3 border-t border-slate-200 space-y-2">
-            <button onclick="app.syncAll(true)" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition shadow-lg shadow-teal-600/20">
-              <i class="fas fa-sync-alt" id="sync-icon"></i>
-              <span>Sincronizar</span>
-            </button>
             <button onclick="authModule.logout()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition border border-red-200">
               <i class="fas fa-sign-out-alt"></i>
               <span>Sair</span>
@@ -616,7 +612,7 @@ const app = {
     });
     const titleMap = {
       dashboard: 'Dashboard', indicadores: 'Indicadores',
-      emprestimos: 'Empréstimos', estoque: 'Estoque',
+      emprestimos: 'Empréstimos de Ferramentas', estoque: 'Estoque',
       ferramentas: 'Ferramentas', historico: 'Histórico',
       fornecedores: 'Fornecedores', pedidos: 'Pedidos',
       usuarios: 'Usuários', relatorios: 'Relatórios'
@@ -1200,7 +1196,7 @@ const emprestimosModule = {
                     <td class="px-4 py-3 text-center ${atrasado ? 'text-red-600 font-bold' : 'text-slate-600'}">${utils.formatDate(e.previsaoDevolucao)}</td>
                     <td class="px-4 py-3 text-center">${statusBadge}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="text-emerald-600 hover:text-emerald-700 mx-1" title="Registrar devolução"><i class="fas fa-undo"></i></button>` : ''}
+                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 mx-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200 transition whitespace-nowrap" title="Registrar devolução"><i class="fas fa-undo"></i> Devolução</button>` : ''}
                       <button onclick="emprestimosModule.excluir('${idEsc}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir registro"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
