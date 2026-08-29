@@ -1196,7 +1196,7 @@ const emprestimosModule = {
                     <td class="px-4 py-3 text-center ${atrasado ? 'text-red-600 font-bold' : 'text-slate-600'}">${utils.formatDate(e.previsaoDevolucao)}</td>
                     <td class="px-4 py-3 text-center">${statusBadge}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 mx-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200 transition whitespace-nowrap" title="Registrar devolução"><i class="fas fa-undo"></i> Devolução</button>` : ''}
+                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 mx-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold border border-red-600 transition whitespace-nowrap" title="Registrar devolução"><i class="fas fa-undo"></i> Devolução</button>` : ''}
                       <button onclick="emprestimosModule.excluir('${idEsc}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir registro"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
