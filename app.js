@@ -227,7 +227,7 @@ const app = {
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.5.1') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.6.0') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
@@ -1027,6 +1027,9 @@ const app = {
    * Extrai ?aba= da URL para incluir também no corpo (robustez para o Apps Script)
    */
   _extractAbaFromUrl(url) {
+    // Caminho /api/<aba> (backend Neon/Vercel)
+    const mPath = String(url).match(/\/api\/([a-z]+)/i);
+    if (mPath) return mPath[1];
     try {
       const u = new URL(url);
       return u.searchParams.get('aba') || '';

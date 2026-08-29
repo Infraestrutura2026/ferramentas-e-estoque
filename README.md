@@ -1,9 +1,14 @@
 # Ferramentas & Estoque — Complexo Penal de Marília
 
-Sistema web de **controle de estoque** e **empréstimo de ferramentas entre setores**,
-com sincronização online via Google Sheets (Apps Script) e fallback offline em CSV.
+Sistema web de **controle de estoque** e **empréstimo de ferramentas entre setores**.
 
-**Versão:** 2.5.1 · Polícia Penal — Núcleo de Infraestrutura e Logística
+**v2.6.0 — Backend PostgreSQL (Neon) com API serverless na Vercel.** Quem abre o
+site oficial (`https://<projeto>.vercel.app`) já está conectado ao banco — nada a
+configurar por computador. A connection string fica em variável de ambiente da
+Vercel (nunca no código). O GitHub Pages segue como **espelho offline** em modo
+Apps Script/CSV. Guia completo: **[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**.
+
+**Versão:** 2.6.0 · Polícia Penal — Núcleo de Infraestrutura e Logística
 
 ---
 
@@ -40,28 +45,32 @@ para todos os computadores (são gravados na aba `usuarios` do Google Sheets).
 ## ▶️ Rodando localmente
 
 ```bash
-# na pasta do projeto
+npm install        # 1x (baixa o driver do Neon)
+npm start          # servidor com API /api/* em memória (seed dos CSVs)
+# abra http://localhost:8080 — comportamento idêntico ao da Vercel
+
+# sem Node? o frontend estático também roda:
 python3 -m http.server 8080
-# abra http://localhost:8080
 ```
 
 > O sistema precisa ser servido por HTTP(S) — abrir o `index.html` direto no
 > navegador (file://) bloqueia a leitura dos CSVs.
+> Com `DATABASE_URL=... npm start` o servidor local usa o banco Neon **real**.
 
 ## 🌐 Publicando online (acesso por outros computadores)
 
-O sistema é 100% estático — pode ser publicado de graça no **GitHub Pages**:
+### Produção — Vercel + Neon (recomendado, v2.6.0)
 
-1. No GitHub, abra o repositório `Infraestrutura2026/ferramentas-e-estoque`;
-2. Vá em **Settings → Pages**;
-3. Em *Source*, escolha **Deploy from a branch**;
-4. Em *Branch*, selecione **`main`** e a pasta **`/ (root)`** → **Save**;
-5. Aguarde ~1 minuto e acesse `https://infraestrutura2026.github.io/ferramentas-e-estoque/`.
+Basta conectar o repositório na Vercel **uma vez** e definir a env var
+`DATABASE_URL` (connection string do Neon). Depois disso, **todo merge no
+`main` publica automaticamente**. Passo a passo com prints do que clicar:
+**[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**.
 
-Alternativas equivalentes: Netlify ou Vercel (arraste o repositório e publique).
+### Espelho offline — GitHub Pages (continua ativo)
 
-> O acesso aos dados em si já é online: as abas vêm do Google Sheets via Apps
-> Script. O GitHub Pages só hospeda a interface.
+`https://infraestrutura2026.github.io/ferramentas-e-estoque/` — serve o mesmo
+frontend em modo Apps Script/CSV (consulta + fallback offline). Já configurado
+(Settings → Pages → branch `main` / root).
 
 ## 🔗 Integração Google Sheets (Apps Script)
 
@@ -85,10 +94,14 @@ A URL do endpoint está em `config.js` (constante `URL_BASE_APPS_SCRIPT`).
 
 ## 🔒 Segurança
 
+- **A connection string do Neon nunca fica no código** — vive como variável de
+  ambiente (`DATABASE_URL`) no painel da Vercel. Veja [DEPLOY-VERCEL.md](DEPLOY-VERCEL.md).
+- Todo SQL é **parametrizado** ($1, $2, …) e nomes de tabela/coluna vêm de uma
+  lista fixa (`api/_lib/schema.js`) — validado por testes de injeção.
 - Senhas são armazenadas e comparadas como **hash SHA-256** (nunca em texto puro);
   o arquivo `data/usuarios.csv` e o código carregam apenas hashes.
-- A autenticação é feita no navegador (adequada para uso interno confiável).
-  Para exigir garantias maiores, mova a validação para o Apps Script (login via token).
+- A autenticação é feita no navegador (adequada para uso interno confiável);
+  próximo passo: token server-side (v2.7.0).
 - **Troque as senhas padrão** criando novas na tela Usuários e desativando as antigas.
 - Restrinja o compartilhamento da planilha vinculada ao Apps Script apenas à equipe.
 
@@ -96,7 +109,7 @@ A URL do endpoint está em `config.js` (constante `URL_BASE_APPS_SCRIPT`).
 
 ```
 index.html        Tela de login + shell
-config.js         URL do Apps Script, abas, cache, versão
+config.js         Detecção de backend (Vercel→Neon / Pages→Apps Script), abas, cache, versão
 utils.js          Utilitários (CSV, formulários, paginação, badges, sha256)
 app.js            Núcleo: auth, sincronização, dashboard, empréstimos, histórico
 estoque.js        Módulo Estoque (CRUD)
@@ -104,21 +117,36 @@ ferramentas.js    Módulo Ferramentas (CRUD)
 indicadores.js    Gráficos e indicadores
 cadastros.js      Fornecedores, Pedidos e Usuários (CRUD)
 data/*.csv        Fallback offline das abas (exportações da planilha)
-apps-script/
+api/              ★ v2.6.0 — Backend serverless Vercel + Neon
+  [aba].js        Rotas /api/<aba> (contrato idêntico ao Apps Script)
+  health.js       GET /api/health (status do banco + contagens)
+  setup.js        GET /api/setup (recria tabelas vazias + seed)
+  _lib/schema.js  8 tabelas, colunas e chaves primárias
+  _lib/store.js   NeonStore (SQL parametrizado) + MemoryStore (dev)
+  _lib/handler.js Contrato HTTP compartilhado (CORS, add/update/delete)
+  _lib/seed-data.js Carga inicial embutida (gerada de data/*.csv)
+dev/server.js     Servidor local idêntico à produção (API em memória)
+scripts/gen-seed.js Regenera o seed-data.js após atualizar CSVs
+vercel.json       Configuração das funções + headers CORS
+apps-script/      Backend legado do espelho (Google Sheets)
   Code.gs         Backend real (Google Apps Script) com LockService
   README.md       Como implantar o backend
   appsscript.json Manifesto do projeto Apps Script
 tests/
   run.js          Testes gerais (sintaxe, CSV, utils, módulos)
   run-contract.js Testes de contrato do Apps Script
+  run-neon.js     Testes da API Neon/Vercel (SQL, segurança, contrato, HTTP)
 ```
 
 ## 🧪 Testes
 
-Validações executadas na v2.5.1 (33 testes):
+Validações executadas na v2.6.0 (**87 testes**):
 
 ```bash
-node tests/run.js && node tests/run-contract.js
+npm test   # roda as três suítes
+node tests/run.js          # 23 — geral (sintaxe, CSV, utils, módulos)
+node tests/run-contract.js # 15 — contrato do Apps Script
+node tests/run-neon.js     # 49 — API Neon/Vercel (SQL, segurança, HTTP)
 ```
 
 - Sintaxe de todos os módulos (`node --check`);
