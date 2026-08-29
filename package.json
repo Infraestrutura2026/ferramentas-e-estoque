@@ -1,0 +1,28 @@
+{
+  "name": "ferramentas-e-estoque",
+  "version": "2.6.0",
+  "description": "Sistema web de controle de estoque e empréstimo de ferramentas — frontend estático + API serverless (Vercel) com PostgreSQL Neon; espelho offline no GitHub Pages via Apps Script.",
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node dev/server.js",
+    "test": "node tests/run.js && node tests/run-contract.js && node tests/run-neon.js",
+    "gen": "node scripts/gen-seed.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Infraestrutura2026/ferramentas-e-estoque.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Infraestrutura2026/ferramentas-e-estoque/issues"
+  },
+  "homepage": "https://github.com/Infraestrutura2026/ferramentas-e-estoque#readme",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0"
+  }
+}

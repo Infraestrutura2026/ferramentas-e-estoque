@@ -1,87 +1,83 @@
-# Próximo Passo — v2.5.1 → v2.6.0
+# Próximo Passo — v2.6.0 → v2.7.0
 
-## ✅ O que foi entregue na v2.5.1 — Integração real com o backend Apps Script
+## ✅ O que foi entregue na v2.6.0 — Backend Neon (PostgreSQL) + API Vercel
 
-- **Backend real versionado**: `apps-script/Code.gs` implementa `doGet`, `doPost`, `LockService.getScriptLock()`, `ContentService`, leitura via `e.postData.contents`, CRUD completo por aba (add/update/delete).
-- **Contrato validado**: `GET ?aba=X`, `POST {action:"add"|"update", aba, ...}`, `GET ?aba=X&action=delete&id=...`
-- **Headers padrão** por aba definidos em `HEADERS_PADRAO` e criação automática via `setup_()`.
-- **Frontend ajustado**: versão bump para `2.5.1` em `config.js` e `index.html`, README atualizado, pasta `apps-script/` documentada.
-- **33 testes originais**: `node tests/run.js` (18) + `node tests/run-contract.js` (15) cobrindo sintaxe, CSV, utils, segurança de senhas, CORS `text/plain`, `Promise.allSettled`, e contrato do Apps Script.
+Substitui a dependência do Google Apps Script na produção por um backend
+serverless versionado junto com o código, com banco PostgreSQL real (Neon).
 
-### 🔧 Correção v2.5.1-hotfix — Sincronização automática
+### Arquitetura
 
-**Problema reportado**: sistema não estava fazendo sincronização automática — ficava preso em cache fresco e sobrescrevia cache do Sheets com CSV antigo.
+- **`api/[aba].js`** (função Vercel/Node): rotas `/api/estoque`, `/api/usuarios`, …
+  com **contrato idêntico** ao Apps Script (`GET ?aba`, `POST {action, aba, …}`,
+  `GET ?action=delete&id`) — o frontend só trocou as URLs.
+- **`api/health.js`** — status da conexão + contagem por tabela.
+- **`api/setup.js`** — recria tabelas ausentes e popula as vazias (`?force=1`).
+- **`api/_lib/store.js`** — `NeonStore` (driver HTTP `@neondatabase/serverless`,
+  SQL 100% parametrizado, upsert igual ao Code.gs, ordem de inserção via `_seq`)
+  + `MemoryStore` para dev/testes (mesma interface).
+- **`api/_lib/schema.js`** — as 8 abas como tabelas (PK `id`, exceto `usuarios` → `usuario`).
+- **Carga inicial automática**: `api/_lib/seed-data.js` (gerado de `data/*.csv`
+  por `scripts/gen-seed.js`) — na 1ª execução cria as tabelas e importa os
+  **172 registros** sem nenhum passo manual.
+- **`config.js` com detecção automática**: `*.vercel.app` → `/api/*` (Neon);
+  `github.io` → Apps Script (espelho offline); override `window.__NEON_API__`.
+- **Connection string fora do código**: env var `DATABASE_URL` na Vercel.
+- **`dev/server.js`**: produção-local idêntica (mesmo handler, banco em memória;
+  com `DATABASE_URL` usa o Neon real).
+- **`vercel.json`**: funções (256 MB, 15 s) + headers CORS.
 
-**Correções aplicadas em `app.js` e `config.js`:**
-- `config.js` agora define `AUTO_SYNC_INTERVAL_MS = 60s`
-- `app.init()` agora chama `syncAll(true)` (forçado) na inicialização + `_startAutoSync()`
-- `_loadFallbackCSV()` corrigido: só carrega CSV se não houver dados em memória/cache, preserva dados do Sheets
-- `syncAll(force)` com log detalhado e detecção de `hasNewData`
-- `_bindGlobalEvents()` agora trata:
-  - `visibilitychange` → `syncAll(true)` quando aba volta a ficar visível
-  - `online` → sincroniza forçado + toast
-  - `offline` → aviso de modo local
-  - `beforeunload` → salva timestamp
-- `_startAutoSync()` / `_stopAutoSync()`:
-  - `setInterval` a cada 60s, só se `document.visibilityState === 'visible'` e `navigator.onLine`
-  - Sincronização extra após 5s do login para garantir dados frescos
-  - Log `[AUTO-SYNC]` no console
-- `app.post()` agora extrai `aba` da URL e inclui no corpo JSON (`{action, aba, ...payload}`) para robustez no Apps Script
-- `app.get()` monta URL corretamente
+### Segurança adicionada
 
-**Testes atualizados (38):**
-- `tests/run.js` agora com 23 testes (5 novos validando `AUTO_SYNC_INTERVAL_MS`, `_startAutoSync`, `_bindGlobalEvents` com `online`/`offline`/`visibilitychange`, `init` forçando sync, e preservação de cache)
+- SQL sempre parametrizado; identificadores vêm de whitelist do schema;
+- testes de injeção (aba maliciosa, colunas fora do schema, payload `DROP TABLE`);
+- connection string do banco fora do repositório.
 
-Rodar para confirmar:
+### Testes (87 = 23 + 15 + 49)
 
 ```bash
-node tests/run.js && node tests/run-contract.js
-# deve mostrar 38 testes passando (23 + 15)
+npm test   # node tests/run.js && node tests/run-contract.js && node tests/run-neon.js
 ```
 
-## ⏭️ Próximos passos recomendados (v2.6.0)
+`tests/run-neon.js` cobre: DDL+seed, add/update/upsert/delete, ORDER BY _seq,
+parametrização, injeção, contrato HTTP completo, integração via servidor real,
+detecção de backend no frontend e parser CSV (aspas/vírgulas).
 
-### 1. Publicação online (decisão de equipe)
-- Publicar o frontend no **GitHub Pages** (Settings → Pages → Branch `main` / root) ou Netlify/Vercel.
-- URL final: `https://infraestrutura2026.github.io/ferramentas-e-estoque/`
-- Validar que `data/*.csv` continua acessível como fallback.
+## ⏭️ Para PUBLICAR (ação da equipe — 1x, ~2 minutos)
 
-### 2. Implantação do backend Apps Script
-- Criar projeto Apps Script **a partir da planilha** (Extensões → Apps Script).
-- Colar `apps-script/Code.gs` e `apps-script/appsscript.json`.
-- Rodar `setup_()` uma vez para criar as 8 abas se necessário.
-- Implantar como **App da Web** → acesso **Qualquer pessoa** (planilha compartilhada só com equipe).
-- Atualizar `URL_BASE_APPS_SCRIPT` em `config.js` com a nova URL `/exec` se for diferente.
+Seguir **[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**: conectar o repo na Vercel e
+definir `DATABASE_URL` (connection string do Neon) como env var. Depois disso,
+**todo merge no `main` publica sozinho**. Verificar `/api/health`.
 
-### 3. Troca de senhas padrão (urgente)
-- Entrar como `admin`, ir em **Usuários**, criar novos usuários com senhas fortes.
-- Desativar/remover `admin/admin123`, `oliveira`, `souza`, `Osvaldo`, `Zanoni` após migração.
-- `data/usuarios.csv` já contém apenas hashes SHA-256.
+## ⏭️ Próximos passos recomendados (v2.7.0)
 
-### 4. Endurecimento de segurança (v2.6.0)
-- **Autenticação server-side**: mover validação de login para o Apps Script com token (ex.: `PropertiesService` + expiração).
-- Validar `e.parameter.token` em `doGet`/`doPost`.
-- Adicionar rate limiting simples no Apps Script.
-- Auditar compartilhamento da planilha (apenas e-mails da equipe).
+### 1. Autenticação server-side (prioridade máxima)
+- Login no backend: `POST /api/auth` valida hash e devolve **token** (expiração).
+- Exigir token nas escritas (`/api/<aba>` POST/DELETE).
+- Rate limiting simples por IP (Vercel WAF ou tabela `tentativas_login`).
+- Remover dependência do hash de senha no cliente.
 
-### 5. Melhorias de UX
-- Substituir `window.confirm()` por modal custom (já existe `app.openModal`).
-- Paginação server-side quando histórico > 1000 linhas.
-- Filtro por período em **Histórico** e **Pedidos**.
-- Exportação XLSX além de CSV (usar SheetJS).
-- Tema claro/escuro alternável.
+### 2. Pós-publicação imediata
+- Trocar senhas padrão (`admin/admin123` etc.) na tela Usuários.
+- Se a planilha do Google tiver dados mais novos que os CSVs: exportar e rodar
+  `npm run gen` + merge, ou atualizar direto pelo sistema.
+- Marcar o link da Vercel como oficial (intranet/atalhos) e comunicar a equipe.
 
-### 6. Qualidade
-- Gerar `styles.css` compilado do Tailwind (`tailwindcss -i input.css -o styles.css --minify`) para não depender do Play CDN em produção.
-- Adicionar `eslint` e `prettier`.
-- CI no GitHub Actions rodando `node tests/run.js && node tests/run-contract.js` a cada push.
+### 3. Endurecimento
+- `DATABASE_URL` com usuário limitado ( Neon → Roles: só as 9 tabelas, sem DROP).
+- Backup automático (Neon história de restores no plano free — validar janela).
+- Logs de auditoria server-side (quem criou/editou/apagou o quê, quando).
 
-### 7. Monitoramento
-- Adicionar aba `logs` no Sheets para registrar erros do `doPost`.
-- Dashboard de auditoria: quem criou/editou o quê (usar `Session.getActiveUser().getEmail()` no Apps Script).
+### 4. Melhorias de UX (da v2.5.1, ainda válidas)
+- `window.confirm` → modal custom; paginação server-side quando histórico > 1000;
+  filtro por período; exportação XLSX (SheetJS); tema claro/escuro.
+- Compilar Tailwind para `styles.css` (sair do Play CDN).
+
+### 5. Qualidade/CI
+- GitHub Actions rodando `npm test` a cada push/PR.
+- ESLint + Prettier.
 
 ---
 
-**Versão atual**: 2.5.1  
-**Branch**: `arena/01a042f8-ferramentas-e-estoque`  
-**PR alvo**: `main` com título **"v2.5.1 — Integração real com o backend Apps Script"**
+**Versão atual**: 2.6.0
+**Branch**: `arena/01a04e88-ferramentas-e-estoque`
+**PR alvo**: `main` com título **"v2.6.0 — Backend Neon (PostgreSQL) + API Vercel"**
