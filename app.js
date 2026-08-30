@@ -532,7 +532,7 @@ const app = {
             </div>
           </div>
 
-          <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto" aria-label="Menu principal">
             ${this._navItem('dashboard', 'fa-tachometer-alt', 'Dashboard')}
             ${this._navItem('indicadores', 'fa-chart-pie', 'Indicadores')}
             ${this._navItem('emprestimos', 'fa-hand-holding', 'Empréstimos de Ferramentas')}
@@ -595,9 +595,9 @@ const app = {
 
   _navItem(page, icon, label) {
     return `
-      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-teal-50 hover:text-teal-700 transition">
-        <i class="fas ${icon} w-5 text-center"></i>
-        <span>${label}</span>
+      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item group w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-lg border border-transparent text-left text-sm font-medium text-slate-600 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 transition-colors duration-150">
+        <i class="fas ${icon} w-5 shrink-0 text-center transition-colors duration-150"></i>
+        <span class="flex-1 min-w-0 leading-snug text-left">${label}</span>
       </button>
     `;
   },
@@ -608,7 +608,10 @@ const app = {
       btn.classList.toggle('bg-teal-50', isActive);
       btn.classList.toggle('text-teal-700', isActive);
       btn.classList.toggle('font-semibold', isActive);
+      btn.classList.toggle('border-teal-100', isActive);
+      btn.classList.toggle('shadow-sm', isActive);
       btn.classList.toggle('text-slate-600', !isActive);
+      btn.classList.toggle('border-transparent', !isActive);
     });
     const titleMap = {
       dashboard: 'Dashboard', indicadores: 'Indicadores',
