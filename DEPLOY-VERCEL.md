@@ -81,7 +81,7 @@ Neon PostgreSQL  —  8 tabelas (estoque, ferramentas, …) + _setup
 
 ```bash
 npm start            # servidor local idêntico à produção (banco em memória)
-npm test             # 101 testes (23 + 15 + 49 + 14) incl. migração online
+npm test             # 106 testes (23 + 15 + 53 + 15) incl. migração em lotes
 npm run gen          # regenera api/_lib/seed-data.js após atualizar data/*.csv
 DATABASE_URL=postgres://… npm start   # dev apontando para o Neon REAL
 

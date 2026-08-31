@@ -7,11 +7,12 @@ const {
   carregarFonte,
   ident,
   normalizarBaseAPI,
+  inserirEmLote,
   migrarDireto,
   migrarViaAPI,
   totalRegistros,
 } = require('../scripts/migrate-online');
-const { ABAS_VALIDAS, pkDa } = require('../api/_lib/schema');
+const { ABAS_VALIDAS, pkDa, colunasDa } = require('../api/_lib/schema');
 const { MemoryStore } = require('../api/_lib/store');
 const { criarSetupHandler } = require('../api/_lib/handler');
 
@@ -48,11 +49,20 @@ function ok(name, condition, message = '') {
     if (inserir) {
       const aba = inserir[1];
       const pk = pkDa(aba);
-      const registro = { [pk]: String(params[0]) };
+      const colunas = colunasDa(aba);
+      const k = colunas.length || 1;
+      const numLinhas = Math.max(1, Math.floor(params.length / k));
       const rows = tabelas.get(aba) || [];
-      if (rows.some(row => row[pk] === registro[pk])) return { rows: [] };
-      rows.push(registro); tabelas.set(aba, rows);
-      return { rows: [[1]] };
+      let inseridos = 0;
+      for (let i = 0; i < numLinhas; i++) {
+        const chave = String(params[i * k]);
+        if (!rows.some(row => row[pk] === chave)) {
+          rows.push({ [pk]: chave });
+          inseridos++;
+        }
+      }
+      tabelas.set(aba, rows);
+      return { rows: Array(inseridos).fill([1]) };
     }
     return { rows: [] };
   };
@@ -63,6 +73,7 @@ function ok(name, condition, message = '') {
   ok('migração SQL insere registros ausentes', primeira.find(r => r.aba === 'estoque').inseridos === 2);
   ok('migração SQL é idempotente', segunda.find(r => r.aba === 'estoque').inseridos === 0);
   ok('migração SQL não altera nem remove registros', [...tabelas.get('estoque')].length === 2);
+  ok('inserirEmLote trata lote vazio', (await inserirEmLote(query, 'estoque', [])) === 0);
 
   // Fetch falso: valida o contrato HTTP e que o corpo usa text/plain.
   const resposta = corpo => ({ ok: true, status: 200, text: async () => JSON.stringify(corpo) });

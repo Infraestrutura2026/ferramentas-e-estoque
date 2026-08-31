@@ -85,14 +85,15 @@ class NeonStore {
       );
       defs.push('_seq BIGSERIAL'); // coluna interna: preserva ordem de inserção (oculta na API)
       await this.query(`CREATE TABLE IF NOT EXISTS ${ident(aba)} (${defs.join(', ')})`);
-      for (const c of colunas) {
-        if (c === pk) continue;
-        await this.query(`ALTER TABLE ${ident(aba)} ADD COLUMN IF NOT EXISTS ${ident(c)} TEXT NOT NULL DEFAULT ''`);
+      const colunasExtras = colunas.filter(c => c !== pk);
+      if (colunasExtras.length > 0) {
+        const alters = colunasExtras.map(c => `ADD COLUMN IF NOT EXISTS ${ident(c)} TEXT NOT NULL DEFAULT ''`);
+        await this.query(`ALTER TABLE ${ident(aba)} ${alters.join(', ')}`);
       }
     }
     await this.query(`CREATE TABLE IF NOT EXISTS "_setup" ("key" TEXT PRIMARY KEY, "value" TEXT NOT NULL DEFAULT '')`);
 
-    // 2) Seed: apenas tabelas vazias (idempotente; ON CONFLICT protege de corridas)
+    // 2) Seed: apenas tabelas vazias ou merge em lotes (idempotente; ON CONFLICT protege de corridas)
     const carga = this._cargaInicial();
     const resumo = {};
     for (const aba of ABAS_VALIDAS) {
@@ -100,10 +101,7 @@ class NeonStore {
       const existentes = (rows[0] && rows[0][0]) || 0;
       if (existentes > 0 && !mesclar) { resumo[aba] = { existentes, inseridos: 0 }; continue; }
       const registros = carga[aba] || [];
-      let inseridos = 0;
-      for (const reg of registros) {
-        inseridos += await this._inserirSeAusente(aba, reg);
-      }
+      const inseridos = await this._inserirEmLote(aba, registros);
       resumo[aba] = { existentes, inseridos };
     }
     await this.query(
@@ -114,19 +112,42 @@ class NeonStore {
     return resumo;
   }
 
-  /** INSERT ... ON CONFLICT DO NOTHING → retorna 1 se inseriu, 0 se já existia */
-  async _inserirSeAusente(aba, registro) {
+  /** INSERT multi-row em lote ... ON CONFLICT DO NOTHING → retorna total inserido */
+  async _inserirEmLote(aba, registros, tamanhoLote = 50) {
     const pk = pkDa(aba);
     const colunas = colunasDa(aba);
-    if (!texto(registro[pk])) return 0;
-    const valores = colunas.map(c => texto(registro[c]));
-    const placeholders = colunas.map((_, i) => `$${i + 1}`).join(', ');
-    const sqlTxt = `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')})
-                    VALUES (${placeholders})
-                    ON CONFLICT (${ident(pk)}) DO NOTHING
-                    RETURNING 1`;
-    const { rows } = await this.query(sqlTxt, valores);
-    return rows.length ? 1 : 0;
+    const validos = (registros || []).filter(r => texto(r[pk]).trim() !== '');
+    if (!validos.length) return 0;
+
+    let totalInseridos = 0;
+    for (let i = 0; i < validos.length; i += tamanhoLote) {
+      const lote = validos.slice(i, i + tamanhoLote);
+      const linhasPlaceholders = [];
+      const valores = [];
+
+      for (let rIdx = 0; rIdx < lote.length; rIdx++) {
+        const reg = lote[rIdx];
+        const phs = [];
+        for (let cIdx = 0; cIdx < colunas.length; cIdx++) {
+          phs.push(`$${valores.length + 1}`);
+          valores.push(texto(reg[colunas[cIdx]]));
+        }
+        linhasPlaceholders.push(`(${phs.join(', ')})`);
+      }
+
+      const sqlTxt = `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')})\n` +
+                     `VALUES\n  ${linhasPlaceholders.join(',\n  ')}\n` +
+                     `ON CONFLICT (${ident(pk)}) DO NOTHING\n` +
+                     `RETURNING 1`;
+      const { rows } = await this.query(sqlTxt, valores);
+      totalInseridos += (rows && rows.length) || 0;
+    }
+    return totalInseridos;
+  }
+
+  /** Compatibilidade: insere 1 registro se ausente */
+  async _inserirSeAusente(aba, registro) {
+    return this._inserirEmLote(aba, [registro]);
   }
 
   /** Carga inicial: tenta CSVs do bundle; senão usa seed-data.js embutido */
