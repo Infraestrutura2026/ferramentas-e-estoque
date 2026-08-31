@@ -41,14 +41,87 @@
     .nav-item.is-active i { color: #fff !important; }
 
     /* Botões: hover mais visível, sombra e leve elevação */
+    button:not(:disabled) {
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
     button:not(:disabled):hover {
       transform: translateY(-1px);
       box-shadow: 0 6px 14px rgba(15, 23, 42, 0.14);
     }
-    button:not(:disabled) { transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
 
-    /* Tabelas: destaque mais forte na linha */
-    tbody tr:hover { background-color: #ccfbf1 !important; }
+    /* Ações padrão (botões, paginação, chips, exportar, cancelar):
+       hover teal forte com texto/ícones brancos, sombra e leve elevação */
+    .app-button:not(:disabled):hover,
+    .pagination-btn:not(:disabled):hover,
+    .filter-chip:not(:disabled):hover,
+    .export-btn:not(:disabled):hover,
+    .cancel-btn:not(:disabled):hover,
+    .sidebar-toggle:not(:disabled):hover {
+      background-color: #0d9488 !important;
+      border-color: #0f766e !important;
+      color: #fff !important;
+      box-shadow: 0 6px 14px rgba(13, 148, 136, 0.35);
+      transform: translateY(-1px);
+    }
+    .app-button:hover i,
+    .pagination-btn:hover i,
+    .filter-chip:hover i,
+    .export-btn:hover i,
+    .cancel-btn:hover i,
+    .sidebar-toggle:hover i { color: #fff !important; }
+
+    /* Ícones de ação (editar/excluir) como botões com hover preenchido */
+    .icon-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border-radius: 0.5rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+    }
+    .icon-action.icon-action-edit:not(:disabled):hover {
+      background-color: #0d9488 !important;
+      border-color: #0f766e !important;
+      color: #fff !important;
+      box-shadow: 0 6px 14px rgba(13, 148, 136, 0.35);
+      transform: translateY(-1px);
+    }
+    .icon-action.icon-action-danger:not(:disabled):hover {
+      background-color: #dc2626 !important;
+      border-color: #b91c1c !important;
+      color: #fff !important;
+      box-shadow: 0 6px 14px rgba(220, 38, 38, 0.35);
+      transform: translateY(-1px);
+    }
+    .icon-action.icon-action-edit:hover i,
+    .icon-action.icon-action-danger:hover i { color: #fff !important; }
+
+    /* Ações destrutivas: excluir, sair e devolução continuam vermelhas */
+    .btn-danger:not(:disabled):hover {
+      background-color: #dc2626 !important;
+      border-color: #b91c1c !important;
+      color: #fff !important;
+      box-shadow: 0 6px 14px rgba(220, 38, 38, 0.35);
+      transform: translateY(-1px);
+    }
+    .btn-danger:hover i { color: #fff !important; }
+
+    /* Tabelas: linha em teal claro com barra lateral */
+    tbody tr:hover {
+      background-color: #ccfbf1 !important;
+      box-shadow: inset 4px 0 0 #0d9488 !important;
+    }
+    tbody tr:hover > td:first-child {
+      box-shadow: inset 4px 0 0 #0d9488 !important;
+    }
+
+    /* Cards: borda/sombra teal no hover */
+    .bg-white.rounded-xl.border-slate-200:hover {
+      border-color: #0d9488 !important;
+      box-shadow: 0 8px 20px rgba(13, 148, 136, 0.18) !important;
+    }
 
     @media print {
       #sidebar, header, #sidebar-overlay, #login-screen, button[onclick*="export"], button[onclick*="print"] { display: none !important; }
@@ -106,7 +179,7 @@
           </div>
 
           <button id="login-btn" onclick="authModule.doLogin()"
-            class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition shadow-lg shadow-teal-600/20 text-sm uppercase tracking-wide disabled:opacity-60 disabled:cursor-wait">
+            class="app-button w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition shadow-lg shadow-teal-600/20 text-sm uppercase tracking-wide disabled:opacity-60 disabled:cursor-wait">
             <i class="fas fa-sign-in-alt mr-2"></i>Entrar no Sistema
           </button>
         </div>

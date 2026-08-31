@@ -34,7 +34,7 @@ const estoqueModule = {
             </select>
           </div>
           <button onclick="estoqueModule.abrirModalAdicionar()" 
-            class="px-4 py-2 text-sm bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 shadow shadow-black/20 transition">
+            class="app-button px-4 py-2 text-sm bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 shadow shadow-black/20 transition">
             <i class="fas fa-plus mr-1"></i> Novo Item
           </button>
         </div>
@@ -95,8 +95,8 @@ const estoqueModule = {
           <td class="px-4 py-3 text-center">${statusBadge}</td>
           <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.local || '—')}</td>
           <td class="px-4 py-3 text-center">
-            <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-            <button onclick="estoqueModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+            <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+            <button onclick="estoqueModule.excluir('${utils.escapeHtml(item.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
       `;

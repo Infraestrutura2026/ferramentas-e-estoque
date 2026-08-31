@@ -117,7 +117,7 @@ const utils = {
 
   paginationControls(moduleName, page, pages, total) {
     if (pages <= 1) return '';
-    const btn = 'px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-300 hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed';
+    const btn = 'pagination-btn px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed';
     return `
       <div class="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-xs text-slate-500">
         <span>${total} registro(s)</span>

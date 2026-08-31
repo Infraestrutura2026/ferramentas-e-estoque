@@ -546,7 +546,7 @@ const app = {
           </nav>
 
           <div class="px-3 py-3 border-t border-slate-200 space-y-2">
-            <button onclick="authModule.logout()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition border border-red-200">
+            <button onclick="authModule.logout()" class="btn-danger w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition border border-red-200">
               <i class="fas fa-sign-out-alt"></i>
               <span>Sair</span>
             </button>
@@ -561,7 +561,7 @@ const app = {
         <div class="flex-1 flex flex-col min-w-0">
           <!-- Topbar -->
           <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-            <button onclick="app._toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600">
+            <button onclick="app._toggleSidebar()" class="sidebar-toggle lg:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600">
               <i class="fas fa-bars"></i>
             </button>
             <div class="flex items-center gap-3 min-w-0">
@@ -941,10 +941,10 @@ const app = {
           <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados (CSV)</h3>
           <div class="flex flex-wrap gap-3">
             ${abasExportaveis.map(aba => `
-              <button onclick="app._exportCSV('${aba}')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition capitalize">
+              <button onclick="app._exportCSV('${aba}')" class="export-btn app-button px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition capitalize">
                 <i class="fas fa-file-csv mr-1"></i> ${aba}
               </button>`).join('')}
-            <button onclick="window.print()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+            <button onclick="window.print()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
               <i class="fas fa-print mr-1"></i> Imprimir
             </button>
           </div>
@@ -980,12 +980,12 @@ const app = {
       <div class="relative bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col fade-in">
         <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
           <h3 class="text-base font-bold text-slate-900">${utils.escapeHtml(title)}</h3>
-          <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+          <button onclick="app.closeModal()" class="app-button p-2 rounded-lg text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
         </div>
         <div id="modal-body" class="px-5 py-4 overflow-y-auto flex-1">${bodyHTML}</div>
         <div class="px-5 py-3 border-t border-slate-200 bg-slate-50 flex justify-end gap-2">
-          <button onclick="app.closeModal()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancelar</button>
-          <button id="modal-confirm" class="px-4 py-2 text-sm bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition font-medium">${utils.escapeHtml(confirmLabel)}</button>
+          <button onclick="app.closeModal()" class="cancel-btn app-button px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancelar</button>
+          <button id="modal-confirm" class="app-button px-4 py-2 text-sm bg-teal-600 text-white hover:bg-teal-700 rounded-lg transition font-medium">${utils.escapeHtml(confirmLabel)}</button>
         </div>
       </div>
     `;
@@ -1144,7 +1144,7 @@ const emprestimosModule = {
             <p class="text-2xl font-bold text-emerald-600">${devolvidos.length}</p>
           </div>
           <div class="flex items-stretch">
-            <button onclick="emprestimosModule.abrirNovo()" class="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow">
+            <button onclick="emprestimosModule.abrirNovo()" class="app-button w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow">
               <i class="fas fa-plus mr-1"></i> Novo Empréstimo
             </button>
           </div>
@@ -1199,8 +1199,8 @@ const emprestimosModule = {
                     <td class="px-4 py-3 text-center ${atrasado ? 'text-red-600 font-bold' : 'text-slate-600'}">${utils.formatDate(e.previsaoDevolucao)}</td>
                     <td class="px-4 py-3 text-center">${statusBadge}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 mx-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold border border-red-600 transition whitespace-nowrap" title="Registrar devolução"><i class="fas fa-undo"></i> Devolução</button>` : ''}
-                      <button onclick="emprestimosModule.excluir('${idEsc}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir registro"><i class="fas fa-trash-alt"></i></button>
+                      ${!devolvido ? `<button onclick="emprestimosModule.registrarDevolucao('${idEsc}')" class="btn-danger inline-flex items-center gap-1 px-2.5 py-1.5 mx-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold border border-red-600 transition whitespace-nowrap" title="Registrar devolução"><i class="fas fa-undo"></i> Devolução</button>` : ''}
+                      <button onclick="emprestimosModule.excluir('${idEsc}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir registro"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
                 }).join('') || '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Nenhum empréstimo encontrado.</td></tr>'}
