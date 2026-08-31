@@ -595,8 +595,8 @@ const app = {
 
   _navItem(page, icon, label) {
     return `
-      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item group w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-lg border border-transparent text-left text-sm font-medium text-slate-600 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 transition-colors duration-150">
-        <i class="fas ${icon} w-5 shrink-0 text-center transition-colors duration-150"></i>
+      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item group w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-lg border border-transparent text-left text-sm font-medium text-slate-600 hover:bg-teal-600 hover:text-white hover:border-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 transition-colors duration-150">
+        <i class="fas ${icon} w-5 shrink-0 text-center transition-colors duration-150 group-hover:text-white"></i>
         <span class="flex-1 min-w-0 leading-snug text-left">${label}</span>
       </button>
     `;
