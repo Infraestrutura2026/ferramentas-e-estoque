@@ -8,8 +8,9 @@
   },
   "scripts": {
     "start": "node dev/server.js",
-    "test": "node tests/run.js && node tests/run-contract.js && node tests/run-neon.js",
-    "gen": "node scripts/gen-seed.js"
+    "test": "node tests/run.js && node tests/run-contract.js && node tests/run-neon.js && node tests/run-migrate.js",
+    "gen": "node scripts/gen-seed.js",
+    "migrate:online": "node scripts/migrate-online.js"
   },
   "repository": {
     "type": "git",
