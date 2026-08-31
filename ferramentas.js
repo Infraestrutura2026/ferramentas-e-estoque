@@ -26,7 +26,7 @@ const ferramentasModule = {
           <i class="fas fa-tools text-4xl text-slate-600 mb-3"></i>
           <h3 class="text-lg font-bold text-slate-700">Nenhuma ferramenta cadastrada</h3>
           <p class="text-sm text-slate-500 mt-1 mb-4">Cadastre a primeira ferramenta usando o botão abaixo.</p>
-          <button onclick="ferramentasModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
+          <button onclick="ferramentasModule.abrirModal()" class="app-button px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
             <i class="fas fa-plus mr-1"></i> Nova Ferramenta
           </button>
         </div>`;
@@ -74,7 +74,7 @@ const ferramentasModule = {
             <p class="text-2xl font-bold text-red-600">${manutencao}</p>
           </div>
           <button onclick="ferramentasModule.abrirModal()"
-            class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow">
+            class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow">
             <i class="fas fa-plus mr-1"></i> Nova Ferramenta
           </button>
         </div>
@@ -97,14 +97,14 @@ const ferramentasModule = {
           </div>
           <div class="flex flex-wrap gap-2">
             <button onclick="ferramentasModule.setCategoria('todas')"
-              class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${catFiltro === 'todas' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'}">
+              class="filter-chip px-2.5 py-1 rounded-full text-xs font-medium border transition ${catFiltro === 'todas' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'}">
               Todas
             </button>
             ${categorias.map(cat => {
               const style = utils.getCategoriaStyle(cat);
               const isActive = cat === catFiltro;
               return `<button onclick="ferramentasModule.setCategoria('${utils.escapeHtml(cat).replace(/'/g, "\\'")}')"
-                class="px-2.5 py-1 rounded-full text-xs font-medium border transition ${isActive ? 'ring-1 ring-teal-500 ring-offset-2 ring-offset-white' : ''}"
+                class="filter-chip px-2.5 py-1 rounded-full text-xs font-medium border transition ${isActive ? 'ring-1 ring-teal-500 ring-offset-2 ring-offset-white' : ''}"
                 style="background-color:${style.bg};color:${style.text};border-color:${style.border}">
                 ${utils.escapeHtml(cat)}
               </button>`;
@@ -143,8 +143,8 @@ const ferramentasModule = {
                       <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.local || '—')}</td>
                       <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.responsavel || item.usuario || '—')}</td>
                       <td class="px-4 py-3 text-center whitespace-nowrap">
-                        <button onclick="ferramentasModule.abrirModal('${utils.escapeHtml(item.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                        <button onclick="ferramentasModule.excluir('${utils.escapeHtml(item.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                        <button onclick="ferramentasModule.abrirModal('${utils.escapeHtml(item.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                        <button onclick="ferramentasModule.excluir('${utils.escapeHtml(item.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                       </td>
                     </tr>
                   `;

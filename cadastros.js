@@ -37,7 +37,7 @@ const fornecedoresModule = {
                 class="pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none w-56"
                 oninput="fornecedoresModule.setBusca(this.value)">
             </div>
-            <button onclick="fornecedoresModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
+            <button onclick="fornecedoresModule.abrirModal()" class="app-button px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
               <i class="fas fa-plus mr-1"></i> Novo
             </button>
           </div>
@@ -67,8 +67,8 @@ const fornecedoresModule = {
                   <td class="px-4 py-3 text-slate-600 whitespace-nowrap">${utils.escapeHtml(f.telefone || '—')}</td>
                   <td class="px-4 py-3 text-center">${utils.statusBadge(f.status || 'Ativo')}</td>
                   <td class="px-4 py-3 text-center whitespace-nowrap">
-                    <button onclick="fornecedoresModule.abrirModal('${utils.escapeHtml(f.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                    <button onclick="fornecedoresModule.excluir('${utils.escapeHtml(f.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="fornecedoresModule.abrirModal('${utils.escapeHtml(f.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                    <button onclick="fornecedoresModule.excluir('${utils.escapeHtml(f.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                   </td>
                 </tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Nenhum fornecedor encontrado.</td></tr>'}
             </tbody>
@@ -207,7 +207,7 @@ const pedidosModule = {
                 <option value="pendente" ${this.filtroStatus === 'pendente' ? 'selected' : ''}>Pendentes</option>
                 <option value="entregue" ${this.filtroStatus === 'entregue' ? 'selected' : ''}>Entregues</option>
               </select>
-              <button onclick="pedidosModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
+              <button onclick="pedidosModule.abrirModal()" class="app-button px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
                 <i class="fas fa-plus mr-1"></i> Novo
               </button>
             </div>
@@ -239,8 +239,8 @@ const pedidosModule = {
                       ? '<span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-200">⏰ ATRASADO</span>'
                       : utils.statusBadge(p.status || 'Pendente')}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                      <button onclick="pedidosModule.abrirModal('${utils.escapeHtml(p.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
-                      <button onclick="pedidosModule.excluir('${utils.escapeHtml(p.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+                      <button onclick="pedidosModule.abrirModal('${utils.escapeHtml(p.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
+                      <button onclick="pedidosModule.excluir('${utils.escapeHtml(p.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
                 }).join('') || '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Nenhum pedido encontrado.</td></tr>'}
@@ -354,7 +354,7 @@ const usuariosModule = {
             <h2 class="text-lg font-bold text-slate-900">Usuários do Sistema</h2>
             <p class="text-xs text-slate-500 mt-1">Senhas são armazenadas com hash SHA-256. Usuários valem para todos os computadores.</p>
           </div>
-          <button onclick="usuariosModule.abrirModal()" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
+          <button onclick="usuariosModule.abrirModal()" class="app-button px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
             <i class="fas fa-user-plus mr-1"></i> Novo Usuário
           </button>
         </div>
@@ -377,8 +377,8 @@ const usuariosModule = {
                       : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-300"><i class="fas fa-user mr-1"></i>Operador</span>'}
                   </td>
                   <td class="px-4 py-3 text-center whitespace-nowrap">
-                    <button onclick="usuariosModule.abrirModal('${utils.escapeHtml(u.id)}')" class="text-blue-600 hover:text-blue-700 mx-1" title="Editar/Alterar senha"><i class="fas fa-edit"></i></button>
-                    ${u.usuario !== authModule.getCurrentUser() ? `<button onclick="usuariosModule.excluir('${utils.escapeHtml(u.id)}')" class="text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>` : ''}
+                    <button onclick="usuariosModule.abrirModal('${utils.escapeHtml(u.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar/Alterar senha"><i class="fas fa-edit"></i></button>
+                    ${u.usuario !== authModule.getCurrentUser() ? `<button onclick="usuariosModule.excluir('${utils.escapeHtml(u.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>` : ''}
                   </td>
                 </tr>`).join('') || '<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Nenhum usuário remoto carregado (usando usuários padrão locais).</td></tr>'}
             </tbody>
