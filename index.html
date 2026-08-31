@@ -24,6 +24,32 @@
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; border: 2px solid #eef2f6; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+    /* Menu lateral: hover teal forte + texto/ícone brancos */
+    .nav-item:hover {
+      background-color: #0d9488 !important;
+      color: #fff !important;
+      border-color: #0f766e !important;
+    }
+    .nav-item:hover i { color: #fff !important; }
+    .nav-item.is-active {
+      background-color: #0f766e !important;
+      color: #fff !important;
+      border-color: #115e59 !important;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+      font-weight: 700;
+    }
+    .nav-item.is-active i { color: #fff !important; }
+
+    /* Botões: hover mais visível, sombra e leve elevação */
+    button:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.14);
+    }
+    button:not(:disabled) { transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
+
+    /* Tabelas: destaque mais forte na linha */
+    tbody tr:hover { background-color: #ccfbf1 !important; }
+
     @media print {
       #sidebar, header, #sidebar-overlay, #login-screen, button[onclick*="export"], button[onclick*="print"] { display: none !important; }
       #main-content { padding: 0 !important; }
