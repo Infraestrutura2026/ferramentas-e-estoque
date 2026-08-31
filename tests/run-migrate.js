@@ -12,6 +12,8 @@ const {
   totalRegistros,
 } = require('../scripts/migrate-online');
 const { ABAS_VALIDAS, pkDa } = require('../api/_lib/schema');
+const { MemoryStore } = require('../api/_lib/store');
+const { criarSetupHandler } = require('../api/_lib/handler');
 
 const ROOT = path.resolve(__dirname, '..');
 let passed = 0;
@@ -78,6 +80,23 @@ function ok(name, condition, message = '') {
   ok('migração via API executa setup e lista as 8 abas', chamadas.some(c => c.url.endsWith('/setup?force=1')) && chamadas.filter(c => !c.options.method && !c.url.endsWith('/setup?force=1')).length === 8);
   ok('migração via API envia somente registros ausentes', apiResultado.find(r => r.aba === 'estoque').inseridos === 1);
   ok('migração via API usa POST text/plain', post && post.options.headers['Content-Type'].startsWith('text/plain') && JSON.parse(post.options.body).action === 'add');
+
+  // A URL amigável para quem não usa terminal: /api/setup?migrate=1.
+  const parcial = Object.fromEntries(ABAS_VALIDAS.map(aba => [aba, []]));
+  parcial.estoque = fonte.registros.estoque.slice(0, 48);
+  parcial.ferramentas = fonte.registros.ferramentas.slice(0, 50);
+  parcial.usuarios = fonte.registros.usuarios.slice(0, 1);
+  const storeParcial = new MemoryStore(parcial);
+  await storeParcial.ensureReady();
+  // Simula a versão atualizada do seed no bundle após um deploy.
+  storeParcial._cargaCache = fonte.registros;
+  const setupHandler = criarSetupHandler(() => storeParcial);
+  const req = { method: 'GET', url: '/api/setup?migrate=1', headers: {} };
+  const res = { statusCode: 0, headers: {}, corpo: '', setHeader(k, v) { this.headers[k] = v; }, end(body) { this.corpo = body; } };
+  await setupHandler(req, res);
+  const setupResposta = JSON.parse(res.corpo);
+  ok('setup?migrate=1 retorna sucesso', setupResposta.success === true && setupResposta.message.includes('Migração'));
+  ok('setup?migrate=1 completa tabelas parcialmente carregadas', setupResposta.contagens.estoque === 51 && setupResposta.contagens.ferramentas === 64 && setupResposta.contagens.usuarios === 3);
 
   console.log(`\n${passed} passed, ${failed} failed — total ${passed + failed}`);
   process.exit(failed ? 1 : 0);

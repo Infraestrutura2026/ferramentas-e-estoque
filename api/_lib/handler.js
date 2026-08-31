@@ -10,6 +10,7 @@
  *
  *   GET  /api/health   → status da conexão + contagem por tabela
  *   GET  /api/setup    → status/força re-criação (?force=1 re-executa o setup)
+ *   GET  /api/setup?migrate=1 → cria/evolui e adiciona chaves ausentes do seed
  *
  * Paridade de respostas com apps-script/Code.gs: erros de domínio retornam
  * HTTP 200 com {success:false, error} (o frontend exibe a mensagem amigável).
@@ -146,11 +147,14 @@ function criarSetupHandler(storeFactory) {
     try {
       const url = new URL(req.url, 'http://localhost');
       const force = url.searchParams.get('force') === '1';
-      const resumo = await storeFactory().ensureReady({ force: true }).catch(() => null);
+      const migrate = url.searchParams.get('migrate') === '1';
+      const resumo = await storeFactory().ensureReady({ force: force || migrate, merge: migrate });
       const health = await storeFactory().health();
       enviarJSON(res, 200, {
         success: true,
-        message: force ? 'Setup re-executado (tabelas vazias foram populadas)' : 'Setup verificado',
+        message: migrate
+          ? 'Migração executada (somente chaves ausentes foram adicionadas)'
+          : (force ? 'Setup re-executado (tabelas vazias foram populadas)' : 'Setup verificado'),
         seed: resumo,
         contagens: health.contagens || {},
         backend: health.backend,

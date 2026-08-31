@@ -68,12 +68,14 @@ class NeonStore {
   /* ── Setup: DDL + seed ── */
   async ensureReady(opcoes) {
     const forcar = opcoes && opcoes.force;
-    if (!forcar && this._pronto) return this._pronto;
-    this._pronto = this._setup().catch (e => { this._pronto = null; throw e; });
+    const mesclar = opcoes && opcoes.merge;
+    if (!forcar && !mesclar && this._pronto) return this._pronto;
+    this._pronto = this._setup({ merge: mesclar }).catch (e => { this._pronto = null; throw e; });
     return this._pronto;
   }
 
-  async _setup() {
+  async _setup(opcoes) {
+    const mesclar = !!(opcoes && opcoes.merge);
     // 1) Tabelas (IF NOT EXISTS + ADD COLUMN IF NOT EXISTS p/ evolução segura)
     for (const aba of ABAS_VALIDAS) {
       const pk = pkDa(aba);
@@ -96,13 +98,13 @@ class NeonStore {
     for (const aba of ABAS_VALIDAS) {
       const { rows } = await this.query(`SELECT COUNT(*)::int AS n FROM ${ident(aba)}`);
       const existentes = (rows[0] && rows[0][0]) || 0;
-      if (existentes > 0) { resumo[aba] = { existentes, inseridos: 0 }; continue; }
+      if (existentes > 0 && !mesclar) { resumo[aba] = { existentes, inseridos: 0 }; continue; }
       const registros = carga[aba] || [];
       let inseridos = 0;
       for (const reg of registros) {
         inseridos += await this._inserirSeAusente(aba, reg);
       }
-      resumo[aba] = { existentes: 0, inseridos };
+      resumo[aba] = { existentes, inseridos };
     }
     await this.query(
       `INSERT INTO "_setup" ("key", "value") VALUES ('seeded_at', $1)
@@ -290,15 +292,32 @@ class MemoryStore {
   }
 
   async ensureReady(opcoes) {
-    if (this._setupFeito && !(opcoes && opcoes.force)) return {};
+    const mesclar = !!(opcoes && opcoes.merge);
+    if (this._setupFeito && !(opcoes && opcoes.force) && !mesclar) return {};
     const carga = this._carga();
     const resumo = {};
     for (const aba of ABAS_VALIDAS) {
-      if (!this._dados[aba] || !this._dados[aba].length) {
-        this._dados[aba] = (carga[aba] || []).map(r => Object.assign({}, r));
+      const atuais = this._dados[aba] || [];
+      const registros = carga[aba] || [];
+      if (mesclar && atuais.length) {
+        const pk = pkDa(aba);
+        const chaves = new Set(atuais.map(r => texto(r[pk])));
+        let inseridos = 0;
+        for (const registro of registros) {
+          const chave = texto(registro[pk]);
+          if (chaves.has(chave)) continue;
+          atuais.push(Object.assign({}, registro));
+          chaves.add(chave);
+          inseridos++;
+        }
+        this._dados[aba] = atuais;
+        resumo[aba] = { existentes: atuais.length - inseridos, inseridos };
+      } else if (!atuais.length) {
+        this._dados[aba] = registros.map(r => Object.assign({}, r));
         resumo[aba] = { existentes: 0, inseridos: this._dados[aba].length };
       } else {
-        resumo[aba] = { existentes: this._dados[aba].length, inseridos: 0 };
+        this._dados[aba] = atuais;
+        resumo[aba] = { existentes: atuais.length, inseridos: 0 };
       }
     }
     this._setupFeito = true;

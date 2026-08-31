@@ -93,6 +93,16 @@ As duas variáveis de destino são mutuamente exclusivas. Para uma pasta de CSVs
 diferente, use `DATA_DIR=/caminho/dos/csvs`. O comando também pode ser
 consultado com `npm run migrate:online -- --help`.
 
+Se você não usa terminal, depois de publicar esta versão é possível fazer a
+sincronização pelo navegador abrindo:
+
+```text
+https://<projeto>.vercel.app/api/setup?migrate=1
+```
+
+Essa URL também é não destrutiva: adiciona somente chaves ausentes do seed e
+não remove nem atualiza registros existentes.
+
 ## 🌐 Publicando online (acesso por outros computadores)
 
 ### Produção — Vercel + Neon (recomendado, v2.6.0)
@@ -177,7 +187,7 @@ tests/
 
 ## 🧪 Testes
 
-Validações executadas na v2.6.0 (**99 testes**):
+Validações executadas na v2.6.0 (**101 testes**):
 
 ```bash
 npm test   # roda as quatro suítes

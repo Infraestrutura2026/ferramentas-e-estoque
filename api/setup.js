@@ -1,4 +1,4 @@
-/** api/setup.js — GET /api/setup → verifica/força criação de tabelas + seed */
+/** api/setup.js — GET /api/setup → setup e, opcionalmente, merge do seed faltante */
 'use strict';
 
 const { criarSetupHandler } = require('./_lib/handler');
