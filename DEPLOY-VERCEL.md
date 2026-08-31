@@ -81,15 +81,27 @@ Neon PostgreSQL  —  8 tabelas (estoque, ferramentas, …) + _setup
 
 ```bash
 npm start            # servidor local idêntico à produção (banco em memória)
-npm test             # 87 testes (23 + 15 + 49) incl. SQL/segurança/contrato
+npm test             # 99 testes (23 + 15 + 49 + 12) incl. migração online
 npm run gen          # regenera api/_lib/seed-data.js após atualizar data/*.csv
 DATABASE_URL=postgres://… npm start   # dev apontando para o Neon REAL
+
+# Migração não destrutiva dos CSVs para o ambiente online:
+DATABASE_URL=postgresql://... npm run migrate:online
+# ou via API, sem expor a connection string:
+MIGRATE_API_BASE=https://<projeto>.vercel.app npm run migrate:online
+# conferência local, sem conectar nem alterar:
+DRY_RUN=1 npm run migrate:online
 ```
 
 ## 🔁 Reexecutar a carga inicial
 
 `https://<projeto>.vercel.app/api/setup?force=1` — recria tabelas ausentes e
 popula **apenas as que estiverem vazias** (nunca apaga dados existentes).
+
+Para levar uma versão atualizada dos CSVs a um ambiente que já contém dados,
+use `npm run migrate:online` conforme os comandos acima. A migração é
+idempotente e só insere chaves ausentes; `DRY_RUN=1` não abre conexão com o
+destino.
 
 ## 🔒 Segurança — estado atual e próximos passos
 

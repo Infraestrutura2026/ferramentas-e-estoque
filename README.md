@@ -57,6 +57,42 @@ python3 -m http.server 8080
 > navegador (file://) bloqueia a leitura dos CSVs.
 > Com `DATABASE_URL=... npm start` o servidor local usa o banco Neon **real**.
 
+## 🔄 Migrando os CSVs para o ambiente online
+
+O comando `migrate:online` leva os dados versionados em `data/*.csv` para o
+banco online. A operação é **não destrutiva**: cria/evolui as tabelas e insere
+somente chaves primárias que ainda não existem; nunca apaga nem sobrescreve um
+registro já online.
+
+### Opção A — direto no banco
+
+Requer a connection string do PostgreSQL/Neon:
+
+```bash
+DATABASE_URL=postgresql://... npm run migrate:online
+```
+
+### Opção B — pela API do próprio sistema
+
+Não expõe a connection string e usa apenas o contrato HTTP da aplicação:
+
+```bash
+MIGRATE_API_BASE=https://<projeto>.vercel.app npm run migrate:online
+```
+
+### Conferir antes de executar
+
+`DRY_RUN=1` valida os CSVs e mostra a quantidade planejada sem conectar nem
+alterar o destino:
+
+```bash
+DRY_RUN=1 npm run migrate:online
+```
+
+As duas variáveis de destino são mutuamente exclusivas. Para uma pasta de CSVs
+diferente, use `DATA_DIR=/caminho/dos/csvs`. O comando também pode ser
+consultado com `npm run migrate:online -- --help`.
+
 ## 🌐 Publicando online (acesso por outros computadores)
 
 ### Produção — Vercel + Neon (recomendado, v2.6.0)
@@ -127,6 +163,7 @@ api/              ★ v2.6.0 — Backend serverless Vercel + Neon
   _lib/seed-data.js Carga inicial embutida (gerada de data/*.csv)
 dev/server.js     Servidor local idêntico à produção (API em memória)
 scripts/gen-seed.js Regenera o seed-data.js após atualizar CSVs
+scripts/migrate-online.js Migra data/*.csv para PostgreSQL ou API online
 vercel.json       Configuração das funções + headers CORS
 apps-script/      Backend legado do espelho (Google Sheets)
   Code.gs         Backend real (Google Apps Script) com LockService
@@ -140,13 +177,14 @@ tests/
 
 ## 🧪 Testes
 
-Validações executadas na v2.6.0 (**87 testes**):
+Validações executadas na v2.6.0 (**99 testes**):
 
 ```bash
-npm test   # roda as três suítes
+npm test   # roda as quatro suítes
 node tests/run.js          # 23 — geral (sintaxe, CSV, utils, módulos)
 node tests/run-contract.js # 15 — contrato do Apps Script
 node tests/run-neon.js     # 49 — API Neon/Vercel (SQL, segurança, HTTP)
+node tests/run-migrate.js  # 12 — migração online (sem rede/banco real)
 ```
 
 - Sintaxe de todos os módulos (`node --check`);
