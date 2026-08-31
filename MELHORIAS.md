@@ -120,6 +120,7 @@ empréstimo de ferramentas (frontend estático + CSVs locais + Google Sheets via
 3. ✅ **CRUD de Empréstimos:** registrar, devolver, destacar atrasados.
 4. ✅ **Tela Ferramentas** corrigida (CRUD próprio) e schemas CSV ↔ telas alinhados.
 5. ✅ **Telas de Fornecedores, Pedidos e Usuários** (CRUD completo).
-6. ✅ **Versionar o código do Apps Script** no repo + `LockService`
+6. ✅ **Melhorias de Relatórios e Exportação**: Relatório consolidado de estoque por categoria, métricas de esgotados/críticos, exportação em lote para todas as 8 abas em formato CSV com UTF-8 e suporte a impressão otimizada.
+7. ✅ **Versionar o código do Apps Script** no repo + `LockService`
    (implementado em `apps-script/Code.gs`, contrato validado em `tests/run-contract.js`).
-7. ⏳ **Autenticação server-side** (evolução futura, se necessário).
+8. ⏳ **Autenticação server-side** (evolução futura, se necessário).
