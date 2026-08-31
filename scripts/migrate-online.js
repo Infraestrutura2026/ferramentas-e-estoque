@@ -127,11 +127,12 @@ function sqlCriarTabela(aba) {
 async function garantirSchema(query) {
   for (const aba of ABAS_VALIDAS) {
     await query(sqlCriarTabela(aba));
-    for (const coluna of colunasDa(aba)) {
-      if (coluna === pkDa(aba)) continue;
-      await query(
-        `ALTER TABLE ${ident(aba)} ADD COLUMN IF NOT EXISTS ${ident(coluna)} TEXT NOT NULL DEFAULT ''`
+    const colunasExtras = colunasDa(aba).filter(coluna => coluna !== pkDa(aba));
+    if (colunasExtras.length > 0) {
+      const alters = colunasExtras.map(
+        coluna => `ADD COLUMN IF NOT EXISTS ${ident(coluna)} TEXT NOT NULL DEFAULT ''`
       );
+      await query(`ALTER TABLE ${ident(aba)} ${alters.join(', ')}`);
     }
     // Bancos criados antes do _seq precisam dele para a ordenação da API.
     await query(
@@ -141,25 +142,49 @@ async function garantirSchema(query) {
   await query(`CREATE TABLE IF NOT EXISTS ${ident('_setup')} ("key" TEXT PRIMARY KEY, "value" TEXT NOT NULL DEFAULT '')`);
 }
 
-async function inserir(query, aba, registro) {
+async function inserirEmLote(query, aba, registros, tamanhoLote = 50) {
   const colunas = colunasDa(aba);
   const pk = pkDa(aba);
-  const valores = colunas.map(coluna => texto(registro[coluna]));
-  const placeholders = colunas.map((_, indice) => '$' + (indice + 1)).join(', ');
-  const resultado = await query(
-    `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')})\n` +
-    `VALUES (${placeholders})\n` +
-    `ON CONFLICT (${ident(pk)}) DO NOTHING RETURNING 1`,
-    valores
-  );
-  return resultadoRows(resultado).length > 0 ? 1 : 0;
+  const validos = (registros || []).filter(r => texto(r[pk]).trim() !== '');
+  if (!validos.length) return 0;
+
+  let totalInseridos = 0;
+  for (let i = 0; i < validos.length; i += tamanhoLote) {
+    const lote = validos.slice(i, i + tamanhoLote);
+    const linhasPlaceholders = [];
+    const valores = [];
+
+    for (let rIdx = 0; rIdx < lote.length; rIdx++) {
+      const reg = lote[rIdx];
+      const phs = [];
+      for (let cIdx = 0; cIdx < colunas.length; cIdx++) {
+        phs.push(`$${valores.length + 1}`);
+        valores.push(texto(reg[colunas[cIdx]]));
+      }
+      linhasPlaceholders.push(`(${phs.join(', ')})`);
+    }
+
+    const resultado = await query(
+      `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')})\n` +
+      `VALUES\n  ${linhasPlaceholders.join(',\n  ')}\n` +
+      `ON CONFLICT (${ident(pk)}) DO NOTHING\n` +
+      `RETURNING 1`,
+      valores
+    );
+    totalInseridos += resultadoRows(resultado).length;
+  }
+  return totalInseridos;
+}
+
+async function inserir(query, aba, registro) {
+  return inserirEmLote(query, aba, [registro]);
 }
 
 /**
- * Migra por SQL. O objeto query recebe (sql, parâmetros), assim como o
+ * Migra por SQL em lotes. O objeto query recebe (sql, parâmetros), assim como o
  * executor do NeonStore; isso também mantém a rotina fácil de testar sem rede.
  */
-async function migrarDireto(query, registros) {
+async function migrarDireto(query, registros, tamanhoLote = 50) {
   await garantirSchema(query);
   const resultado = [];
 
@@ -168,14 +193,9 @@ async function migrarDireto(query, registros) {
     const pk = pkDa(aba);
     const existentesSet = await consultarChaves(query, aba);
     const existentes = fonte.filter(registro => existentesSet.has(texto(registro[pk]))).length;
-    let inseridos = 0;
+    const faltantes = fonte.filter(registro => !existentesSet.has(texto(registro[pk])));
 
-    for (const registro of fonte) {
-      if (existentesSet.has(texto(registro[pk]))) continue;
-      inseridos += await inserir(query, aba, registro);
-      // Evita repetir uma tentativa caso outro processo tenha inserido a chave.
-      existentesSet.add(texto(registro[pk]));
-    }
+    const inseridos = await inserirEmLote(query, aba, faltantes, tamanhoLote);
     resultado.push(resumoTabela(aba, pk, fonte.length, existentes, inseridos, 'database'));
   }
   return resultado;
@@ -358,6 +378,8 @@ module.exports = {
   normalizarBaseAPI,
   sqlCriarTabela,
   garantirSchema,
+  inserir,
+  inserirEmLote,
   migrarDireto,
   migrarViaAPI,
   totalRegistros,

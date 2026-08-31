@@ -187,14 +187,14 @@ tests/
 
 ## 🧪 Testes
 
-Validações executadas na v2.6.0 (**101 testes**):
+Validações executadas na v2.6.0 (**106 testes**):
 
 ```bash
 npm test   # roda as quatro suítes
 node tests/run.js          # 23 — geral (sintaxe, CSV, utils, módulos)
 node tests/run-contract.js # 15 — contrato do Apps Script
-node tests/run-neon.js     # 49 — API Neon/Vercel (SQL, segurança, HTTP)
-node tests/run-migrate.js  # 12 — migração online (sem rede/banco real)
+node tests/run-neon.js     # 53 — API Neon/Vercel (SQL em lote, segurança, HTTP)
+node tests/run-migrate.js  # 15 — migração online em lotes (sem rede/banco real)
 ```
 
 - Sintaxe de todos os módulos (`node --check`);

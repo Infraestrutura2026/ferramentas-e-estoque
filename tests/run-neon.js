@@ -48,7 +48,7 @@ function criarExecutorFalso() {
       return { rows: [] };
     }
     if (s.startsWith('ALTER TABLE')) return { rows: [] };
-    if (s.startsWith('INSERT INTO "_setup"')) return { rows: [] };
+    if (s.startsWith('INSERT INTO "_SETUP"') || s.startsWith('INSERT INTO "_setup"')) return { rows: [] };
 
     if (s.startsWith('SELECT COUNT(*)')) {
       const m = sql.match(/FROM "([a-z_]+)"/i);
@@ -82,13 +82,22 @@ function criarExecutorFalso() {
     if (s.startsWith('INSERT INTO')) {
       const mNome = sql.match(/^[\s]*INSERT INTO "([a-z_]+)"/i);
       const t = garantirTabela(mNome[1]);
-      const obj = {};
-      t.colunas.forEach((c, i) => { obj[c] = params[i] === undefined ? '' : String(params[i]); });
       const onConflict = /ON CONFLICT/i.test(sql);
-      const jaExiste = [...t.rows.values()].some(r => String(r[t.pk]) === String(obj[t.pk]));
-      if (onConflict && jaExiste) return { rows: [] }; // DO NOTHING
-      t.rows.set(++seq, obj);
-      return /RETURNING/i.test(sql) ? { rows: [[1]] } : { rows: [] };
+      const k = (t.colunas && t.colunas.length) || 1;
+      const numLinhas = Math.max(1, Math.floor(params.length / k));
+      let inseridos = 0;
+      for (let r = 0; r < numLinhas; r++) {
+        const obj = {};
+        t.colunas.forEach((c, i) => {
+          const val = params[r * k + i];
+          obj[c] = val === undefined ? '' : String(val);
+        });
+        const jaExiste = [...t.rows.values()].some(row => String(row[t.pk]) === String(obj[t.pk]));
+        if (onConflict && jaExiste) continue; // DO NOTHING
+        t.rows.set(++seq, obj);
+        inseridos++;
+      }
+      return /RETURNING/i.test(sql) ? { rows: Array(inseridos).fill([1]) } : { rows: [] };
     }
 
     if (s.startsWith('UPDATE')) {
@@ -126,8 +135,8 @@ function criarExecutorFalso() {
   ok('seed insere 51 registros de estoque (via ON CONFLICT DO NOTHING)', resumo.estoque.inseridos === 51, JSON.stringify(resumo.estoque));
   ok('seed insere 3 usuários', resumo.usuarios.inseridos === 3);
   const insertsSeed = fx.log.filter(l => l.sql.startsWith('INSERT INTO "estoque"') && /ON CONFLICT \("id"\) DO NOTHING/.test(l.sql));
-  ok('INSERT de seed usa ON CONFLICT (pk) DO NOTHING', insertsSeed.length >= 51);
-  ok('INSERT de seed é parametrizado (10 valores)', insertsSeed[0] && insertsSeed[0].params.length === 10);
+  ok('INSERT de seed usa ON CONFLICT (pk) DO NOTHING', insertsSeed.length >= 1);
+  ok('INSERT de seed é parametrizado em lote', insertsSeed[0] && insertsSeed[0].params.length >= 10);
 
   // 1.2 ensureReady de novo não repete seed (cache por instância)
   const antes = fx.log.length;
@@ -176,6 +185,30 @@ function criarExecutorFalso() {
   const lista = await store2.list('estoque');
   ok('list() retorna objetos com colunas do schema', lista.length > 0 && lista[0].nome !== undefined && typeof lista[0].nome === 'string');
   ok('list() usa ORDER BY _seq ASC (ordem de inserção)', fx2.log.some(l => /ORDER BY _seq ASC/.test(l.sql)));
+
+  // 1.9 ensureReady com merge=true faz inserção em lotes de registros ausentes
+  const fxMerge = criarExecutorFalso();
+  const storeMerge = new NeonStore(fxMerge.exec);
+  await storeMerge.ensureReady();
+  const resumoMerge = await storeMerge.ensureReady({ merge: true });
+  ok('ensureReady com merge=true não duplica registros existentes', resumoMerge.estoque.existentes === 51 && resumoMerge.estoque.inseridos === 0);
+
+  // 1.10 _inserirEmLote divide em lotes e ignora registros sem chave primária
+  const fxLote = criarExecutorFalso();
+  const storeLote = new NeonStore(fxLote.exec);
+  await storeLote.ensureReady();
+  fxLote.log.length = 0;
+  const registrosLote = [
+    { id: 'lote-1', nome: 'Item 1' },
+    { id: '', nome: 'Sem ID' },
+    { id: 'lote-2', nome: 'Item 2' },
+    { id: 'lote-3', nome: 'Item 3' },
+  ];
+  const inseridosLote = await storeLote._inserirEmLote('estoque', registrosLote, 2);
+  ok('_inserirEmLote insere registros válidos respeitando tamanhoLote', inseridosLote === 3);
+  const sqlInsLote = fxLote.log.filter(l => l.sql.startsWith('INSERT INTO "estoque"'));
+  ok('_inserirEmLote dividiu 3 itens válidos em 2 queries com tamanhoLote=2', sqlInsLote.length === 2);
+  ok('_inserirEmLote retorna 0 para lista vazia', (await storeLote._inserirEmLote('estoque', [])) === 0);
 
   console.log('\n━━━ 2. Segurança ━━━');
 
