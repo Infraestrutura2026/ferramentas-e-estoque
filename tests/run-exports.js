@@ -159,7 +159,7 @@ ok('app.js Excel sanitiza nomes de folha (31 chars, sem caracteres inválidos)',
 const html = read('index.html');
 ok('index.html carrega SheetJS (xlsx.full.min.js)', html.includes('cdn.sheetjs.com') && html.includes('xlsx.full.min.js'));
 ok('index.html tem raiz dedicada à impressão do relatório (#report-print-root)', html.includes('#report-print-root'));
-ok('index.html exibe v2.7.3', html.includes('v2.7.3'));
+ok('index.html exibe v2.7.4', html.includes('v2.7.4'));
 ok('index.html login split-screen (painel institucional + card de acesso)', html.includes('login-brand') && html.includes('Acesse o sistema'));
 ok('index.html login mantém ids/contrato do authModule (login-user/login-pass/login-btn/login-error)', ['login-user', 'login-pass', 'login-btn', 'login-error', 'authModule.doLogin()'].every(id => html.includes(id)));
 
@@ -169,6 +169,17 @@ ok('index.html título institucional em destaque (v2.7.3)', html.includes('Gest�
 ok('index.html mantém linha do Complexo Penal de Marília (v2.7.3)', html.includes('Complexo Penal de Marília — Núcleo de Infraestrutura e Logística'));
 ok('index.html sem marca "Ferramentas & Estoque / Polícia Penal" no topo do painel (v2.7.3)', !html.includes('<p class="text-sm font-bold tracking-wide">Ferramentas &amp; Estoque</p>'));
 ok('index.html sem lista de 3 destaques no painel (v2.7.3)', !html.includes('Controle de estoque com alertas de mínimo e esgotados') && !html.includes('Empréstimos e devoluções de ferramentas com histórico'));
+
+// v2.7.4: painel teal vivo, bloco do título centralizado e crédito InfraTech só no rodapé do card
+const idxPainel = html.indexOf('login-brand');
+const idxForm = html.indexOf('Lado do formulário');
+const painelLogin = idxPainel >= 0 && idxForm > idxPainel ? html.slice(idxPainel, idxForm) : '';
+const ocorrenciasZanoni = html.split('ZANONI &amp; MARTINEZ InfraTech').length - 1;
+ok('index.html painel institucional em teal vivo (gradiente #0f766e → #134e4a)', html.includes('#0f766e') && html.includes('#134e4a'));
+ok('index.html bloco do título centralizado no painel (justify-center + items-center + text-center)', /login-brand[^"]*justify-center/.test(html) && /login-brand[^"]*items-center/.test(html) && /login-brand[^"]*text-center/.test(html));
+ok('index.html traço decorativo centralizado (flex flex-col items-center no miolo do painel)', painelLogin.includes('flex flex-col items-center'));
+ok('index.html painel sem crédito "ZANONI & MARTINEZ InfraTech" (permanece só no rodapé do card de acesso)', painelLogin.length > 0 && !painelLogin.includes('ZANONI') && ocorrenciasZanoni === 1);
+ok('index.html textos do painel com sombra suave (legibilidade sobre o brasão)', html.includes('text-shadow') && painelLogin.includes('text-teal-100'));
 ok('index.html tem badge de versão dinâmico (data-app-version, sem hard-code)', html.includes('data-app-version'));
 
 // Badge/cache honestos (v2.7.1/v2.7.2): dados locais nunca se passam por sincronizados

@@ -151,21 +151,26 @@
         linear-gradient(160deg, #e2e8f0 0%, #eef2f6 55%, #e8edf3 100%);
     }
 
-    /* Painel institucional do login (v2.7.2/v2.7.3): ardósia profunda com brilhos teal
-       e grade sutil — mesma paleta do sistema (slate + teal) */
+    /* Painel institucional do login (v2.7.4): teal vivo — gradiente #0f766e → #134e4a
+       com brilhos turquesa/esmeralda e grade sutil clara; textos com sombra suave
+       para manter a legibilidade sobre o brasão em marca d'água */
     .login-brand {
       background:
-        radial-gradient(ellipse 60% 40% at 15% 0%, rgba(13, 148, 136, 0.30) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 35% at 100% 100%, rgba(13, 148, 136, 0.18) 0%, transparent 50%),
-        linear-gradient(160deg, #1e293b 0%, #0f172a 60%, #101c30 100%);
+        radial-gradient(ellipse 60% 40% at 15% 0%, rgba(45, 212, 191, 0.38) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 35% at 100% 100%, rgba(16, 185, 129, 0.28) 0%, transparent 50%),
+        linear-gradient(160deg, #0f766e 0%, #115e59 55%, #134e4a 100%);
+    }
+    .login-brand h1,
+    .login-brand p {
+      text-shadow: 0 2px 10px rgba(15, 23, 42, 0.35);
     }
     .login-brand::after {
       content: '';
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+        linear-gradient(rgba(204, 251, 241, 0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(204, 251, 241, 0.09) 1px, transparent 1px);
       background-size: 44px 44px;
       pointer-events: none;
     }
@@ -173,28 +178,22 @@
 </head>
 <body class="bg-[#eef2f6] text-slate-800 antialiased">
 
-  <!-- TELA DE LOGIN (v2.7.3 — split-screen institucional: brasão em marca d'água + título em destaque à esquerda, formulário à direita) -->
+  <!-- TELA DE LOGIN (v2.7.4 — split-screen institucional: brasão em marca d'água + título em destaque, centralizados, painel teal vivo à esquerda; formulário à direita) -->
   <div id="login-screen" class="fixed inset-0 z-[100] flex">
     <!-- Painel institucional (apenas telas grandes) -->
-    <div class="login-brand hidden lg:flex relative overflow-hidden flex-col justify-between w-[44%] xl:w-[42%] p-10 xl:p-14 text-white">
+    <div class="login-brand hidden lg:flex relative overflow-hidden flex-col justify-center items-center w-[44%] xl:w-[42%] p-10 xl:p-14 text-white text-center">
       <!-- Brasão da Polícia Penal de SP em marca d'água (v2.7.3) -->
-      <img src="assets/brasao-policia-penal-sp.png?v=2.7.3" alt="" aria-hidden="true"
+      <img src="assets/brasao-policia-penal-sp.png?v=2.7.4" alt="" aria-hidden="true"
         class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-auto h-[700px] max-h-[85%] opacity-[0.13] pointer-events-none select-none z-0">
 
-      <!-- Topo (reservado — mantém o título centralizado verticalmente) -->
-      <div class="relative z-10"></div>
-
-      <!-- Miolo: título institucional -->
-      <div class="relative z-10">
-        <div class="w-10 h-1 rounded-full bg-teal-500 mb-6"></div>
+      <!-- Miolo: título institucional centralizado (v2.7.4 — traço decorativo também centralizado) -->
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="w-10 h-1 rounded-full bg-teal-200 mb-6"></div>
         <h1 class="text-3xl xl:text-4xl font-extrabold leading-tight uppercase tracking-wide">Gestão de Estoque<br>e Controle de Ferramentas</h1>
-        <p class="mt-4 text-sm text-slate-300 leading-relaxed max-w-md">
+        <p class="mt-4 text-sm text-teal-100 leading-relaxed max-w-md">
           Complexo Penal de Marília — Núcleo de Infraestrutura e Logística
         </p>
       </div>
-
-      <!-- Base: crédito -->
-      <div class="relative z-10 text-[11px] text-slate-400">ZANONI &amp; MARTINEZ InfraTech</div>
     </div>
 
     <!-- Lado do formulário -->
@@ -251,7 +250,7 @@
 
           <!-- Footer -->
           <div class="bg-slate-50 px-8 py-3 border-t border-slate-200 text-center flex items-center justify-between">
-            <p class="text-[10px] text-slate-400" data-app-version>v2.7.3</p>
+            <p class="text-[10px] text-slate-400" data-app-version>v2.7.4</p>
             <p class="text-[10px] text-slate-400">ZANONI &amp; MARTINEZ InfraTech</p>
           </div>
         </div>
@@ -269,12 +268,12 @@
   <!-- Scripts (versão ?v= força o navegador a recarregar após mudanças visuais) -->
   <!-- SheetJS CE: exportação Excel .xlsx (se offline, o sistema faz fallback para CSV pt-BR) -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  <script src="config.js?v=2.7.3"></script>
-  <script src="utils.js?v=2.7.3"></script>
-  <script src="estoque.js?v=2.7.3"></script>
-  <script src="ferramentas.js?v=2.7.3"></script>
-  <script src="indicadores.js?v=2.7.3"></script>
-  <script src="cadastros.js?v=2.7.3"></script>
-  <script src="app.js?v=2.7.3"></script>
+  <script src="config.js?v=2.7.4"></script>
+  <script src="utils.js?v=2.7.4"></script>
+  <script src="estoque.js?v=2.7.4"></script>
+  <script src="ferramentas.js?v=2.7.4"></script>
+  <script src="indicadores.js?v=2.7.4"></script>
+  <script src="cadastros.js?v=2.7.4"></script>
+  <script src="app.js?v=2.7.4"></script>
 </body>
 </html>

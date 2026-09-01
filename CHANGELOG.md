@@ -2,6 +2,27 @@
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [2.7.4] — 2026-09-01
+
+### Novidades
+- **Painel institucional do login em teal vivo**: gradiente `#0f766e → #134e4a` com brilhos
+  turquesa/esmeralda e grade sutil clara, no lugar da ardósia escura — cor mais vibrante para
+  a tela. Textos do painel com **sombra suave** para manter a legibilidade sobre o brasão em
+  marca d'água.
+
+### Correções/Refinamentos
+- **Bloco do título centralizado**: "GESTÃO DE ESTOQUE E CONTROLE DE FERRAMENTAS" e a linha
+  "Complexo Penal de Marília — Núcleo de Infraestrutura e Logística" agora ficam centralizados
+  horizontal e verticalmente no painel, com o traço decorativo também centralizado.
+- **Crédito "ZANONI &amp; MARTINEZ InfraTech" removido do painel institucional** — permanece
+  apenas no rodapé do card de acesso, à direita.
+- Cache-buster dos scripts (`?v=`) e badge de versão atualizados para `2.7.4`.
+
+### Testes
+- `tests/run-exports.js` atualizado: painel teal vivo (`#0f766e`/`#134e4a`), bloco do título
+  centralizado, crédito `ZANONI &amp; MARTINEZ InfraTech` presente apenas no rodapé do card
+  e sombra de texto no painel. Versões `2.7.4` em `tests/run.js` e `tests/run-neon.js`.
+
 ## [2.7.3] — 2026-09-01
 
 ### Novidades
