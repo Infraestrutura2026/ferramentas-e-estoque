@@ -162,7 +162,8 @@ const pedidosModule = {
       const b = utils.normalize(this.busca);
       items = items.filter(p =>
         utils.normalize(p.item).includes(b) ||
-        utils.normalize(p.solicitante).includes(b));
+        utils.normalize(p.solicitante).includes(b) ||
+        utils.normalize(p.localUso || '').includes(b));
     }
     if (this.filtroStatus) {
       items = items.filter(p => utils.normalize(p.status).includes(utils.normalize(this.filtroStatus)));
@@ -197,7 +198,7 @@ const pedidosModule = {
             <div class="flex items-center gap-2">
               <div class="relative">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar item ou solicitante..."
+                <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar item, solicitante ou local..."
                   class="pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none w-56"
                   oninput="pedidosModule.setBusca(this.value)">
               </div>
@@ -219,6 +220,7 @@ const pedidosModule = {
                 <th class="px-4 py-3 text-left font-semibold text-slate-600">Item</th>
                 <th class="px-4 py-3 text-left font-semibold text-slate-600">Solicitante</th>
                 <th class="px-4 py-3 text-center font-semibold text-slate-600">Qtd</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-600">Local de Uso</th>
                 <th class="px-4 py-3 text-right font-semibold text-slate-600">Valor Total</th>
                 <th class="px-4 py-3 text-center font-semibold text-slate-600">Previsão</th>
                 <th class="px-4 py-3 text-center font-semibold text-slate-600">Entrega</th>
@@ -233,7 +235,8 @@ const pedidosModule = {
                     <td class="px-4 py-3 text-slate-500 whitespace-nowrap">${utils.formatDate(p.data)}</td>
                     <td class="px-4 py-3 font-medium text-slate-900">${utils.escapeHtml(p.item || '—')}</td>
                     <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(p.solicitante || '—')}</td>
-                    <td class="px-4 py-3 text-center font-mono">${utils.escapeHtml(p.quantidade || '—')} ${utils.escapeHtml(p.unidade || '')}</td>
+                    <td class="px-4 py-3 text-center font-mono">${utils.escapeHtml(p.quantidade || '—')}</td>
+                    <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(p.localUso || '—')}</td>
                     <td class="px-4 py-3 text-right font-mono text-slate-700">R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                     <td class="px-4 py-3 text-center ${atrasado ? 'text-red-600 font-bold' : 'text-slate-600'}">${utils.formatDate(p.previsaoEntrega)}</td>
                     <td class="px-4 py-3 text-center text-slate-600 whitespace-nowrap">${utils.formatDate(p.dataEntrega)}</td>
@@ -245,7 +248,7 @@ const pedidosModule = {
                       <button onclick="pedidosModule.excluir('${utils.escapeHtml(p.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
-                }).join('') || '<tr><td colspan="9" class="px-4 py-8 text-center text-slate-500">Nenhum pedido encontrado.</td></tr>'}
+                }).join('') || '<tr><td colspan="10" class="px-4 py-8 text-center text-slate-500">Nenhum pedido encontrado.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -265,7 +268,8 @@ const pedidosModule = {
       { key: 'item', label: 'Item', type: 'text', value: item.item, required: true },
       { key: 'solicitante', label: 'Solicitante', type: 'text', value: item.solicitante, required: true },
       { key: 'quantidade', label: 'Quantidade', type: 'number', value: item.quantidade, required: true },
-      { key: 'unidade', label: 'Unidade', type: 'text', value: item.unidade || 'un' },
+      { key: 'localUso', label: 'Local de Utilização', type: 'text', value: item.localUso,
+        placeholder: 'Onde o item será usado (ex.: Almoxarifado, Oficina, Refeitório)' },
       { key: 'valorUnitario', label: 'Valor Unitário (R$)', type: 'number', value: item.valorUnitario },
       { key: 'valorTotal', label: 'Valor Total (R$)', type: 'number', value: item.valorTotal },
       { key: 'previsaoEntrega', label: 'Previsão de Entrega', type: 'date', value: item.previsaoEntrega },

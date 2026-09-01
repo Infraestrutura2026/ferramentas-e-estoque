@@ -41,7 +41,7 @@ var HEADERS_PADRAO = {
   movimentacoes: ['id','data','tipo','item','quantidade','local','usuario','observacao'],
   emprestimos:   ['id','ferramentaId','nomeFerramenta','responsavel','setor','local','quantidade','status','dataEmprestimo','previsaoDevolucao','dataDevolucao','motivo','createdAt','updatedAt'],
   fornecedores:  ['id','nome','cnpj','telefone','email','contato','categoria','endereco','status'],
-  pedidos:       ['id','data','solicitante','item','quantidade','unidade','valorUnitario','valorTotal','status','previsaoEntrega','dataEntrega','observacao'],
+  pedidos:       ['id','data','solicitante','item','quantidade','localUso','valorUnitario','valorTotal','status','previsaoEntrega','dataEntrega','observacao'],
   usuarios:      ['usuario','senha','nivel','nome','id','createdAt','updatedAt'],
   historico:     ['id','acao','item','detalhes','responsavel','data','createdAt','updatedAt']
 };

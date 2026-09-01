@@ -2,6 +2,43 @@
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [2.7.7] — 2026-09-01
+
+### Mudanças
+
+- **"Unidade" virou "Local de Utilização" no pedido de compra** — o campo (chave `localUso`)
+  agora registra **onde o item solicitado será usado** (ex.: Almoxarifado, Oficina,
+  Refeitório). É texto livre e opcional, logo após "Quantidade" no formulário.
+- **Nova coluna "Local de Uso" na tabela de Pedidos**, entre "Qtd" e "Valor Total"; a coluna
+  "Qtd" passa a mostrar apenas a quantidade (sem a unidade) e o local fica em coluna própria
+  (10 colunas no total; estado vazio com colspan 10).
+- **Busca ampliada**: o filtro da tela passa a casar **item, solicitante e local** de uso
+  (placeholder "Buscar item, solicitante ou local...").
+- **Relatórios**: `utils.js` ganhou o rótulo `localUso: 'Local de Uso'` (a aba estoque
+  continua usando `unidade: 'Unid.'`).
+
+### Colunas (schema)
+
+- `pedidos`: `unidade` → **`localUso`** (mesma posição, depois de `quantidade`) em
+  `api/_lib/schema.js` (Neon) e no `HEADERS_PADRAO` do Apps Script — a paridade entre os dois
+  continua garantida pelo teste 16 de `tests/run-contract.js`.
+- `data/pedidos.csv` com cabeçalho no formato novo (arquivo segue sem registros).
+- `api/_lib/seed-data.js` regenerado (`node scripts/gen-seed.js`). Total do seed continua
+  **216 registros**.
+
+### Migração
+
+- Banco **novo**: o schema já nasce com `localUso`.
+- Banco **já existente**: a coluna antiga `unidade` permanece (com o histórico) e a nova
+  `localUso` entra vazia — nenhum registro é alterado ou removido. O passo de migração é
+  `GET /api/setup?migrate=1`, a ser executado **manualmente**, quando fizer sentido — não
+  rodar automaticamente em produção.
+
+### Testes (196)
+
+- Versões `2.7.7` em `tests/run.js`, `tests/run-neon.js` e `tests/run-exports.js`.
+- `tests/run-migrate.js` não muda (total do seed permanece 216).
+
 ## [2.7.6] — 2026-09-01
 
 ### Mudanças
