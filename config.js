@@ -79,7 +79,7 @@ function buildConfig(base) {
     TIMEOUT_MS:   15000,
 
     // ── Versão ──
-    VERSAO: '2.7.4',
+    VERSAO: '2.7.5',
     ORGAO:  'COMPLEXO PENAL DE MARÍLIA — POLÍCIA PENAL',
     EQUIPE: 'Núcleo de Infraestrutura e Logística · ZANONI & MARTINEZ InfraTech'
   };

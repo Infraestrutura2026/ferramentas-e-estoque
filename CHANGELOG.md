@@ -2,6 +2,41 @@
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [2.7.5] — 2026-09-01
+
+### Correções
+
+- **Quantidade do empréstimo não era salva (sempre exibia "1")** — bug corrigido na raiz.
+  O formulário de Novo Empréstimo enviava `quantidade` e `setor`, mas a tabela `emprestimos`
+  em `api/_lib/schema.js` **não declarava essas colunas**. Como o `store` filtra o payload
+  por `colunasDa(aba)` (proteção contra SQL injection), os campos eram **descartados
+  silenciosamente** antes do INSERT: a API respondia `success:true` e o dado se perdia.
+  Na listagem, o fallback `e.quantidade || '1'` mascarava a perda mostrando sempre **1**.
+  Colunas adicionadas: `setor`, `quantidade` e `updatedAt`.
+- **Mesma falha em outras duas abas** (encontrada pelo novo teste de paridade):
+  - `ferramentas` perdia o campo **`responsavel`** ("Responsável atual" do cadastro);
+  - `usuarios` perdia **`nome`** (nome completo), além de `id`/`createdAt`/`updatedAt`.
+- `data/emprestimos.csv` teve o cabeçalho alinhado ao novo schema (o arquivo só tem cabeçalho,
+  sem registros). Os CSVs de `ferramentas`/`usuarios` seguem sem as colunas novas — o seed
+  preenche `''` por padrão, então a carga inicial continua idêntica (172 registros).
+
+### Migração
+
+- A correção é aplicada ao banco ao vivo por `GET /api/setup?migrate=1`, que roda
+  `ADD COLUMN IF NOT EXISTS` nas tabelas existentes. **Nenhum registro é alterado ou
+  removido** (o seed usa `ON CONFLICT DO NOTHING`; a migração reporta `inseridos: 0`
+  quando as tabelas já têm dados). Empréstimos já gravados passam a aceitar quantidade;
+  os antigos permanecem com o valor padrão vazio (exibido como `1`).
+
+### Testes (196)
+
+- `tests/run-contract.js`: novo teste de **paridade de colunas** entre `HEADERS_PADRAO`
+  (Apps Script) e `schema.js` — impede que um campo enviado pelo frontend volte a ser
+  descartado sem erro; + teste explícito de `quantidade`/`setor`/`updatedAt` em `emprestimos`.
+- `tests/run-neon.js`: regressão ponta a ponta — o empréstimo persiste `quantidade: '7'`
+  e `setor`, e a **devolução preserva a quantidade**. Asserções de contagem de colunas
+  agora derivam do schema, em vez de números fixos.
+
 ## [2.7.4] — 2026-09-01
 
 ### Novidades

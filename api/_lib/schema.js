@@ -17,7 +17,7 @@ const ABAS = {
   },
   ferramentas: {
     pk: 'id',
-    colunas: ['id', 'nome', 'codigo', 'categoria', 'descricao', 'estado', 'local', 'createdAt', 'updatedAt'],
+    colunas: ['id', 'nome', 'codigo', 'categoria', 'descricao', 'estado', 'local', 'responsavel', 'createdAt', 'updatedAt'],
   },
   movimentacoes: {
     pk: 'id',
@@ -25,7 +25,7 @@ const ABAS = {
   },
   emprestimos: {
     pk: 'id',
-    colunas: ['id', 'ferramentaId', 'nomeFerramenta', 'responsavel', 'local', 'status', 'dataEmprestimo', 'previsaoDevolucao', 'dataDevolucao', 'motivo', 'createdAt'],
+    colunas: ['id', 'ferramentaId', 'nomeFerramenta', 'responsavel', 'setor', 'local', 'quantidade', 'status', 'dataEmprestimo', 'previsaoDevolucao', 'dataDevolucao', 'motivo', 'createdAt', 'updatedAt'],
   },
   fornecedores: {
     pk: 'id',
@@ -37,7 +37,7 @@ const ABAS = {
   },
   usuarios: {
     pk: 'usuario',
-    colunas: ['usuario', 'senha', 'nivel'],
+    colunas: ['usuario', 'senha', 'nivel', 'nome', 'id', 'createdAt', 'updatedAt'],
   },
   historico: {
     pk: 'id',

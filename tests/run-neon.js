@@ -151,8 +151,12 @@ function criarExecutorFalso() {
   const rAdd = await store2.add('ferramentas', { nome: 'Chave inglesa 12"', categoria: 'manual' });
   const ins = fx2.log.find(l => l.sql.startsWith('INSERT INTO "ferramentas"'));
   ok('add() retorna id gerado', rAdd.ok && typeof rAdd.id === 'string' && rAdd.id.length > 10);
-  ok('add() parametriza TODAS as colunas (sem concatenação)', ins && ins.params.length === 9);
-  ok('add() define createdAt/updatedAt ISO', ins && /^\d{4}-\d{2}-\d{2}T/.test(ins.params[7]) && /^\d{4}-\d{2}-\d{2}T/.test(ins.params[8]));
+  const colsFerr = require('../api/_lib/schema').colunasDa('ferramentas');
+  ok('add() parametriza TODAS as colunas (sem concatenação)', ins && ins.params.length === colsFerr.length,
+    'esperado ' + colsFerr.length + ', veio ' + (ins ? ins.params.length : 'nada'));
+  ok('add() define createdAt/updatedAt ISO', ins &&
+    /^\d{4}-\d{2}-\d{2}T/.test(ins.params[colsFerr.indexOf('createdAt')]) &&
+    /^\d{4}-\d{2}-\d{2}T/.test(ins.params[colsFerr.indexOf('updatedAt')]));
   ok('aspas no valor viajam como parâmetro (não quebram SQL)', ins && ins.params[1] === 'Chave inglesa 12"');
 
   // 1.4 add em usuarios usa chave usuario (não gera id)
@@ -296,6 +300,29 @@ function criarExecutorFalso() {
   const r9 = await reqFalso('GET', { aba: 'xyz' });
   ok('aba inválida → success:false', JSON.parse(r9.corpo).success === false);
 
+  /* ── 3.7b REGRESSÃO: quantidade/setor do empréstimo persistem (bug v2.7.5) ──
+   * O schema de `emprestimos` não tinha as colunas `quantidade`, `setor` e
+   * `updatedAt`, que o frontend (app.js → emprestimosModule.salvar) envia. Como
+   * o store filtra o payload por colunasDa(aba), esses campos eram DESCARTADOS
+   * silenciosamente: a tela sempre exibia "1" (fallback `e.quantidade || '1'`).
+   */
+  const rq = await reqFalso('POST', { aba: 'emprestimos' }, {
+    action: 'add', aba: 'emprestimos', nomeFerramenta: 'Furadeira',
+    responsavel: 'Agente Souza', setor: 'Manutenção', quantidade: '7', status: 'Ativo',
+  });
+  const dq = JSON.parse(rq.corpo);
+  const rqL = JSON.parse((await reqFalso('GET', { aba: 'emprestimos' })).corpo);
+  const emp = rqL.find(x => x.id === dq.id) || {};
+  ok('empréstimo persiste quantidade informada (não vira 1)', emp.quantidade === '7', 'veio ' + JSON.stringify(emp.quantidade));
+  ok('empréstimo persiste setor informado', emp.setor === 'Manutenção', 'veio ' + JSON.stringify(emp.setor));
+
+  // update parcial não zera a quantidade já gravada
+  await reqFalso('POST', { aba: 'emprestimos' }, { action: 'update', aba: 'emprestimos', id: dq.id, status: 'Devolvido' });
+  const rqL2 = JSON.parse((await reqFalso('GET', { aba: 'emprestimos' })).corpo);
+  const emp2 = rqL2.find(x => x.id === dq.id) || {};
+  ok('devolução preserva a quantidade do empréstimo', emp2.quantidade === '7' && emp2.status === 'Devolvido', 'veio ' + JSON.stringify(emp2.quantidade));
+  await reqFalso('GET', { aba: 'emprestimos', action: 'delete', id: dq.id });
+
   // 3.8 health
   const h = criarHealthHandler(() => storeM);
   const healthRes = await new Promise(async (resolve) => {
@@ -333,7 +360,7 @@ function criarExecutorFalso() {
   const cfg = fs.readFileSync(path.join(ROOT, 'config.js'), 'utf8');
   ok('config.js detecta host .vercel.app → Neon', /\.vercel\.app/.test(cfg));
   ok('config.js mantém Apps Script para GitHub Pages', /URL_BASE_APPS_SCRIPT\s*=\s*'https:\/\/script\.google\.com/.test(cfg));
-  ok('config.js versão 2.7.4', /VERSAO:\s*'2\.7\.4'/.test(cfg));
+  ok('config.js versão 2.7.5', /VERSAO:\s*'2\.7\.5'/.test(cfg));
   ok('config.js expõe CONFIG.BACKEND', /BACKEND:\s*neon\s*\?\s*'neon'\s*:\s*'appsscript'/.test(cfg));
   const appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
   ok('app.js extrai aba de /api/<aba>', appJs.includes('([a-z]+)') && /_extractAbaFromUrl/.test(appJs));
