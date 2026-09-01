@@ -224,10 +224,14 @@ const app = {
   isLoading: false,
   lastSync: null,
   syncErrors: [],
+  /** Fonte dos dados por aba da última sincronização ('remoto' | 'remoto-vazio' | 'cache' | 'csv' | 'vazio') — alimenta o badge honesto. */
+  fetchSources: {},
+  /** true enquanto pelo menos uma aba exibida NÃO veio do servidor (cache/CSV/local). */
+  localOnly: false,
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.6.1') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.7.1') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
@@ -265,7 +269,11 @@ const app = {
       }
     }));
     if (!this.lastSync) {
-      this.lastSync = new Date();
+      // Badge honesto: nada foi confirmado com o servidor ainda. Mostra a data
+      // real do cache (se houver) e marca "Dados locais" — nunca "Sincronizado".
+      const ts = parseInt(localStorage.getItem(CONFIG.CACHE_KEYS.timestamp) || '0', 10);
+      this.lastSync = ts ? new Date(ts) : new Date();
+      this.localOnly = true;
       this._updateSyncBadge();
     }
   },
@@ -316,7 +324,20 @@ const app = {
       }
     });
 
-    localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString());
+    // Resumo das fontes realmente usadas nesta rodada (badge honesto):
+    // 'remoto'/'remoto-vazio' = dado confirmado no servidor; demais = dado local.
+    const locais = abas.filter(aba => {
+      const src = this.fetchSources[aba];
+      return src && src !== 'remoto' && src !== 'remoto-vazio';
+    });
+    // Cache: só renova o timestamp quando alguma aba realmente veio do servidor.
+    // Renovar numa sessão 100% local inflaria o TTL e faria a próxima abertura
+    // pular a sincronização, mantendo o usuário em dados velhos (bug corrigido).
+    const veioDoServidor = abas.some(aba => this.fetchSources[aba] === 'remoto' || this.fetchSources[aba] === 'remoto-vazio');
+    if (veioDoServidor) {
+      localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString());
+    }
+    this.localOnly = this.syncErrors.length > 0 || locais.length > 0;
     this.lastSync = new Date();
     this.isLoading = false;
     this._setLoading(false);
@@ -326,6 +347,11 @@ const app = {
       console.warn('[SYNC] Erros:', this.syncErrors);
       if (force) {
         this.showToast(`⚠️ ${this.syncErrors.length} aba(s) não sincronizaram. Usando dados locais.`, 'warning');
+      }
+    } else if (locais.length > 0) {
+      console.warn(`[SYNC] Sem resposta do servidor em: ${locais.join(', ')} — exibindo dados locais.`);
+      if (force) {
+        this.showToast(`⚠️ Sem acesso ao servidor em ${locais.length} aba(s) — exibindo dados locais.`, 'warning');
       }
     } else if (force) {
       if (hasNewData) {
@@ -363,7 +389,12 @@ const app = {
 
     try {
       const data = await this._fetchJSON(url, aba);
-      if (data && Array.isArray(data) && data.length > 0) return data;
+      if (data && Array.isArray(data) && data.length > 0) {
+        this.fetchSources[aba] = 'remoto';
+        return data;
+      }
+      // Servidor respondeu, mas a aba está vazia (resposta legítima)
+      this.fetchSources[aba] = 'remoto-vazio';
       console.warn(`[SYNC] ${aba}: resposta vazia do Sheets`);
     } catch (e) {
       console.warn(`[SYNC] ${aba} Sheets falhou:`, e.message);
@@ -373,15 +404,22 @@ const app = {
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (parsed.length > 0) return parsed;
+        if (parsed.length > 0) {
+          this.fetchSources[aba] = 'cache';
+          return parsed;
+        }
       } catch (e) {}
     }
 
     try {
       const csvData = await this._fetchCSV(CONFIG.CSV_FALLBACK[aba]);
-      if (csvData && csvData.length > 0) return csvData;
+      if (csvData && csvData.length > 0) {
+        this.fetchSources[aba] = 'csv';
+        return csvData;
+      }
     } catch (e) { /* sem fallback */ }
 
+    if (this.fetchSources[aba] !== 'remoto-vazio') this.fetchSources[aba] = 'vazio';
     return [];
   },
 
@@ -646,15 +684,19 @@ const app = {
       const timeStr = this.lastSync.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       if (badge) {
         badge.classList.remove('hidden');
-        if (this.syncErrors.length) {
+        // Badge honesto: âmbar "Dados locais" quando QUALQUER aba veio de cache/CSV
+        // (ou falhou) — verde "Sincronizado" só quando tudo veio do servidor.
+        if (this.syncErrors.length || this.localOnly) {
           badge.textContent = 'Dados locais';
+          badge.title = 'Pelo menos uma aba não foi confirmada no servidor — exibindo cache/CSV local.';
           badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 font-medium whitespace-nowrap';
         } else {
           badge.textContent = 'Sincronizado';
+          badge.title = 'Todos os dados foram confirmados com o servidor.';
           badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 font-medium whitespace-nowrap';
         }
       }
-      if (status) status.textContent = `Última: ${timeStr}`;
+      if (status) status.textContent = `Última: ${timeStr}${this.localOnly ? ' (local)' : ''}`;
     }
   },
 
@@ -693,11 +735,9 @@ const app = {
       this.showToast('⚠️ Você está offline — usando dados locais.', 'warning');
     });
 
-    // Sincroniza antes de fechar/recarregar (best-effort)
-    window.addEventListener('beforeunload', () => {
-      // Não bloqueia, apenas tenta salvar timestamp
-      try { localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString()); } catch(e){}
-    });
+    // NÃO gravar cache_timestamp no beforeunload: esse era o bug clássico —
+    // fechar a aba "renovava" o cache e a reabertura em < 5 min pulava a
+    // sincronização (TTL), exibindo dados velhos como se fossem atuais.
   },
 
   _startAutoSync() {
@@ -924,26 +964,170 @@ const app = {
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados (CSV — UTF-8)</h3>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">🖥️ Prévia de Relatório Padronizado</h3>
+          <p class="text-xs text-slate-400 mb-4">O documento exibido aqui é exatamente o que sai no CSV, no Excel e na impressão: cabeçalho institucional, metadados e dados em formato pt-BR (datas dd/mm/aaaa, números com vírgula).</p>
+          <div class="flex flex-wrap items-center gap-3 mb-4 no-print">
+            <label class="text-xs font-semibold text-slate-500 uppercase">Relatório:</label>
+            <select id="rel-fonte" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+              <option value="consolidado">Relatório de Estoque — Consolidado por Categoria</option>
+              ${abasVisiveis.map(aba => `<option value="${aba}">${utils.escapeHtml(utils.rotuloAba(aba))}</option>`).join('')}
+            </select>
+            <button onclick="app._gerarPreviaRelatorio()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-eye mr-1"></i> Gerar Prévia
+            </button>
+          </div>
+          <div id="rel-preview" class="hidden"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados — padrão pt-BR (CSV <code class="font-mono">;</code> · Excel .xlsx)</h3>
           <div class="flex flex-wrap gap-3">
+            <button onclick="app._exportAllXLSX()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-file-excel mr-1"></i> Exportar Tudo (Excel)
+            </button>
             <button onclick="app._exportAllCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-layer-group mr-1"></i> Exportar Tudo (${abasVisiveis.length} abas)
+              <i class="fas fa-layer-group mr-1"></i> Exportar Tudo (CSV — ${abasVisiveis.length} abas)
+            </button>
+            <button onclick="app._exportRelatorioXLSX()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-file-excel mr-1"></i> Consolidado (Excel)
             </button>
             <button onclick="app._exportRelatorioCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-file-export mr-1"></i> Exportar Relatório (CSV)
+              <i class="fas fa-file-export mr-1"></i> Consolidado (CSV)
             </button>
             ${abasVisiveis.map(aba => `
               <button onclick="app._exportCSV('${aba}')" class="export-btn app-button px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition capitalize">
                 <i class="fas fa-file-csv mr-1"></i> ${aba}
               </button>`).join('')}
-            <button onclick="window.print()" class="app-button px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-print mr-1"></i> Imprimir
-            </button>
           </div>
-          <p class="text-xs text-slate-400 mt-3">Dica: no lote, o navegador pode perguntar se deseja baixar vários arquivos — permita para receber todos os arquivos. A aba Usuários é restrita a administradores.</p>
+          <p class="text-xs text-slate-400 mt-3">Padrão pt-BR: CSV com separador <code class="font-mono">;</code> (abre direto no Excel brasileiro), datas <code class="font-mono">dd/mm/aaaa</code> e números com vírgula. O Excel gera UM arquivo <code class="font-mono">.xlsx</code> com uma folha por aba (larguras automáticas e números calculáveis) — no lote CSV, permita múltiplos downloads. A aba Usuários é restrita a administradores.</p>
         </div>
       </div>
     `;
+  },
+
+  /* ── Prévia de relatório padronizado (v2.7.1) ── */
+  _docPreviaAtual: null,
+
+  /** Gera a prévia em tela do documento padronizado (consolidado ou aba individual). */
+  _gerarPreviaRelatorio() {
+    const sel = document.getElementById('rel-fonte');
+    const fonte = sel ? sel.value : 'consolidado';
+    const usuario = (typeof authModule !== 'undefined' && authModule.getCurrentUser()) || 'sistema';
+    let doc;
+    if (fonte === 'consolidado') {
+      doc = utils.docConsolidadoEstoque(app.data.estoque || [], usuario);
+      if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para o relatório.', 'warning'); return; }
+    } else {
+      if (!this._podeExportar(fonte)) { app.showToast('Relatório de usuários é restrito a administradores.', 'warning'); return; }
+      const dados = app.data[fonte] || [];
+      if (!dados.length) { app.showToast(`A aba "${utils.rotuloAba(fonte)}" não tem dados para o relatório.`, 'warning'); return; }
+      doc = utils.buildReportDoc({ aba: fonte, usuario, dados });
+    }
+    this._docPreviaAtual = doc;
+    const el = document.getElementById('rel-preview');
+    if (!el) return;
+    el.innerHTML = this._docHtml(doc);
+    el.classList.remove('hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+
+  /** HTML do documento padronizado (mesmo documento para tela, impressão, CSV e Excel). */
+  _docHtml(doc) {
+    const MAX = 500;
+    const linhas = doc.linhasBR.slice(0, MAX);
+    const truncado = doc.linhasBR.length > MAX;
+    return `
+      <div id="rel-doc" class="border border-slate-300 rounded-lg overflow-hidden fade-in bg-white">
+        <!-- Cabeçalho institucional -->
+        <div class="bg-slate-800 text-white px-5 py-4">
+          <p class="text-[10px] uppercase tracking-widest text-slate-300">${utils.escapeHtml(doc.orgao)}</p>
+          <div class="flex items-end justify-between gap-4 flex-wrap">
+            <h4 class="text-base font-bold mt-1">${utils.escapeHtml(doc.titulo)}</h4>
+            <p class="text-[10px] text-slate-300">${utils.escapeHtml(doc.sistema)} · relatório padronizado</p>
+          </div>
+        </div>
+        <!-- Metadados -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 text-xs border-b border-slate-300">
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Gerado em</p><p class="font-semibold text-slate-700">${utils.escapeHtml(doc.geradoEmBR)}</p></div>
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Gerado por</p><p class="font-semibold text-slate-700">${utils.escapeHtml(doc.geradoPor)}</p></div>
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Registros</p><p class="font-semibold text-slate-700">${doc.totalRegistros}</p></div>
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Versão</p><p class="font-semibold text-slate-700">v${utils.escapeHtml(doc.versao || '-')}</p></div>
+        </div>
+        <!-- Tabela -->
+        <div class="overflow-x-auto max-h-[60vh] overflow-y-auto rel-scroll">
+          <table class="w-full text-sm">
+            <thead class="sticky top-0"><tr class="bg-slate-100 border-b border-slate-300">
+              ${doc.colunas.map(c => `<th class="px-3 py-2 ${c.numerica ? 'text-right' : 'text-left'} font-semibold text-slate-600 whitespace-nowrap">${utils.escapeHtml(c.rotulo)}</th>`).join('')}
+            </tr></thead>
+            <tbody>
+              ${linhas.map((row, i) => `
+                <tr class="${i % 2 ? 'bg-slate-50' : 'bg-white'} border-b border-slate-100">
+                  ${row.map((cell, j) => `<td class="px-3 py-1.5 ${doc.colunas[j].numerica ? 'text-right font-mono' : 'text-left'}">${utils.escapeHtml(cell)}</td>`).join('')}
+                </tr>`).join('') || `<tr><td colspan="${doc.colunas.length}" class="px-4 py-6 text-center text-slate-500">Sem registros.</td></tr>`}
+            </tbody>
+          </table>
+          ${truncado ? `<p class="text-xs text-amber-600 bg-amber-50 border-t border-amber-200 px-3 py-2">⚠️ Prévia limitada a ${MAX} de ${doc.linhasBR.length} linhas — o arquivo exportado contém TODAS as linhas.</p>` : ''}
+        </div>
+        <!-- Rodapé institucional -->
+        <div class="bg-slate-50 border-t border-slate-300 px-5 py-3 flex items-center justify-between flex-wrap gap-2">
+          <p class="text-[10px] text-slate-400">${utils.escapeHtml(doc.equipe)}</p>
+          <p class="text-[10px] text-slate-400 italic">Documento gerado eletronicamente em ${utils.escapeHtml(doc.geradoEmBR)} — Ferramentas &amp; Estoque v${utils.escapeHtml(doc.versao || '-')}.</p>
+        </div>
+      </div>
+      <!-- Ações do documento -->
+      <div class="flex flex-wrap gap-3 mt-4 no-print">
+        <button onclick="app._relatorioAtualAcao('print')" class="app-button px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition">
+          <i class="fas fa-print mr-1"></i> Imprimir
+        </button>
+        <button onclick="app._relatorioAtualAcao('csv')" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+          <i class="fas fa-file-csv mr-1"></i> Baixar CSV (pt-BR)
+        </button>
+        <button onclick="app._relatorioAtualAcao('xlsx')" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+          <i class="fas fa-file-excel mr-1"></i> Baixar Excel (.xlsx)
+        </button>
+      </div>
+    `;
+  },
+
+  /** Ações sobre o documento da prévia: csv (pt-BR), Excel (.xlsx) e impressão fiel. */
+  _relatorioAtualAcao(acao) {
+    const doc = this._docPreviaAtual;
+    if (!doc) { app.showToast('Gere a prévia primeiro.', 'warning'); return; }
+    if (acao === 'csv') {
+      const csv = utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR);
+      this._downloadCSV(`relatorio_${doc.aba}`, csv);
+      app.showToast('CSV pt-BR gerado a partir do documento em tela.', 'success');
+    } else if (acao === 'xlsx') {
+      if (this._downloadXLSX(`relatorio_${doc.aba}`, [{ name: utils.rotuloAba(doc.aba), doc }])) {
+        app.showToast('Excel gerado a partir do documento em tela.', 'success');
+      }
+    } else if (acao === 'print') {
+      this._imprimirDoc();
+    }
+  },
+
+  /** Impressão fiel: imprime SOMENTE o documento padronizado (via #report-print-root). */
+  _imprimirDoc() {
+    if (!this._docPreviaAtual) return;
+    let root = document.getElementById('report-print-root');
+    if (!root) {
+      root = document.createElement('div');
+      root.id = 'report-print-root';
+      document.body.appendChild(root);
+    }
+    const fonte = document.getElementById('rel-doc');
+    root.innerHTML = fonte ? fonte.outerHTML : '';
+    const copia = root.querySelector('#rel-doc');
+    if (copia) copia.id = 'rel-doc-print';
+    document.body.classList.add('printing-report');
+    const limpar = () => {
+      document.body.classList.remove('printing-report');
+      root.innerHTML = '';
+      window.removeEventListener('afterprint', limpar);
+    };
+    window.addEventListener('afterprint', limpar);
+    window.print();
+    setTimeout(limpar, 1500); // fallback caso afterprint não dispare
   },
 
   _downloadCSV(nomeBase, csv) {
@@ -959,8 +1143,9 @@ const app = {
     if (!this._podeExportar(aba)) { app.showToast('Exportação de usuários é restrita a administradores.', 'warning'); return; }
     const data = app.data[aba] || [];
     if (!data.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
-    const headers = Object.keys(data[0]);
-    const csv = utils.buildCSV(headers, data.map(row => headers.map(h => row[h])));
+    // Documento padronizado: CSV idêntico à prévia em tela (rótulos pt-BR, separador ';')
+    const doc = utils.buildReportDoc({ aba, usuario: authModule.getCurrentUser() || 'sistema', dados: data });
+    const csv = utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR);
     this._downloadCSV(aba, csv);
   },
 
@@ -986,16 +1171,62 @@ const app = {
       : `Lote concluído — ${abas.length} arquivos CSV baixados.`, 'success');
   },
 
-  /** Exporta o relatório consolidado (por categoria) como CSV. */
+  /** Exporta o relatório consolidado (por categoria) — documento padronizado. */
   _exportRelatorioCSV() {
-    const estoque = app.data.estoque || [];
-    const linhas = utils.categoriaResumo(estoque);
-    if (!linhas.length) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
-    const csv = utils.buildCSV(
-      ['Categoria', 'Itens', 'Qtd Total', 'Esgotados'],
-      linhas.map(r => [r.categoria, r.itens, r.qtdTotal, r.esgotados])
-    );
-    this._downloadCSV('relatorio_estoque', csv);
+    const doc = utils.docConsolidadoEstoque(app.data.estoque || [], authModule.getCurrentUser() || 'sistema');
+    if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
+    this._downloadCSV('relatorio_estoque', utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR));
+  },
+
+  _exportRelatorioXLSX() {
+    const doc = utils.docConsolidadoEstoque(app.data.estoque || [], authModule.getCurrentUser() || 'sistema');
+    if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
+    this._downloadXLSX('relatorio_estoque', [{ name: 'Consolidado', doc }]);
+  },
+
+  /** Excel em lote: UM arquivo .xlsx com uma folha por aba + consolidado de estoque. */
+  _exportAllXLSX() {
+    const usuario = authModule.getCurrentUser() || 'sistema';
+    const abas = utils.ABAS_EXPORTAVEIS.filter(a => this._podeExportar(a) && (app.data[a] || []).length > 0);
+    if (!abas.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
+    const sheets = [];
+    const cons = utils.docConsolidadoEstoque(app.data.estoque || [], usuario);
+    if (cons.totalRegistros) sheets.push({ name: 'Consolidado Estoque', doc: cons });
+    abas.forEach(aba => sheets.push({ name: utils.rotuloAba(aba), doc: utils.buildReportDoc({ aba, usuario, dados: app.data[aba] }) }));
+    if (this._downloadXLSX('ferramentas_e_estoque', sheets)) {
+      app.showToast(`Pasta Excel gerada com ${sheets.length} folha(s).`, 'success');
+    }
+  },
+
+  /**
+   * Download .xlsx via SheetJS. `sheets`: [{ name, doc }] — cada folha segue o
+   * documento padronizado (rótulos pt-BR; números como Number → calculáveis).
+   * Se a biblioteca não carregou (offline), orienta o fallback para CSV pt-BR.
+   */
+  _downloadXLSX(nomeBase, sheets) {
+    if (typeof XLSX === 'undefined') {
+      app.showToast('Biblioteca Excel não carregada (sem internet?). Use o CSV pt-BR — abre no Excel normalmente.', 'warning');
+      return false;
+    }
+    const wb = XLSX.utils.book_new();
+    const usados = new Set();
+    sheets.forEach(({ name, doc }) => {
+      // Nome de folha válido: sem [ ] * ? / \ : e com no máximo 31 caracteres
+      const base = String(name || (doc && doc.aba) || 'Relatorio').replace(/[\\/?*\[\]:]/g, ' ').replace(/\s+/g, ' ').trim() || 'Relatorio';
+      let unico = base.slice(0, 31);
+      let i = 2;
+      while (usados.has(unico.toLowerCase())) { unico = (base.slice(0, 27) + ' ' + i).slice(0, 31); i++; }
+      usados.add(unico.toLowerCase());
+      const aoa = [doc.colunas.map(c => c.rotulo), ...doc.linhasXLSX];
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols'] = (aoa[0] || []).map((_, j) => {
+        const maior = aoa.reduce((m, r) => Math.max(m, String(r[j] ?? '').length), 0);
+        return { wch: Math.min(Math.max(maior + 2, 8), 42) };
+      });
+      XLSX.utils.book_append_sheet(wb, ws, unico);
+    });
+    XLSX.writeFile(wb, `${nomeBase}_${utils.today()}.xlsx`, { bookType: 'xlsx', compression: true });
+    return true;
   },
 
   /* ── Modal ── */

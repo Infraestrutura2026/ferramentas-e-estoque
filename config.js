@@ -79,10 +79,24 @@ function buildConfig(base) {
     TIMEOUT_MS:   15000,
 
     // ── Versão ──
-    VERSAO: '2.6.1',
+    VERSAO: '2.7.1',
     ORGAO:  'COMPLEXO PENAL DE MARÍLIA — POLÍCIA PENAL',
     EQUIPE: 'Núcleo de Infraestrutura e Logística · ZANONI & MARTINEZ InfraTech'
   };
+}
+
+/* ── Badge de versão: fonte única é CONFIG.VERSAO ──
+   Qualquer elemento com [data-app-version] recebe "v" + VERSAO ao carregar,
+   evitando versão hard-coded no HTML (bug recorrente de badge dessincronizado). */
+if (typeof document !== 'undefined') {
+  const sincronizarBadgeVersao = () => {
+    document.querySelectorAll('[data-app-version]').forEach(el => {
+      el.textContent = 'v' + CONFIG.VERSAO;
+      el.title = 'Versão do sistema: ' + CONFIG.VERSAO;
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sincronizarBadgeVersao);
+  else sincronizarBadgeVersao();
 }
 
 /* ── Helpers para salvar configuração via UI ── */
