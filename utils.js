@@ -217,5 +217,66 @@ const utils = {
 
   getCategoriaChartBorders(categorias) {
     return categorias.map(cat => this.getCategoriaStyle(cat).chartBorder);
+  },
+
+  /* ══════════════════════════════════════════════════════════════
+     RELATÓRIOS & EXPORTAÇÃO (v2.6.1)
+     Funções puras (sem DOM) — testadas em tests/run-exports.js
+     ══════════════════════════════════════════════════════════════ */
+
+  /** As 8 abas do sistema, na ordem oficial dos relatórios. */
+  ABAS_EXPORTAVEIS: ['estoque', 'ferramentas', 'emprestimos', 'movimentacoes', 'historico', 'fornecedores', 'pedidos', 'usuarios'],
+
+  /** Escapa um valor para célula CSV (RFC 4180). */
+  escapeCsvValue(v) {
+    const s = String(v ?? '');
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  },
+
+  /**
+   * Gera o conteúdo CSV (sem BOM) a partir de cabeçalhos e linhas.
+   * O BOM UTF-8 (\uFEFF) é acrescentado apenas no download (app._downloadCSV).
+   */
+  buildCSV(headers, rows) {
+    const h = (headers || []).map(x => this.escapeCsvValue(x));
+    const linhas = (rows || []).map(row => row.map(v => this.escapeCsvValue(v)));
+    return [h, ...linhas].map(l => l.join(',')).join('\n');
+  },
+
+  /**
+   * Métricas do relatório consolidado: total de itens, esgotados (qtd 0)
+   * e críticos (qtd > 0 e <= mínimo).
+   */
+  metricasRelatorio(estoque) {
+    const items = estoque || [];
+    const total = items.length;
+    const esgotados = items.filter(i => (parseFloat(i.quantidadeAtual) || 0) === 0).length;
+    const criticos = items.filter(i => {
+      const q = parseFloat(i.quantidadeAtual) || 0;
+      const m = parseFloat(i.quantidadeMinima) || 0;
+      return q > 0 && q <= m;
+    }).length;
+    return { total, esgotados, criticos };
+  },
+
+  /**
+   * Relatório consolidado por categoria:
+   * retorna [{ categoria, itens, qtdTotal, esgotados }] ordenado por nº de itens (desc).
+   */
+  categoriaResumo(estoque) {
+    const map = {};
+    (estoque || []).forEach(i => {
+      const cat = i.categoria || 'Sem categoria';
+      if (!map[cat]) map[cat] = { categoria: cat, itens: 0, qtdTotal: 0, esgotados: 0 };
+      map[cat].itens++;
+      map[cat].qtdTotal += parseFloat(i.quantidadeAtual) || 0;
+      if ((parseFloat(i.quantidadeAtual) || 0) === 0) map[cat].esgotados++;
+    });
+    return Object.values(map).sort((a, b) => b.itens - a.itens || a.categoria.localeCompare(b.categoria, 'pt-BR'));
   }
 };
+
+/* Exportação para testes em Node (ignorada no navegador). */
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = utils;
+}
