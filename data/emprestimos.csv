@@ -1,1 +1,1 @@
-id,ferramentaId,nomeFerramenta,responsavel,local,status,dataEmprestimo,previsaoDevolucao,dataDevolucao,motivo,createdAt,updatedAt
+id,ferramentaId,nomeFerramenta,responsavel,setor,local,quantidade,status,dataEmprestimo,previsaoDevolucao,dataDevolucao,motivo,createdAt,updatedAt

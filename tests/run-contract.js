@@ -149,5 +149,39 @@ try {
   ok('README.md documenta apps-script', false, e.message);
 }
 
+// 16. Paridade de colunas: schema.js (Neon) ⊇ HEADERS_PADRAO do Apps Script
+// Guard-rail do bug v2.7.5: o schema do Neon perdeu `quantidade`/`setor` de
+// `emprestimos`, e o store descarta qualquer chave fora de colunasDa(aba).
+try {
+  const code = read('apps-script/Code.gs');
+  const { colunasDa } = require('../api/_lib/schema');
+  const faltantes = [];
+  const bloco = code.match(/HEADERS_PADRAO\s*=\s*\{([\s\S]*?)\n\};/);
+  const linhas = bloco ? bloco[1].split('\n') : [];
+  for (const linha of linhas) {
+    const m = linha.match(/^\s*(\w+)\s*:\s*\[([^\]]*)\]/);
+    if (!m) continue;
+    const aba = m[1];
+    const cols = colunasDa(aba);
+    if (!cols.length) continue;
+    m[2].split(',').map(s => s.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
+      .forEach(c => { if (!cols.includes(c)) faltantes.push(`${aba}.${c}`); });
+  }
+  ok('schema.js cobre todas as colunas do Apps Script (sem perda de campos)',
+    linhas.length > 0 && faltantes.length === 0, 'faltando: ' + faltantes.join(', '));
+} catch (e) {
+  ok('schema.js x Apps Script paridade de colunas', false, e.message);
+}
+
+// 17. emprestimos aceita quantidade/setor (campos enviados por app.js)
+try {
+  const { colunasDa } = require('../api/_lib/schema');
+  const cols = colunasDa('emprestimos');
+  ok('schema emprestimos tem quantidade, setor e updatedAt',
+    ['quantidade', 'setor', 'updatedAt'].every(c => cols.includes(c)), cols.join(','));
+} catch (e) {
+  ok('schema emprestimos tem quantidade/setor', false, e.message);
+}
+
 console.log(`\n${passed} passed, ${failed} failed — total ${passed+failed}`);
 process.exit(failed > 0 ? 1 : 0);
