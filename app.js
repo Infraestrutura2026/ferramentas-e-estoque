@@ -964,6 +964,22 @@ const app = {
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-sm font-bold text-slate-700 mb-1">🖥️ Prévia de Relatório Padronizado</h3>
+          <p class="text-xs text-slate-400 mb-4">O documento exibido aqui é exatamente o que sai no CSV, no Excel e na impressão: cabeçalho institucional, metadados e dados em formato pt-BR (datas dd/mm/aaaa, números com vírgula).</p>
+          <div class="flex flex-wrap items-center gap-3 mb-4 no-print">
+            <label class="text-xs font-semibold text-slate-500 uppercase">Relatório:</label>
+            <select id="rel-fonte" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+              <option value="consolidado">Relatório de Estoque — Consolidado por Categoria</option>
+              ${abasVisiveis.map(aba => `<option value="${aba}">${utils.escapeHtml(utils.rotuloAba(aba))}</option>`).join('')}
+            </select>
+            <button onclick="app._gerarPreviaRelatorio()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-eye mr-1"></i> Gerar Prévia
+            </button>
+          </div>
+          <div id="rel-preview" class="hidden"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados (CSV — UTF-8)</h3>
           <div class="flex flex-wrap gap-3">
             <button onclick="app._exportAllCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
@@ -984,6 +1000,124 @@ const app = {
         </div>
       </div>
     `;
+  },
+
+  /* ── Prévia de relatório padronizado (v2.7.1) ── */
+  _docPreviaAtual: null,
+
+  /** Gera a prévia em tela do documento padronizado (consolidado ou aba individual). */
+  _gerarPreviaRelatorio() {
+    const sel = document.getElementById('rel-fonte');
+    const fonte = sel ? sel.value : 'consolidado';
+    const usuario = (typeof authModule !== 'undefined' && authModule.getCurrentUser()) || 'sistema';
+    let doc;
+    if (fonte === 'consolidado') {
+      doc = utils.docConsolidadoEstoque(app.data.estoque || [], usuario);
+      if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para o relatório.', 'warning'); return; }
+    } else {
+      if (!this._podeExportar(fonte)) { app.showToast('Relatório de usuários é restrito a administradores.', 'warning'); return; }
+      const dados = app.data[fonte] || [];
+      if (!dados.length) { app.showToast(`A aba "${utils.rotuloAba(fonte)}" não tem dados para o relatório.`, 'warning'); return; }
+      doc = utils.buildReportDoc({ aba: fonte, usuario, dados });
+    }
+    this._docPreviaAtual = doc;
+    const el = document.getElementById('rel-preview');
+    if (!el) return;
+    el.innerHTML = this._docHtml(doc);
+    el.classList.remove('hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+
+  /** HTML do documento padronizado (mesmo documento para tela, impressão, CSV e Excel). */
+  _docHtml(doc) {
+    const MAX = 500;
+    const linhas = doc.linhasBR.slice(0, MAX);
+    const truncado = doc.linhasBR.length > MAX;
+    return `
+      <div id="rel-doc" class="border border-slate-300 rounded-lg overflow-hidden fade-in bg-white">
+        <!-- Cabeçalho institucional -->
+        <div class="bg-slate-800 text-white px-5 py-4">
+          <p class="text-[10px] uppercase tracking-widest text-slate-300">${utils.escapeHtml(doc.orgao)}</p>
+          <div class="flex items-end justify-between gap-4 flex-wrap">
+            <h4 class="text-base font-bold mt-1">${utils.escapeHtml(doc.titulo)}</h4>
+            <p class="text-[10px] text-slate-300">${utils.escapeHtml(doc.sistema)} · relatório padronizado</p>
+          </div>
+        </div>
+        <!-- Metadados -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 text-xs border-b border-slate-300">
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Gerado em</p><p class="font-semibold text-slate-700">${utils.escapeHtml(doc.geradoEmBR)}</p></div>
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Gerado por</p><p class="font-semibold text-slate-700">${utils.escapeHtml(doc.geradoPor)}</p></div>
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Registros</p><p class="font-semibold text-slate-700">${doc.totalRegistros}</p></div>
+          <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Versão</p><p class="font-semibold text-slate-700">v${utils.escapeHtml(doc.versao || '-')}</p></div>
+        </div>
+        <!-- Tabela -->
+        <div class="overflow-x-auto max-h-[60vh] overflow-y-auto rel-scroll">
+          <table class="w-full text-sm">
+            <thead class="sticky top-0"><tr class="bg-slate-100 border-b border-slate-300">
+              ${doc.colunas.map(c => `<th class="px-3 py-2 ${c.numerica ? 'text-right' : 'text-left'} font-semibold text-slate-600 whitespace-nowrap">${utils.escapeHtml(c.rotulo)}</th>`).join('')}
+            </tr></thead>
+            <tbody>
+              ${linhas.map((row, i) => `
+                <tr class="${i % 2 ? 'bg-slate-50' : 'bg-white'} border-b border-slate-100">
+                  ${row.map((cell, j) => `<td class="px-3 py-1.5 ${doc.colunas[j].numerica ? 'text-right font-mono' : 'text-left'}">${utils.escapeHtml(cell)}</td>`).join('')}
+                </tr>`).join('') || `<tr><td colspan="${doc.colunas.length}" class="px-4 py-6 text-center text-slate-500">Sem registros.</td></tr>`}
+            </tbody>
+          </table>
+          ${truncado ? `<p class="text-xs text-amber-600 bg-amber-50 border-t border-amber-200 px-3 py-2">⚠️ Prévia limitada a ${MAX} de ${doc.linhasBR.length} linhas — o arquivo exportado contém TODAS as linhas.</p>` : ''}
+        </div>
+        <!-- Rodapé institucional -->
+        <div class="bg-slate-50 border-t border-slate-300 px-5 py-3 flex items-center justify-between flex-wrap gap-2">
+          <p class="text-[10px] text-slate-400">${utils.escapeHtml(doc.equipe)}</p>
+          <p class="text-[10px] text-slate-400 italic">Documento gerado eletronicamente em ${utils.escapeHtml(doc.geradoEmBR)} — Ferramentas &amp; Estoque v${utils.escapeHtml(doc.versao || '-')}.</p>
+        </div>
+      </div>
+      <!-- Ações do documento -->
+      <div class="flex flex-wrap gap-3 mt-4 no-print">
+        <button onclick="app._relatorioAtualAcao('print')" class="app-button px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition">
+          <i class="fas fa-print mr-1"></i> Imprimir
+        </button>
+        <button onclick="app._relatorioAtualAcao('csv')" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+          <i class="fas fa-file-csv mr-1"></i> Baixar CSV (pt-BR)
+        </button>
+      </div>
+    `;
+  },
+
+  /** Ações sobre o documento da prévia: csv (pt-BR) e impressão fiel. */
+  _relatorioAtualAcao(acao) {
+    const doc = this._docPreviaAtual;
+    if (!doc) { app.showToast('Gere a prévia primeiro.', 'warning'); return; }
+    if (acao === 'csv') {
+      const csv = utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR);
+      this._downloadCSV(`relatorio_${doc.aba}`, csv);
+      app.showToast('CSV pt-BR gerado a partir do documento em tela.', 'success');
+    } else if (acao === 'print') {
+      this._imprimirDoc();
+    }
+  },
+
+  /** Impressão fiel: imprime SOMENTE o documento padronizado (via #report-print-root). */
+  _imprimirDoc() {
+    if (!this._docPreviaAtual) return;
+    let root = document.getElementById('report-print-root');
+    if (!root) {
+      root = document.createElement('div');
+      root.id = 'report-print-root';
+      document.body.appendChild(root);
+    }
+    const fonte = document.getElementById('rel-doc');
+    root.innerHTML = fonte ? fonte.outerHTML : '';
+    const copia = root.querySelector('#rel-doc');
+    if (copia) copia.id = 'rel-doc-print';
+    document.body.classList.add('printing-report');
+    const limpar = () => {
+      document.body.classList.remove('printing-report');
+      root.innerHTML = '';
+      window.removeEventListener('afterprint', limpar);
+    };
+    window.addEventListener('afterprint', limpar);
+    window.print();
+    setTimeout(limpar, 1500); // fallback caso afterprint não dispare
   },
 
   _downloadCSV(nomeBase, csv) {

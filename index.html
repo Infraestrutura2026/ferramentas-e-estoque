@@ -124,13 +124,24 @@
     }
 
     @media print {
-      #sidebar, header, #sidebar-overlay, #login-screen, button[onclick*="export"], button[onclick*="print"] { display: none !important; }
+      #sidebar, header, #sidebar-overlay, #login-screen, button[onclick*="export"], button[onclick*="print"], .no-print { display: none !important; }
       #main-content { padding: 0 !important; }
       .space-y-6 > div, .bg-white { box-shadow: none !important; border-color: #cbd5e1 !important; }
       table { font-size: 11px !important; }
       thead { display: table-header-group; }
       tr { page-break-inside: avoid; break-inside: avoid; }
       body { background: #fff !important; }
+    }
+
+    /* Impressão fiel do relatório padronizado (v2.7.1):
+       com body.printing-report, imprime SOMENTE o documento (sem menu/topo). */
+    #report-print-root { display: none; }
+    @media print {
+      body.printing-report #app, body.printing-report #login-screen { display: none !important; }
+      body.printing-report #report-print-root { display: block !important; }
+      #report-print-root .rel-scroll, #report-print-root .overflow-x-auto {
+        overflow: visible !important; max-height: none !important;
+      }
     }
 
     /* Fundo do login: cinza-ardósia claro com brilho teal sutil */
