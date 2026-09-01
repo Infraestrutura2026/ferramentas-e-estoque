@@ -85,6 +85,20 @@ function buildConfig(base) {
   };
 }
 
+/* ── Badge de versão: fonte única é CONFIG.VERSAO ──
+   Qualquer elemento com [data-app-version] recebe "v" + VERSAO ao carregar,
+   evitando versão hard-coded no HTML (bug recorrente de badge dessincronizado). */
+if (typeof document !== 'undefined') {
+  const sincronizarBadgeVersao = () => {
+    document.querySelectorAll('[data-app-version]').forEach(el => {
+      el.textContent = 'v' + CONFIG.VERSAO;
+      el.title = 'Versão do sistema: ' + CONFIG.VERSAO;
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sincronizarBadgeVersao);
+  else sincronizarBadgeVersao();
+}
+
 /* ── Helpers para salvar configuração via UI ── */
 const configUI = {
   getBaseUrl() {

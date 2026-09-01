@@ -224,6 +224,10 @@ const app = {
   isLoading: false,
   lastSync: null,
   syncErrors: [],
+  /** Fonte dos dados por aba da última sincronização ('remoto' | 'remoto-vazio' | 'cache' | 'csv' | 'vazio') — alimenta o badge honesto. */
+  fetchSources: {},
+  /** true enquanto pelo menos uma aba exibida NÃO veio do servidor (cache/CSV/local). */
+  localOnly: false,
 
   /* ── Inicialização ── */
   async init() {
@@ -265,7 +269,11 @@ const app = {
       }
     }));
     if (!this.lastSync) {
-      this.lastSync = new Date();
+      // Badge honesto: nada foi confirmado com o servidor ainda. Mostra a data
+      // real do cache (se houver) e marca "Dados locais" — nunca "Sincronizado".
+      const ts = parseInt(localStorage.getItem(CONFIG.CACHE_KEYS.timestamp) || '0', 10);
+      this.lastSync = ts ? new Date(ts) : new Date();
+      this.localOnly = true;
       this._updateSyncBadge();
     }
   },
@@ -316,7 +324,20 @@ const app = {
       }
     });
 
-    localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString());
+    // Resumo das fontes realmente usadas nesta rodada (badge honesto):
+    // 'remoto'/'remoto-vazio' = dado confirmado no servidor; demais = dado local.
+    const locais = abas.filter(aba => {
+      const src = this.fetchSources[aba];
+      return src && src !== 'remoto' && src !== 'remoto-vazio';
+    });
+    // Cache: só renova o timestamp quando alguma aba realmente veio do servidor.
+    // Renovar numa sessão 100% local inflaria o TTL e faria a próxima abertura
+    // pular a sincronização, mantendo o usuário em dados velhos (bug corrigido).
+    const veioDoServidor = abas.some(aba => this.fetchSources[aba] === 'remoto' || this.fetchSources[aba] === 'remoto-vazio');
+    if (veioDoServidor) {
+      localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString());
+    }
+    this.localOnly = this.syncErrors.length > 0 || locais.length > 0;
     this.lastSync = new Date();
     this.isLoading = false;
     this._setLoading(false);
@@ -326,6 +347,11 @@ const app = {
       console.warn('[SYNC] Erros:', this.syncErrors);
       if (force) {
         this.showToast(`⚠️ ${this.syncErrors.length} aba(s) não sincronizaram. Usando dados locais.`, 'warning');
+      }
+    } else if (locais.length > 0) {
+      console.warn(`[SYNC] Sem resposta do servidor em: ${locais.join(', ')} — exibindo dados locais.`);
+      if (force) {
+        this.showToast(`⚠️ Sem acesso ao servidor em ${locais.length} aba(s) — exibindo dados locais.`, 'warning');
       }
     } else if (force) {
       if (hasNewData) {
@@ -363,7 +389,12 @@ const app = {
 
     try {
       const data = await this._fetchJSON(url, aba);
-      if (data && Array.isArray(data) && data.length > 0) return data;
+      if (data && Array.isArray(data) && data.length > 0) {
+        this.fetchSources[aba] = 'remoto';
+        return data;
+      }
+      // Servidor respondeu, mas a aba está vazia (resposta legítima)
+      this.fetchSources[aba] = 'remoto-vazio';
       console.warn(`[SYNC] ${aba}: resposta vazia do Sheets`);
     } catch (e) {
       console.warn(`[SYNC] ${aba} Sheets falhou:`, e.message);
@@ -373,15 +404,22 @@ const app = {
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (parsed.length > 0) return parsed;
+        if (parsed.length > 0) {
+          this.fetchSources[aba] = 'cache';
+          return parsed;
+        }
       } catch (e) {}
     }
 
     try {
       const csvData = await this._fetchCSV(CONFIG.CSV_FALLBACK[aba]);
-      if (csvData && csvData.length > 0) return csvData;
+      if (csvData && csvData.length > 0) {
+        this.fetchSources[aba] = 'csv';
+        return csvData;
+      }
     } catch (e) { /* sem fallback */ }
 
+    if (this.fetchSources[aba] !== 'remoto-vazio') this.fetchSources[aba] = 'vazio';
     return [];
   },
 
@@ -646,15 +684,19 @@ const app = {
       const timeStr = this.lastSync.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       if (badge) {
         badge.classList.remove('hidden');
-        if (this.syncErrors.length) {
+        // Badge honesto: âmbar "Dados locais" quando QUALQUER aba veio de cache/CSV
+        // (ou falhou) — verde "Sincronizado" só quando tudo veio do servidor.
+        if (this.syncErrors.length || this.localOnly) {
           badge.textContent = 'Dados locais';
+          badge.title = 'Pelo menos uma aba não foi confirmada no servidor — exibindo cache/CSV local.';
           badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 font-medium whitespace-nowrap';
         } else {
           badge.textContent = 'Sincronizado';
+          badge.title = 'Todos os dados foram confirmados com o servidor.';
           badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 font-medium whitespace-nowrap';
         }
       }
-      if (status) status.textContent = `Última: ${timeStr}`;
+      if (status) status.textContent = `Última: ${timeStr}${this.localOnly ? ' (local)' : ''}`;
     }
   },
 
@@ -693,11 +735,9 @@ const app = {
       this.showToast('⚠️ Você está offline — usando dados locais.', 'warning');
     });
 
-    // Sincroniza antes de fechar/recarregar (best-effort)
-    window.addEventListener('beforeunload', () => {
-      // Não bloqueia, apenas tenta salvar timestamp
-      try { localStorage.setItem(CONFIG.CACHE_KEYS.timestamp, Date.now().toString()); } catch(e){}
-    });
+    // NÃO gravar cache_timestamp no beforeunload: esse era o bug clássico —
+    // fechar a aba "renovava" o cache e a reabertura em < 5 min pulava a
+    // sincronização (TTL), exibindo dados velhos como se fossem atuais.
   },
 
   _startAutoSync() {
