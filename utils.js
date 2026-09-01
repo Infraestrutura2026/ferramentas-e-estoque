@@ -305,9 +305,10 @@ const utils = {
     responsavel: 'Responsável', motivo: 'Motivo', ferramentaId: 'ID Ferramenta',
     nomeFerramenta: 'Ferramenta', dataEmprestimo: 'Data Empréstimo',
     previsaoDevolucao: 'Prev. Devolução', dataDevolucao: 'Devolução',
-    fornecedor: 'Fornecedor', cnpj: 'CNPJ', telefone: 'Telefone', email: 'E-mail',
+    solicitante: 'Solicitante', cnpj: 'CNPJ', telefone: 'Telefone', email: 'E-mail',
     contato: 'Contato', endereco: 'Endereço', valorUnitario: 'Valor Unit. (R$)',
     valorTotal: 'Valor Total (R$)', previsaoEntrega: 'Prev. Entrega',
+    dataEntrega: 'Data Entrega',
     acao: 'Ação', detalhes: 'Detalhes', senha: 'Senha (hash)', nivel: 'Nível',
     createdAt: 'Criado em', updatedAt: 'Atualizado em'
   },

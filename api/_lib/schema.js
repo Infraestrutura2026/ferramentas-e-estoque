@@ -33,7 +33,7 @@ const ABAS = {
   },
   pedidos: {
     pk: 'id',
-    colunas: ['id', 'data', 'fornecedor', 'item', 'quantidade', 'unidade', 'valorUnitario', 'valorTotal', 'status', 'previsaoEntrega', 'observacao'],
+    colunas: ['id', 'data', 'solicitante', 'item', 'quantidade', 'unidade', 'valorUnitario', 'valorTotal', 'status', 'previsaoEntrega', 'dataEntrega', 'observacao'],
   },
   usuarios: {
     pk: 'usuario',
