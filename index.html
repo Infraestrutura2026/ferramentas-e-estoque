@@ -151,7 +151,7 @@
         linear-gradient(160deg, #e2e8f0 0%, #eef2f6 55%, #e8edf3 100%);
     }
 
-    /* Painel institucional do login (v2.7.2): ardósia profunda com brilhos teal
+    /* Painel institucional do login (v2.7.2/v2.7.3): ardósia profunda com brilhos teal
        e grade sutil — mesma paleta do sistema (slate + teal) */
     .login-brand {
       background:
@@ -173,40 +173,24 @@
 </head>
 <body class="bg-[#eef2f6] text-slate-800 antialiased">
 
-  <!-- TELA DE LOGIN (v2.7.2 — split-screen institucional: marca à esquerda, formulário à direita) -->
+  <!-- TELA DE LOGIN (v2.7.3 — split-screen institucional: brasão em marca d'água + título em destaque à esquerda, formulário à direita) -->
   <div id="login-screen" class="fixed inset-0 z-[100] flex">
     <!-- Painel institucional (apenas telas grandes) -->
     <div class="login-brand hidden lg:flex relative overflow-hidden flex-col justify-between w-[44%] xl:w-[42%] p-10 xl:p-14 text-white">
-      <!-- Topo: marca -->
-      <div class="relative z-10 flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-teal-600 flex items-center justify-center shadow-lg shadow-teal-900/40 shrink-0">
-          <i class="fas fa-toolbox text-white text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm font-bold tracking-wide">Ferramentas &amp; Estoque</p>
-          <p class="text-[11px] text-teal-300/90 uppercase tracking-widest">Polícia Penal</p>
-        </div>
-      </div>
+      <!-- Brasão da Polícia Penal de SP em marca d'água (v2.7.3) -->
+      <img src="assets/brasao-policia-penal-sp.png?v=2.7.3" alt="" aria-hidden="true"
+        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-auto h-[700px] max-h-[85%] opacity-[0.13] pointer-events-none select-none z-0">
 
-      <!-- Miolo: apresentação -->
+      <!-- Topo (reservado — mantém o título centralizado verticalmente) -->
+      <div class="relative z-10"></div>
+
+      <!-- Miolo: título institucional -->
       <div class="relative z-10">
         <div class="w-10 h-1 rounded-full bg-teal-500 mb-6"></div>
-        <h1 class="text-3xl xl:text-4xl font-bold leading-tight">Gestão de ferramentas<br>e estoque do órgão</h1>
+        <h1 class="text-3xl xl:text-4xl font-extrabold leading-tight uppercase tracking-wide">Gestão de Estoque<br>e Controle de Ferramentas</h1>
         <p class="mt-4 text-sm text-slate-300 leading-relaxed max-w-md">
-          Complexo Penal de Marília — Núcleo de Infraestrutura e Logística.
-          Estoque, empréstimos e relatórios padronizados em um só lugar.
+          Complexo Penal de Marília — Núcleo de Infraestrutura e Logística
         </p>
-        <ul class="mt-8 space-y-3 text-sm text-slate-200">
-          <li class="flex items-center gap-3">
-            <i class="fas fa-boxes-stacked text-teal-400 w-5 text-center"></i> Controle de estoque com alertas de mínimo e esgotados
-          </li>
-          <li class="flex items-center gap-3">
-            <i class="fas fa-right-left text-teal-400 w-5 text-center"></i> Empréstimos e devoluções de ferramentas com histórico
-          </li>
-          <li class="flex items-center gap-3">
-            <i class="fas fa-file-invoice text-teal-400 w-5 text-center"></i> Relatórios padronizados em pt-BR (CSV, Excel e impressão)
-          </li>
-        </ul>
       </div>
 
       <!-- Base: crédito -->
@@ -267,7 +251,7 @@
 
           <!-- Footer -->
           <div class="bg-slate-50 px-8 py-3 border-t border-slate-200 text-center flex items-center justify-between">
-            <p class="text-[10px] text-slate-400" data-app-version>v2.7.2</p>
+            <p class="text-[10px] text-slate-400" data-app-version>v2.7.3</p>
             <p class="text-[10px] text-slate-400">ZANONI &amp; MARTINEZ InfraTech</p>
           </div>
         </div>
@@ -285,12 +269,12 @@
   <!-- Scripts (versão ?v= força o navegador a recarregar após mudanças visuais) -->
   <!-- SheetJS CE: exportação Excel .xlsx (se offline, o sistema faz fallback para CSV pt-BR) -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  <script src="config.js?v=2.7.2"></script>
-  <script src="utils.js?v=2.7.2"></script>
-  <script src="estoque.js?v=2.7.2"></script>
-  <script src="ferramentas.js?v=2.7.2"></script>
-  <script src="indicadores.js?v=2.7.2"></script>
-  <script src="cadastros.js?v=2.7.2"></script>
-  <script src="app.js?v=2.7.2"></script>
+  <script src="config.js?v=2.7.3"></script>
+  <script src="utils.js?v=2.7.3"></script>
+  <script src="estoque.js?v=2.7.3"></script>
+  <script src="ferramentas.js?v=2.7.3"></script>
+  <script src="indicadores.js?v=2.7.3"></script>
+  <script src="cadastros.js?v=2.7.3"></script>
+  <script src="app.js?v=2.7.3"></script>
 </body>
 </html>

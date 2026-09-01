@@ -37,12 +37,12 @@ try {
   ok('config.js define URL_BASE_APPS_SCRIPT', false, e.message);
 }
 
-// 2. config.js VERSAO is 2.7.2
+// 2. config.js VERSAO is 2.7.3
 try {
   const cfg = read('config.js');
-  ok('config.js VERSAO é 2.7.2', /VERSAO:\s*['"]2\.7\.2['"]/.test(cfg));
+  ok('config.js VERSAO é 2.7.3', /VERSAO:\s*['"]2\.7\.3['"]/.test(cfg));
 } catch (e) {
-  ok('config.js VERSAO é 2.7.2', /VERSAO:\s*['"]2\.7\.2['"]/.test(cfg));
+  ok('config.js VERSAO é 2.7.3', /VERSAO:\s*['"]2\.7\.3['"]/.test(cfg));
 }
 
 // 3. CONFIG.SHEETS has 8 keys

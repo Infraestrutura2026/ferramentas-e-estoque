@@ -2,6 +2,24 @@
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [2.7.3] — 2026-09-01
+
+### Novidades
+- **Painel institucional do login redesenhado**: novo título em caixa alta e destaque —
+  **GESTÃO DE ESTOQUE E CONTROLE DE FERRAMENTAS** — sobre o brasão da Polícia Penal de SP
+  em marca d'água (`assets/brasao-policia-penal-sp.png`, 700px, fundo removido, 13% de
+  opacidade), mantendo a identidade slate + teal do sistema.
+
+### Remoções
+- Marca "Ferramentas &amp; Estoque / Polícia Penal" removida do topo do painel institucional.
+- Subtítulo "Estoque, empréstimos e relatórios…" e a lista de 3 destaques removidos:
+  permanecem apenas o título, a linha "Complexo Penal de Marília — Núcleo de
+  Infraestrutura e Logística" e o crédito ZANONI &amp; MARTINEZ InfraTech.
+
+### Infra
+- Cache-buster dos scripts (`?v=`) e badge de versão atualizados para `2.7.3`;
+  testes de contrato do login atualizados.
+
 ## [2.7.2] — 2026-09-01
 
 ### Novidades
