@@ -159,9 +159,16 @@ ok('app.js Excel sanitiza nomes de folha (31 chars, sem caracteres inválidos)',
 const html = read('index.html');
 ok('index.html carrega SheetJS (xlsx.full.min.js)', html.includes('cdn.sheetjs.com') && html.includes('xlsx.full.min.js'));
 ok('index.html tem raiz dedicada à impressão do relatório (#report-print-root)', html.includes('#report-print-root'));
-ok('index.html exibe v2.7.2', html.includes('v2.7.2'));
-ok('index.html login split-screen v2.7.2 (painel institucional + card de acesso)', html.includes('login-brand') && html.includes('Acesse o sistema'));
+ok('index.html exibe v2.7.3', html.includes('v2.7.3'));
+ok('index.html login split-screen (painel institucional + card de acesso)', html.includes('login-brand') && html.includes('Acesse o sistema'));
 ok('index.html login mantém ids/contrato do authModule (login-user/login-pass/login-btn/login-error)', ['login-user', 'login-pass', 'login-btn', 'login-error', 'authModule.doLogin()'].every(id => html.includes(id)));
+
+// v2.7.3: painel institucional — brasão em marca d'água + título em caixa alta, sem marca do topo nem lista de destaques
+ok('index.html usa brasão da Polícia Penal SP em marca d\'água (v2.7.3)', html.includes('assets/brasao-policia-penal-sp.png'));
+ok('index.html título institucional em destaque (v2.7.3)', html.includes('Gestão de Estoque') && html.includes('Controle de Ferramentas') && html.includes('uppercase'));
+ok('index.html mantém linha do Complexo Penal de Marília (v2.7.3)', html.includes('Complexo Penal de Marília — Núcleo de Infraestrutura e Logística'));
+ok('index.html sem marca "Ferramentas & Estoque / Polícia Penal" no topo do painel (v2.7.3)', !html.includes('<p class="text-sm font-bold tracking-wide">Ferramentas &amp; Estoque</p>'));
+ok('index.html sem lista de 3 destaques no painel (v2.7.3)', !html.includes('Controle de estoque com alertas de mínimo e esgotados') && !html.includes('Empréstimos e devoluções de ferramentas com histórico'));
 ok('index.html tem badge de versão dinâmico (data-app-version, sem hard-code)', html.includes('data-app-version'));
 
 // Badge/cache honestos (v2.7.1/v2.7.2): dados locais nunca se passam por sincronizados
