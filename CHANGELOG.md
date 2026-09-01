@@ -2,6 +2,45 @@
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [2.7.6] — 2026-09-01
+
+### Mudanças
+
+- **"Fornecedor" virou "Solicitante" no pedido de compra** — quem pede o material é a informação
+  que interessa no momento do pedido (o fornecedor só aparece depois, com a cotação). O campo
+  deixou de ser uma lista suspensa amarrada ao cadastro de fornecedores e passou a **texto livre**,
+  obrigatório. A busca da tela de Pedidos (`p.solicitante`) e o placeholder
+  ("Buscar item ou solicitante...") acompanharam, e a coluna da tabela passou a "Solicitante".
+- **Novo campo "Data da Entrega"** ao lado da "Previsão de Entrega" no formulário, com a coluna
+  **"Entrega"** na tabela, entre "Previsão" e "Status".
+- **Pedido com data de entrega não fica mais ATRASADO**: `isAtrasado` agora exige `!p.dataEntrega`,
+  então o registro sai da marcação vermelha assim que a entrega é registrada — mesmo com a
+  previsão vencida.
+- **Seed de pedidos limpo (14 → 0 registros)**: `data/pedidos.csv` fica apenas com o cabeçalho, já
+  no formato novo. Carga inicial total: 230 → **216 registros**.
+
+### Colunas (schema)
+
+- `pedidos`: `fornecedor` → **`solicitante`** e nova coluna **`dataEntrega`** logo depois de
+  `previsaoEntrega`, em `api/_lib/schema.js` (Neon) e no `HEADERS_PADRAO` do Apps Script — a
+  paridade entre os dois continua garantida pelo teste 16 de `tests/run-contract.js`.
+- `utils.js` (`ROTULOS_COLUNAS`): `solicitante: 'Solicitante'` e `dataEntrega: 'Data Entrega'`
+  para os relatórios (prévia, CSV, Excel e impressão).
+- `api/_lib/seed-data.js` regenerado (`node scripts/gen-seed.js`).
+
+### Migração
+
+- Banco **novo**: o schema já nasce com `solicitante` e `dataEntrega`.
+- Banco **já existente**: a coluna antiga `fornecedor` permanece (com o histórico) e a nova
+  `solicitante` entra vazia — nenhum registro é alterado ou removido. O passo de migração é
+  `GET /api/setup?migrate=1`, a ser executado **manualmente**, quando fizer sentido — não rodar
+  automaticamente em produção.
+
+### Testes (196)
+
+- Versões `2.7.6` em `tests/run.js`, `tests/run-neon.js` e `tests/run-exports.js`.
+- `tests/run-migrate.js`: total do seed ajustado de 230 para **216** (pedidos sem registros).
+
 ## [2.7.5] — 2026-09-01
 
 ### Correções

@@ -27,7 +27,7 @@ function ok(name, condition, message = '') {
 (async function main() {
   const fonte = carregarFonte(path.join(ROOT, 'data'));
   ok('migrate carrega os 8 CSVs', ABAS_VALIDAS.every(aba => fonte.registros[aba]));
-  ok('migrate carrega 230 registros da fonte', totalRegistros(fonte.registros) === 230);
+  ok('migrate carrega 216 registros da fonte', totalRegistros(fonte.registros) === 216);
   ok('migrate valida a chave usuario da aba usuarios', fonte.registros.usuarios.every(r => r.usuario));
   ok('normaliza base sem duplicar /api', normalizarBaseAPI('https://projeto.vercel.app/') === 'https://projeto.vercel.app/api');
   ok('normaliza base que já termina em /api', normalizarBaseAPI('https://projeto.vercel.app/api/') === 'https://projeto.vercel.app/api');

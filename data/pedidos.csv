@@ -1,15 +1,1 @@
-id,data,fornecedor,item,quantidade,unidade,valorUnitario,valorTotal,status,previsaoEntrega,observacao
-1,2026-07-05,Leroy Merlin,Tubo PVC 100mm Hidráulico,100,metro,8.50,850.00,Entregue,2026-07-10,Reposição estoque
-2,2026-07-08,Eletrorocha Materiais Elétricos,Disjuntor bipolar 40A,20,unidade,35.00,700.00,Entregue,2026-07-12,Compra emergencial
-3,2026-07-10,Casa do Construtor,Cimento Portland 50kg,50,saco,35.00,1750.00,Entregue,2026-07-15,Obra ala norte
-4,2026-07-12,Makita do Brasil,Parafusadeira 18V Makita,5,unidade,450.00,2250.00,Entregue,2026-07-20,Reposição oficina
-5,2026-07-15,Bosch Ferramentas,Furadeira de impacto Bosch,3,unidade,320.00,960.00,Entregue,2026-07-22,Substituição danificadas
-6,2026-07-18,Tramontina Center,Chave de fenda Phillips,20,unidade,12.00,240.00,Entregue,2026-07-25,Estoque
-7,2026-07-20,Soldatudo Equipamentos,Esmerilhadeira 4.1/2 Dewalt,5,unidade,280.00,1400.00,Entregue,2026-07-25,Oficina
-8,2026-07-22,Depósito do Pintor,Tinta látex branca 18L,20,lata,89.00,1780.00,Entregue,2026-07-28,Reforma refeitório
-9,2026-07-25,InfoHouse Informática,Mouse óptico USB,10,unidade,25.00,250.00,Entregue,2026-07-30,TI administrativo
-10,2026-08-01,Agropecuária Marília,Roçadeira lateral 2T,2,unidade,890.00,1780.00,Pendente,2026-08-10,Perímetro
-11,2026-08-02,Casa do Construtor,Areia média,30,m³,65.00,1950.00,Pendente,2026-08-08,Obra ala sul
-12,2026-08-03,Leroy Merlin,Registro esfera 3/4,30,unidade,18.00,540.00,Em trânsito,2026-08-09,Reposição
-13,2026-08-04,Eletrorocha Materiais Elétricos,Fio elétrico 2,5mm,200,metro,2.80,560.00,Em trânsito,2026-08-10,Reforma
-14,2026-08-05,Soldatudo Equipamentos,Máquina de solda MIG 200A,1,unidade,2800.00,2800.00,Aguardando aprovação,2026-08-20,Reposição crítica
+id,data,solicitante,item,quantidade,unidade,valorUnitario,valorTotal,status,previsaoEntrega,dataEntrega,observacao
