@@ -27,7 +27,7 @@ function ok(name, condition, message = '') {
 (async function main() {
   const fonte = carregarFonte(path.join(ROOT, 'data'));
   ok('migrate carrega os 8 CSVs', ABAS_VALIDAS.every(aba => fonte.registros[aba]));
-  ok('migrate carrega 172 registros da fonte', totalRegistros(fonte.registros) === 172);
+  ok('migrate carrega 230 registros da fonte', totalRegistros(fonte.registros) === 230);
   ok('migrate valida a chave usuario da aba usuarios', fonte.registros.usuarios.every(r => r.usuario));
   ok('normaliza base sem duplicar /api', normalizarBaseAPI('https://projeto.vercel.app/') === 'https://projeto.vercel.app/api');
   ok('normaliza base que já termina em /api', normalizarBaseAPI('https://projeto.vercel.app/api/') === 'https://projeto.vercel.app/api');
@@ -107,7 +107,7 @@ function ok(name, condition, message = '') {
   await setupHandler(req, res);
   const setupResposta = JSON.parse(res.corpo);
   ok('setup?migrate=1 retorna sucesso', setupResposta.success === true && setupResposta.message.includes('Migração'));
-  ok('setup?migrate=1 completa tabelas parcialmente carregadas', setupResposta.contagens.estoque === 51 && setupResposta.contagens.ferramentas === 64 && setupResposta.contagens.usuarios === 3);
+  ok('setup?migrate=1 completa tabelas parcialmente carregadas', setupResposta.contagens.estoque === 109 && setupResposta.contagens.ferramentas === 64 && setupResposta.contagens.usuarios === 3);
 
   console.log(`\n${passed} passed, ${failed} failed — total ${passed + failed}`);
   process.exit(failed ? 1 : 0);

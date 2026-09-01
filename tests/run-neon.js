@@ -132,7 +132,7 @@ function criarExecutorFalso() {
   ok('tabela estoque tem id como PRIMARY KEY', createEstoque && /"id" TEXT PRIMARY KEY/.test(createEstoque.sql));
   const createUsuarios = creates.find(c => c.sql.includes('"usuarios"'));
   ok('tabela usuarios tem usuario como PRIMARY KEY', createUsuarios && /"usuario" TEXT PRIMARY KEY/.test(createUsuarios.sql));
-  ok('seed insere 51 registros de estoque (via ON CONFLICT DO NOTHING)', resumo.estoque.inseridos === 51, JSON.stringify(resumo.estoque));
+  ok('seed insere 109 registros de estoque (via ON CONFLICT DO NOTHING)', resumo.estoque.inseridos === 109, JSON.stringify(resumo.estoque));
   ok('seed insere 3 usuários', resumo.usuarios.inseridos === 3);
   const insertsSeed = fx.log.filter(l => l.sql.startsWith('INSERT INTO "estoque"') && /ON CONFLICT \("id"\) DO NOTHING/.test(l.sql));
   ok('INSERT de seed usa ON CONFLICT (pk) DO NOTHING', insertsSeed.length >= 1);
@@ -195,7 +195,7 @@ function criarExecutorFalso() {
   const storeMerge = new NeonStore(fxMerge.exec);
   await storeMerge.ensureReady();
   const resumoMerge = await storeMerge.ensureReady({ merge: true });
-  ok('ensureReady com merge=true não duplica registros existentes', resumoMerge.estoque.existentes === 51 && resumoMerge.estoque.inseridos === 0);
+  ok('ensureReady com merge=true não duplica registros existentes', resumoMerge.estoque.existentes === 109 && resumoMerge.estoque.inseridos === 0);
 
   // 1.10 _inserirEmLote divide em lotes e ignora registros sem chave primária
   const fxLote = criarExecutorFalso();
@@ -265,7 +265,7 @@ function criarExecutorFalso() {
   const r1 = await reqFalso('GET', { aba: 'estoque' });
   const d1 = JSON.parse(r1.corpo);
   ok('GET /api/estoque → array JSON', r1.statusCode === 200 && Array.isArray(d1));
-  ok('GET /api/estoque traz 51 registros do seed', d1.length === 51, 'veio ' + d1.length);
+  ok('GET /api/estoque traz 109 registros do seed', d1.length === 109, 'veio ' + d1.length);
   ok('resposta tem CORS habilitado', r1.headers['Access-Control-Allow-Origin'] === '*');
 
   // 3.2 POST add → {success:true, id, aba}
@@ -331,7 +331,7 @@ function criarExecutorFalso() {
     await h(req, res);
   });
   const hd = JSON.parse(healthRes.corpo);
-  ok('/api/health → ok com contagens por tabela', hd.ok === true && hd.contagens && hd.contagens.estoque === 51);
+  ok('/api/health → ok com contagens por tabela', hd.ok === true && hd.contagens && hd.contagens.estoque === 109);
 
   console.log('\n━━━ 4. Integração via dev/server.js (HTTP real) ━━━');
 
@@ -342,7 +342,7 @@ function criarExecutorFalso() {
   const base = `http://127.0.0.1:${porta}`;
 
   const gEstoque = await (await fetch(`${base}/api/estoque`)).json();
-  ok('HTTP GET /api/estoque → 51 registros', Array.isArray(gEstoque) && gEstoque.length === 51);
+  ok('HTTP GET /api/estoque → 109 registros', Array.isArray(gEstoque) && gEstoque.length === 109);
   const gHealth = await (await fetch(`${base}/api/health`)).json();
   ok('HTTP GET /api/health → ok', gHealth.ok === true && gHealth.backend === 'memory-dev');
   const pAdd = await (await fetch(`${base}/api/fornecedores`, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'add', aba: 'fornecedores', nome: 'Loja do Parafuso', cnpj: '12.345.678/0001-90' }) })).json();
