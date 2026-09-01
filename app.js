@@ -980,23 +980,26 @@ const app = {
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados (CSV — UTF-8)</h3>
+          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados — padrão pt-BR (CSV <code class="font-mono">;</code> · Excel .xlsx)</h3>
           <div class="flex flex-wrap gap-3">
+            <button onclick="app._exportAllXLSX()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-file-excel mr-1"></i> Exportar Tudo (Excel)
+            </button>
             <button onclick="app._exportAllCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-layer-group mr-1"></i> Exportar Tudo (${abasVisiveis.length} abas)
+              <i class="fas fa-layer-group mr-1"></i> Exportar Tudo (CSV — ${abasVisiveis.length} abas)
+            </button>
+            <button onclick="app._exportRelatorioXLSX()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-file-excel mr-1"></i> Consolidado (Excel)
             </button>
             <button onclick="app._exportRelatorioCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-file-export mr-1"></i> Exportar Relatório (CSV)
+              <i class="fas fa-file-export mr-1"></i> Consolidado (CSV)
             </button>
             ${abasVisiveis.map(aba => `
               <button onclick="app._exportCSV('${aba}')" class="export-btn app-button px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition capitalize">
                 <i class="fas fa-file-csv mr-1"></i> ${aba}
               </button>`).join('')}
-            <button onclick="window.print()" class="app-button px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-print mr-1"></i> Imprimir
-            </button>
           </div>
-          <p class="text-xs text-slate-400 mt-3">Dica: no lote, o navegador pode perguntar se deseja baixar vários arquivos — permita para receber todos os arquivos. A aba Usuários é restrita a administradores.</p>
+          <p class="text-xs text-slate-400 mt-3">Padrão pt-BR: CSV com separador <code class="font-mono">;</code> (abre direto no Excel brasileiro), datas <code class="font-mono">dd/mm/aaaa</code> e números com vírgula. O Excel gera UM arquivo <code class="font-mono">.xlsx</code> com uma folha por aba (larguras automáticas e números calculáveis) — no lote CSV, permita múltiplos downloads. A aba Usuários é restrita a administradores.</p>
         </div>
       </div>
     `;
@@ -1079,11 +1082,14 @@ const app = {
         <button onclick="app._relatorioAtualAcao('csv')" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
           <i class="fas fa-file-csv mr-1"></i> Baixar CSV (pt-BR)
         </button>
+        <button onclick="app._relatorioAtualAcao('xlsx')" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+          <i class="fas fa-file-excel mr-1"></i> Baixar Excel (.xlsx)
+        </button>
       </div>
     `;
   },
 
-  /** Ações sobre o documento da prévia: csv (pt-BR) e impressão fiel. */
+  /** Ações sobre o documento da prévia: csv (pt-BR), Excel (.xlsx) e impressão fiel. */
   _relatorioAtualAcao(acao) {
     const doc = this._docPreviaAtual;
     if (!doc) { app.showToast('Gere a prévia primeiro.', 'warning'); return; }
@@ -1091,6 +1097,10 @@ const app = {
       const csv = utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR);
       this._downloadCSV(`relatorio_${doc.aba}`, csv);
       app.showToast('CSV pt-BR gerado a partir do documento em tela.', 'success');
+    } else if (acao === 'xlsx') {
+      if (this._downloadXLSX(`relatorio_${doc.aba}`, [{ name: utils.rotuloAba(doc.aba), doc }])) {
+        app.showToast('Excel gerado a partir do documento em tela.', 'success');
+      }
     } else if (acao === 'print') {
       this._imprimirDoc();
     }
@@ -1133,8 +1143,9 @@ const app = {
     if (!this._podeExportar(aba)) { app.showToast('Exportação de usuários é restrita a administradores.', 'warning'); return; }
     const data = app.data[aba] || [];
     if (!data.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
-    const headers = Object.keys(data[0]);
-    const csv = utils.buildCSV(headers, data.map(row => headers.map(h => row[h])));
+    // Documento padronizado: CSV idêntico à prévia em tela (rótulos pt-BR, separador ';')
+    const doc = utils.buildReportDoc({ aba, usuario: authModule.getCurrentUser() || 'sistema', dados: data });
+    const csv = utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR);
     this._downloadCSV(aba, csv);
   },
 
@@ -1160,16 +1171,62 @@ const app = {
       : `Lote concluído — ${abas.length} arquivos CSV baixados.`, 'success');
   },
 
-  /** Exporta o relatório consolidado (por categoria) como CSV. */
+  /** Exporta o relatório consolidado (por categoria) — documento padronizado. */
   _exportRelatorioCSV() {
-    const estoque = app.data.estoque || [];
-    const linhas = utils.categoriaResumo(estoque);
-    if (!linhas.length) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
-    const csv = utils.buildCSV(
-      ['Categoria', 'Itens', 'Qtd Total', 'Esgotados'],
-      linhas.map(r => [r.categoria, r.itens, r.qtdTotal, r.esgotados])
-    );
-    this._downloadCSV('relatorio_estoque', csv);
+    const doc = utils.docConsolidadoEstoque(app.data.estoque || [], authModule.getCurrentUser() || 'sistema');
+    if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
+    this._downloadCSV('relatorio_estoque', utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR));
+  },
+
+  _exportRelatorioXLSX() {
+    const doc = utils.docConsolidadoEstoque(app.data.estoque || [], authModule.getCurrentUser() || 'sistema');
+    if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
+    this._downloadXLSX('relatorio_estoque', [{ name: 'Consolidado', doc }]);
+  },
+
+  /** Excel em lote: UM arquivo .xlsx com uma folha por aba + consolidado de estoque. */
+  _exportAllXLSX() {
+    const usuario = authModule.getCurrentUser() || 'sistema';
+    const abas = utils.ABAS_EXPORTAVEIS.filter(a => this._podeExportar(a) && (app.data[a] || []).length > 0);
+    if (!abas.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
+    const sheets = [];
+    const cons = utils.docConsolidadoEstoque(app.data.estoque || [], usuario);
+    if (cons.totalRegistros) sheets.push({ name: 'Consolidado Estoque', doc: cons });
+    abas.forEach(aba => sheets.push({ name: utils.rotuloAba(aba), doc: utils.buildReportDoc({ aba, usuario, dados: app.data[aba] }) }));
+    if (this._downloadXLSX('ferramentas_e_estoque', sheets)) {
+      app.showToast(`Pasta Excel gerada com ${sheets.length} folha(s).`, 'success');
+    }
+  },
+
+  /**
+   * Download .xlsx via SheetJS. `sheets`: [{ name, doc }] — cada folha segue o
+   * documento padronizado (rótulos pt-BR; números como Number → calculáveis).
+   * Se a biblioteca não carregou (offline), orienta o fallback para CSV pt-BR.
+   */
+  _downloadXLSX(nomeBase, sheets) {
+    if (typeof XLSX === 'undefined') {
+      app.showToast('Biblioteca Excel não carregada (sem internet?). Use o CSV pt-BR — abre no Excel normalmente.', 'warning');
+      return false;
+    }
+    const wb = XLSX.utils.book_new();
+    const usados = new Set();
+    sheets.forEach(({ name, doc }) => {
+      // Nome de folha válido: sem [ ] * ? / \ : e com no máximo 31 caracteres
+      const base = String(name || (doc && doc.aba) || 'Relatorio').replace(/[\\/?*\[\]:]/g, ' ').replace(/\s+/g, ' ').trim() || 'Relatorio';
+      let unico = base.slice(0, 31);
+      let i = 2;
+      while (usados.has(unico.toLowerCase())) { unico = (base.slice(0, 27) + ' ' + i).slice(0, 31); i++; }
+      usados.add(unico.toLowerCase());
+      const aoa = [doc.colunas.map(c => c.rotulo), ...doc.linhasXLSX];
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols'] = (aoa[0] || []).map((_, j) => {
+        const maior = aoa.reduce((m, r) => Math.max(m, String(r[j] ?? '').length), 0);
+        return { wch: Math.min(Math.max(maior + 2, 8), 42) };
+      });
+      XLSX.utils.book_append_sheet(wb, ws, unico);
+    });
+    XLSX.writeFile(wb, `${nomeBase}_${utils.today()}.xlsx`, { bookType: 'xlsx', compression: true });
+    return true;
   },
 
   /* ── Modal ── */
