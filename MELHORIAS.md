@@ -120,7 +120,11 @@ empréstimo de ferramentas (frontend estático + CSVs locais + Google Sheets via
 3. ✅ **CRUD de Empréstimos:** registrar, devolver, destacar atrasados.
 4. ✅ **Tela Ferramentas** corrigida (CRUD próprio) e schemas CSV ↔ telas alinhados.
 5. ✅ **Telas de Fornecedores, Pedidos e Usuários** (CRUD completo).
-6. ✅ **Melhorias de Relatórios e Exportação**: Relatório consolidado de estoque por categoria, métricas de esgotados/críticos, exportação em lote para todas as 8 abas em formato CSV com UTF-8 e suporte a impressão otimizada.
+6. ✅ **Melhorias de Relatórios e Exportação (v2.6.1)**: Relatório consolidado de estoque por categoria,
+   métricas de esgotados/críticos, exportação em lote das **8 abas** (incluindo Usuários, restrita a
+   administradores) em CSV UTF-8, exportação dedicada do relatório consolidado (CSV) e suporte a
+   impressão otimizada. Implementado em `utils.js` (funções puras) + `app.js`
+   (`_exportAllCSV`, `_exportRelatorioCSV`) e coberto por `tests/run-exports.js` (29 testes).
 7. ✅ **Versionar o código do Apps Script** no repo + `LockService`
    (implementado em `apps-script/Code.gs`, contrato validado em `tests/run-contract.js`).
 8. ⏳ **Autenticação server-side** (evolução futura, se necessário).

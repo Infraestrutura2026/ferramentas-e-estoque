@@ -126,6 +126,11 @@
     @media print {
       #sidebar, header, #sidebar-overlay, #login-screen, button[onclick*="export"], button[onclick*="print"] { display: none !important; }
       #main-content { padding: 0 !important; }
+      .space-y-6 > div, .bg-white { box-shadow: none !important; border-color: #cbd5e1 !important; }
+      table { font-size: 11px !important; }
+      thead { display: table-header-group; }
+      tr { page-break-inside: avoid; break-inside: avoid; }
+      body { background: #fff !important; }
     }
 
     /* Fundo do login: cinza-ardósia claro com brilho teal sutil */
@@ -186,7 +191,7 @@
 
         <!-- Footer -->
         <div class="bg-slate-50 px-8 py-3 border-t border-slate-200 text-center flex items-center justify-between">
-          <p class="text-[10px] text-slate-400">v2.6.0</p>
+          <p class="text-[10px] text-slate-400">v2.6.1</p>
           <p class="text-[10px] text-slate-400">ZANONI & MARTINEZ InfraTech</p>
         </div>
       </div>

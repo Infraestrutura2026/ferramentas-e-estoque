@@ -2,13 +2,14 @@
 
 Sistema web de **controle de estoque** e **empréstimo de ferramentas entre setores**.
 
-**v2.6.0 — Backend PostgreSQL (Neon) com API serverless na Vercel.** Quem abre o
+**v2.6.1 — Relatórios e exportação em lote (8 abas) + CI de testes.** Sobre a base
+v2.6.0 (Backend PostgreSQL/Neon com API serverless na Vercel): quem abre o
 site oficial (`https://<projeto>.vercel.app`) já está conectado ao banco — nada a
 configurar por computador. A connection string fica em variável de ambiente da
 Vercel (nunca no código). O GitHub Pages segue como **espelho offline** em modo
 Apps Script/CSV. Guia completo: **[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**.
 
-**Versão:** 2.6.0 · Polícia Penal — Núcleo de Infraestrutura e Logística
+**Versão:** 2.6.1 · Polícia Penal — Núcleo de Infraestrutura e Logística
 
 ---
 
@@ -105,7 +106,7 @@ não remove nem atualiza registros existentes.
 
 ## 🌐 Publicando online (acesso por outros computadores)
 
-### Produção — Vercel + Neon (recomendado, v2.6.0)
+### Produção — Vercel + Neon (recomendado, v2.6.1)
 
 Basta conectar o repositório na Vercel **uma vez** e definir a env var
 `DATABASE_URL` (connection string do Neon). Depois disso, **todo merge no
@@ -183,18 +184,21 @@ tests/
   run.js          Testes gerais (sintaxe, CSV, utils, módulos)
   run-contract.js Testes de contrato do Apps Script
   run-neon.js     Testes da API Neon/Vercel (SQL, segurança, contrato, HTTP)
+  run-migrate.js  Testes da migração online em lotes
+  run-exports.js  Testes de relatórios e exportação CSV (v2.6.1)
 ```
 
 ## 🧪 Testes
 
-Validações executadas na v2.6.0 (**106 testes**):
+Validações executadas na v2.6.1 (**135 testes**, com CI no GitHub Actions):
 
 ```bash
-npm test   # roda as quatro suítes
+npm test   # roda as cinco suítes
 node tests/run.js          # 23 — geral (sintaxe, CSV, utils, módulos)
 node tests/run-contract.js # 15 — contrato do Apps Script
 node tests/run-neon.js     # 53 — API Neon/Vercel (SQL em lote, segurança, HTTP)
 node tests/run-migrate.js  # 15 — migração online em lotes (sem rede/banco real)
+node tests/run-exports.js  # 29 — relatórios e exportação CSV (lote, 8 abas, admin)
 ```
 
 - Sintaxe de todos os módulos (`node --check`);

@@ -227,7 +227,7 @@ const app = {
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.6.0') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.6.1') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
@@ -874,24 +874,10 @@ const app = {
   /* ── Relatórios ── */
   _renderRelatorios(container) {
     const estoque = app.data.estoque || [];
-    const total = estoque.length;
-    const zerados = estoque.filter(i => (parseFloat(i.quantidadeAtual) || 0) === 0).length;
-    const criticos = estoque.filter(i => {
-      const q = parseFloat(i.quantidadeAtual) || 0;
-      const m = parseFloat(i.quantidadeMinima) || 0;
-      return q > 0 && q <= m;
-    }).length;
-
-    const catMap = {};
-    estoque.forEach(i => {
-      const cat = i.categoria || 'Sem categoria';
-      if (!catMap[cat]) catMap[cat] = { count: 0, qtd: 0, zerados: 0 };
-      catMap[cat].count++;
-      catMap[cat].qtd += parseFloat(i.quantidadeAtual) || 0;
-      if ((parseFloat(i.quantidadeAtual) || 0) === 0) catMap[cat].zerados++;
-    });
-
-    const abasExportaveis = ['estoque', 'ferramentas', 'emprestimos', 'movimentacoes', 'historico', 'fornecedores', 'pedidos'];
+    const { total, esgotados: zerados, criticos } = utils.metricasRelatorio(estoque);
+    const catMap = utils.categoriaResumo(estoque);
+    const abasExportaveis = utils.ABAS_EXPORTAVEIS; // inclui usuários (8 abas)
+    const abasVisiveis = abasExportaveis.filter(a => this._podeExportar(a));
 
     container.innerHTML = `
       <div class="space-y-6">
@@ -922,13 +908,13 @@ const app = {
                 <th class="px-4 py-2 text-center font-semibold text-slate-600">Esgotados</th>
               </tr></thead>
               <tbody>
-                ${Object.entries(catMap).sort((a, b) => b[1].count - a[1].count).map(([cat, info]) => `
+                ${catMap.map(info => `
                   <tr class="border-b border-slate-100 hover:bg-slate-50">
-                    <td class="px-4 py-2">${utils.categoriaBadge(cat)}</td>
-                    <td class="px-4 py-2 text-center font-medium">${info.count}</td>
-                    <td class="px-4 py-2 text-center font-mono">${info.qtd}</td>
+                    <td class="px-4 py-2">${utils.categoriaBadge(info.categoria)}</td>
+                    <td class="px-4 py-2 text-center font-medium">${info.itens}</td>
+                    <td class="px-4 py-2 text-center font-mono">${info.qtdTotal}</td>
                     <td class="px-4 py-2 text-center">
-                      ${info.zerados > 0 ? `<span class="text-red-600 font-bold">${info.zerados}</span>` : '<span class="text-slate-500">—</span>'}
+                      ${info.esgotados > 0 ? `<span class="text-red-600 font-bold">${info.esgotados}</span>` : '<span class="text-slate-500">—</span>'}
                     </td>
                   </tr>
                 `).join('') || '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Sem dados de estoque.</td></tr>'}
@@ -938,33 +924,78 @@ const app = {
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados (CSV)</h3>
+          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados (CSV — UTF-8)</h3>
           <div class="flex flex-wrap gap-3">
-            ${abasExportaveis.map(aba => `
+            <button onclick="app._exportAllCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-layer-group mr-1"></i> Exportar Tudo (${abasVisiveis.length} abas)
+            </button>
+            <button onclick="app._exportRelatorioCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+              <i class="fas fa-file-export mr-1"></i> Exportar Relatório (CSV)
+            </button>
+            ${abasVisiveis.map(aba => `
               <button onclick="app._exportCSV('${aba}')" class="export-btn app-button px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition capitalize">
                 <i class="fas fa-file-csv mr-1"></i> ${aba}
               </button>`).join('')}
-            <button onclick="window.print()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
+            <button onclick="window.print()" class="app-button px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition">
               <i class="fas fa-print mr-1"></i> Imprimir
             </button>
           </div>
+          <p class="text-xs text-slate-400 mt-3">Dica: no lote, o navegador pode perguntar se deseja baixar vários arquivos — permita para receber todos os arquivos. A aba Usuários é restrita a administradores.</p>
         </div>
       </div>
     `;
   },
 
-  _exportCSV(aba) {
-    const data = app.data[aba] || [];
-    if (!data.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
-    const headers = Object.keys(data[0]);
-    const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const csv = [headers.map(esc).join(','), ...data.map(row => headers.map(h => esc(row[h])).join(','))].join('\n');
+  _downloadCSV(nomeBase, csv) {
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${aba}_${utils.today()}.csv`;
+    link.download = `${nomeBase}_${utils.today()}.csv`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 5000);
+  },
+
+  _exportCSV(aba) {
+    if (!this._podeExportar(aba)) { app.showToast('Exportação de usuários é restrita a administradores.', 'warning'); return; }
+    const data = app.data[aba] || [];
+    if (!data.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
+    const headers = Object.keys(data[0]);
+    const csv = utils.buildCSV(headers, data.map(row => headers.map(h => row[h])));
+    this._downloadCSV(aba, csv);
+  },
+
+  /** Usuários (hashes de senha) só podem ser exportados por administradores. */
+  _podeExportar(aba) {
+    return aba !== 'usuarios' || authModule.isAdmin();
+  },
+
+  /** Exportação em lote: baixa todas as abas com dados, uma a uma. */
+  async _exportAllCSV() {
+    const abas = utils.ABAS_EXPORTAVEIS.filter(a => this._podeExportar(a) && (app.data[a] || []).length > 0);
+    const vazias = utils.ABAS_EXPORTAVEIS.filter(a => !(app.data[a] || []).length);
+    const bloqueadas = utils.ABAS_EXPORTAVEIS.filter(a => !this._podeExportar(a));
+    if (!abas.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
+    app.showToast(`Exportando ${abas.length} de ${utils.ABAS_EXPORTAVEIS.length} abas em lote…`, 'info');
+    for (const aba of abas) {
+      this._exportCSV(aba);
+      await new Promise(r => setTimeout(r, 450)); // evita bloqueio de downloads múltiplos
+    }
+    const notas = [...vazias.map(a => `sem dados: ${a}`), ...bloqueadas.map(a => `restrito (admin): ${a}`)];
+    app.showToast(notas.length
+      ? `Lote concluído (${abas.length} arquivos). ${notas.join('; ')}.`
+      : `Lote concluído — ${abas.length} arquivos CSV baixados.`, 'success');
+  },
+
+  /** Exporta o relatório consolidado (por categoria) como CSV. */
+  _exportRelatorioCSV() {
+    const estoque = app.data.estoque || [];
+    const linhas = utils.categoriaResumo(estoque);
+    if (!linhas.length) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
+    const csv = utils.buildCSV(
+      ['Categoria', 'Itens', 'Qtd Total', 'Esgotados'],
+      linhas.map(r => [r.categoria, r.itens, r.qtdTotal, r.esgotados])
+    );
+    this._downloadCSV('relatorio_estoque', csv);
   },
 
   /* ── Modal ── */
