@@ -231,7 +231,7 @@ const app = {
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.6.1') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.7.1') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
