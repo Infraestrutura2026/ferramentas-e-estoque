@@ -231,7 +231,7 @@ const app = {
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.7.1') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.7.2') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
@@ -965,7 +965,7 @@ const app = {
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h3 class="text-sm font-bold text-slate-700 mb-1">🖥️ Prévia de Relatório Padronizado</h3>
-          <p class="text-xs text-slate-400 mb-4">O documento exibido aqui é exatamente o que sai no CSV, no Excel e na impressão: cabeçalho institucional, metadados e dados em formato pt-BR (datas dd/mm/aaaa, números com vírgula).</p>
+          <p class="text-xs text-slate-400 mb-4">Escolha o relatório e clique em <strong>Gerar Prévia</strong>: o documento exibido é exatamente o que sai no <strong>CSV</strong>, no <strong>Excel</strong> e na <strong>impressão</strong> — cabeçalho institucional, metadados e dados em pt-BR (datas dd/mm/aaaa, números com vírgula). As ações de exportação ficam no próprio documento, sem duplicidade. A aba Usuários é restrita a administradores.</p>
           <div class="flex flex-wrap items-center gap-3 mb-4 no-print">
             <label class="text-xs font-semibold text-slate-500 uppercase">Relatório:</label>
             <select id="rel-fonte" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
@@ -977,29 +977,6 @@ const app = {
             </button>
           </div>
           <div id="rel-preview" class="hidden"></div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-sm font-bold text-slate-700 mb-3">📥 Exportar Dados — padrão pt-BR (CSV <code class="font-mono">;</code> · Excel .xlsx)</h3>
-          <div class="flex flex-wrap gap-3">
-            <button onclick="app._exportAllXLSX()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-file-excel mr-1"></i> Exportar Tudo (Excel)
-            </button>
-            <button onclick="app._exportAllCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-layer-group mr-1"></i> Exportar Tudo (CSV — ${abasVisiveis.length} abas)
-            </button>
-            <button onclick="app._exportRelatorioXLSX()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-file-excel mr-1"></i> Consolidado (Excel)
-            </button>
-            <button onclick="app._exportRelatorioCSV()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-file-export mr-1"></i> Consolidado (CSV)
-            </button>
-            ${abasVisiveis.map(aba => `
-              <button onclick="app._exportCSV('${aba}')" class="export-btn app-button px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition capitalize">
-                <i class="fas fa-file-csv mr-1"></i> ${aba}
-              </button>`).join('')}
-          </div>
-          <p class="text-xs text-slate-400 mt-3">Padrão pt-BR: CSV com separador <code class="font-mono">;</code> (abre direto no Excel brasileiro), datas <code class="font-mono">dd/mm/aaaa</code> e números com vírgula. O Excel gera UM arquivo <code class="font-mono">.xlsx</code> com uma folha por aba (larguras automáticas e números calculáveis) — no lote CSV, permita múltiplos downloads. A aba Usuários é restrita a administradores.</p>
         </div>
       </div>
     `;
@@ -1139,63 +1116,9 @@ const app = {
     setTimeout(() => URL.revokeObjectURL(link.href), 5000);
   },
 
-  _exportCSV(aba) {
-    if (!this._podeExportar(aba)) { app.showToast('Exportação de usuários é restrita a administradores.', 'warning'); return; }
-    const data = app.data[aba] || [];
-    if (!data.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
-    // Documento padronizado: CSV idêntico à prévia em tela (rótulos pt-BR, separador ';')
-    const doc = utils.buildReportDoc({ aba, usuario: authModule.getCurrentUser() || 'sistema', dados: data });
-    const csv = utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR);
-    this._downloadCSV(aba, csv);
-  },
-
   /** Usuários (hashes de senha) só podem ser exportados por administradores. */
   _podeExportar(aba) {
     return aba !== 'usuarios' || authModule.isAdmin();
-  },
-
-  /** Exportação em lote: baixa todas as abas com dados, uma a uma. */
-  async _exportAllCSV() {
-    const abas = utils.ABAS_EXPORTAVEIS.filter(a => this._podeExportar(a) && (app.data[a] || []).length > 0);
-    const vazias = utils.ABAS_EXPORTAVEIS.filter(a => !(app.data[a] || []).length);
-    const bloqueadas = utils.ABAS_EXPORTAVEIS.filter(a => !this._podeExportar(a));
-    if (!abas.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
-    app.showToast(`Exportando ${abas.length} de ${utils.ABAS_EXPORTAVEIS.length} abas em lote…`, 'info');
-    for (const aba of abas) {
-      this._exportCSV(aba);
-      await new Promise(r => setTimeout(r, 450)); // evita bloqueio de downloads múltiplos
-    }
-    const notas = [...vazias.map(a => `sem dados: ${a}`), ...bloqueadas.map(a => `restrito (admin): ${a}`)];
-    app.showToast(notas.length
-      ? `Lote concluído (${abas.length} arquivos). ${notas.join('; ')}.`
-      : `Lote concluído — ${abas.length} arquivos CSV baixados.`, 'success');
-  },
-
-  /** Exporta o relatório consolidado (por categoria) — documento padronizado. */
-  _exportRelatorioCSV() {
-    const doc = utils.docConsolidadoEstoque(app.data.estoque || [], authModule.getCurrentUser() || 'sistema');
-    if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
-    this._downloadCSV('relatorio_estoque', utils.buildCSVBR(doc.colunas.map(c => c.rotulo), doc.linhasBR));
-  },
-
-  _exportRelatorioXLSX() {
-    const doc = utils.docConsolidadoEstoque(app.data.estoque || [], authModule.getCurrentUser() || 'sistema');
-    if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para exportar.', 'warning'); return; }
-    this._downloadXLSX('relatorio_estoque', [{ name: 'Consolidado', doc }]);
-  },
-
-  /** Excel em lote: UM arquivo .xlsx com uma folha por aba + consolidado de estoque. */
-  _exportAllXLSX() {
-    const usuario = authModule.getCurrentUser() || 'sistema';
-    const abas = utils.ABAS_EXPORTAVEIS.filter(a => this._podeExportar(a) && (app.data[a] || []).length > 0);
-    if (!abas.length) { app.showToast('Nenhum dado para exportar.', 'warning'); return; }
-    const sheets = [];
-    const cons = utils.docConsolidadoEstoque(app.data.estoque || [], usuario);
-    if (cons.totalRegistros) sheets.push({ name: 'Consolidado Estoque', doc: cons });
-    abas.forEach(aba => sheets.push({ name: utils.rotuloAba(aba), doc: utils.buildReportDoc({ aba, usuario, dados: app.data[aba] }) }));
-    if (this._downloadXLSX('ferramentas_e_estoque', sheets)) {
-      app.showToast(`Pasta Excel gerada com ${sheets.length} folha(s).`, 'success');
-    }
   },
 
   /**

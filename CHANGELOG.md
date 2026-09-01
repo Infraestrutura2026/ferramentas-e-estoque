@@ -2,6 +2,35 @@
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [2.7.2] — 2026-09-01
+
+### Novidades
+- **Nova tela de login em tela dividida (split-screen)**: painel institucional à esquerda
+  (ardósia profunda com brilhos e grade sutis em teal, marca, apresentação do sistema e
+  destaques) e cartão de acesso à direita sobre o fundo cinza-ardósia atual — mesma paleta
+  do sistema (slate + teal). Campos com ícones, **botão mostrar/ocultar senha**, rótulos
+  acessíveis (`label for` + `autocomplete`) e marca compacta no mobile (painel lateral
+  aparece a partir de `lg`). Contrato do `authModule` preservado (mesmos ids/Handlers).
+
+### Remoções (sem duplicidade)
+- **Painel “Exportar Dados” removido por completo** da tela de Relatórios: a prévia do
+  relatório padronizado já cobre **CSV pt-BR, Excel (.xlsx) e impressão por relatório**,
+  com ações no próprio documento. As funções de exportação em lote/dedicadas
+  (`_exportAllCSV`, `_exportAllXLSX`, `_exportRelatorioCSV`, `_exportRelatorioXLSX`,
+  `_exportCSV`) foram removidas junto com o painel; `_downloadCSV`/`_downloadXLSX`
+  permanecem como motores das ações da prévia.
+
+### Correções/Refinamentos
+- **Coluna ID oculta em todos os relatórios** (`utils.COLUNAS_OCULTAS_RELATORIO`):
+  o identificador técnico interno não aparece mais na prévia em tela, no CSV, no Excel
+  nem na impressão — o documento continua único (“o que você vê é o que você baixa”).
+- Cache-buster dos scripts (`?v=`) e badge de versão atualizados para `2.7.2`.
+
+### Testes
+- `tests/run-exports.js` atualizado para o novo contrato: painel/funções de exportação
+  removidos, coluna ID oculta em `buildReportDoc`, login split-screen no `index.html`
+  e versão 2.7.2.
+
 ## [2.7.1] — 2026-08-31
 
 ### Novidades

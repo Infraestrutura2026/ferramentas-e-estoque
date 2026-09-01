@@ -279,7 +279,7 @@ const utils = {
   },
 
   /* ══════════════════════════════════════════════════════════════
-     RELATÓRIO PADRONIZADO + EXPORTAÇÃO pt-BR (v2.7.1)
+     RELATÓRIO PADRONIZADO + EXPORTAÇÃO pt-BR (v2.7.1 · v2.7.2: coluna ID oculta)
      Um único "documento" de relatório alimenta a prévia em tela,
      o CSV (;) e o Excel (.xlsx) — o que você vê é o que você baixa.
      Funções puras (sem DOM) — testadas em tests/run-exports.js.
@@ -321,6 +321,13 @@ const utils = {
     if (this.ROTULOS_COLUNAS[k]) return this.ROTULOS_COLUNAS[k];
     return k.replace(/_/g, ' ').replace(/([a-zà-ú])([A-ZÀ-Ú])/g, '$1 $2').replace(/^./, c => c.toUpperCase());
   },
+
+  /**
+   * Colunas ocultas dos relatórios (v2.7.2): identificador técnico interno —
+   * não agrega informação ao documento e vaza o ID dos registros. Vale para a
+   * prévia em tela, CSV, Excel e impressão (o documento é único).
+   */
+  COLUNAS_OCULTAS_RELATORIO: ['id'],
 
   /** Detecta data ISO (`2026-07-24` ou `2026-07-24T10:30[:00][.000][Z]`). */
   isDataISO(v) {
@@ -383,7 +390,9 @@ const utils = {
   buildReportDoc({ aba, titulo, usuario, dados, colunas }) {
     const cfg = (typeof CONFIG !== 'undefined') ? CONFIG : {};
     const linhas = Array.isArray(dados) ? dados : [];
-    const chaves = colunas || (linhas.length ? Object.keys(linhas[0]) : []);
+    // v2.7.2: a coluna ID (identificador técnico) fica oculta em todos os relatórios
+    const chaves = (colunas || (linhas.length ? Object.keys(linhas[0]) : []))
+      .filter(key => !this.COLUNAS_OCULTAS_RELATORIO.includes(key));
     const cols = chaves.map(key => {
       const numerica = linhas.some(r => r[key] !== '' && r[key] !== null && r[key] !== undefined)
         && linhas.every(r => r[key] === '' || r[key] === null || r[key] === undefined || this.ehNumeroRelatorio(r[key], key));

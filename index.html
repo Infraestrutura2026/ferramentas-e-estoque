@@ -144,67 +144,137 @@
       }
     }
 
-    /* Fundo do login: cinza-ardósia claro com brilho teal sutil */
+    /* Fundo do login (lado do formulário): cinza-ardósia claro com brilho teal sutil */
     .login-bg {
       background:
         radial-gradient(ellipse 75% 55% at 50% -10%, rgba(13, 148, 136, 0.10) 0%, transparent 60%),
         linear-gradient(160deg, #e2e8f0 0%, #eef2f6 55%, #e8edf3 100%);
     }
+
+    /* Painel institucional do login (v2.7.2): ardósia profunda com brilhos teal
+       e grade sutil — mesma paleta do sistema (slate + teal) */
+    .login-brand {
+      background:
+        radial-gradient(ellipse 60% 40% at 15% 0%, rgba(13, 148, 136, 0.30) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 35% at 100% 100%, rgba(13, 148, 136, 0.18) 0%, transparent 50%),
+        linear-gradient(160deg, #1e293b 0%, #0f172a 60%, #101c30 100%);
+    }
+    .login-brand::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body class="bg-[#eef2f6] text-slate-800 antialiased">
 
-  <!-- TELA DE LOGIN -->
-  <div id="login-screen" class="login-bg fixed inset-0 z-[100] flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-      <!-- Card Principal -->
-      <div class="bg-white rounded-2xl shadow-xl shadow-slate-300/50 overflow-hidden fade-in border border-slate-200">
-        <!-- Header -->
-        <div class="bg-white px-8 py-8 text-center relative border-b border-slate-100">
-          <div class="absolute top-0 left-0 w-full h-1 bg-teal-600"></div>
-          <div class="w-16 h-16 rounded-xl bg-teal-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-600/30">
-            <i class="fas fa-toolbox text-white text-2xl"></i>
-          </div>
-          <h1 class="text-xl font-bold text-slate-900">Ferramentas & Estoque</h1>
-          <p class="text-xs text-teal-700 uppercase tracking-wider mt-1 font-semibold">Complexo Penal de Marília</p>
-          <p class="text-[10px] text-slate-400 mt-1">Polícia Penal — Núcleo de Infraestrutura e Logística</p>
+  <!-- TELA DE LOGIN (v2.7.2 — split-screen institucional: marca à esquerda, formulário à direita) -->
+  <div id="login-screen" class="fixed inset-0 z-[100] flex">
+    <!-- Painel institucional (apenas telas grandes) -->
+    <div class="login-brand hidden lg:flex relative overflow-hidden flex-col justify-between w-[44%] xl:w-[42%] p-10 xl:p-14 text-white">
+      <!-- Topo: marca -->
+      <div class="relative z-10 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-teal-600 flex items-center justify-center shadow-lg shadow-teal-900/40 shrink-0">
+          <i class="fas fa-toolbox text-white text-xl"></i>
         </div>
+        <div>
+          <p class="text-sm font-bold tracking-wide">Ferramentas &amp; Estoque</p>
+          <p class="text-[11px] text-teal-300/90 uppercase tracking-widest">Polícia Penal</p>
+        </div>
+      </div>
 
-        <!-- Formulário -->
-        <div class="px-8 py-6 space-y-4 bg-white">
-          <div id="login-error" class="hidden bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700 text-center"></div>
+      <!-- Miolo: apresentação -->
+      <div class="relative z-10">
+        <div class="w-10 h-1 rounded-full bg-teal-500 mb-6"></div>
+        <h1 class="text-3xl xl:text-4xl font-bold leading-tight">Gestão de ferramentas<br>e estoque do órgão</h1>
+        <p class="mt-4 text-sm text-slate-300 leading-relaxed max-w-md">
+          Complexo Penal de Marília — Núcleo de Infraestrutura e Logística.
+          Estoque, empréstimos e relatórios padronizados em um só lugar.
+        </p>
+        <ul class="mt-8 space-y-3 text-sm text-slate-200">
+          <li class="flex items-center gap-3">
+            <i class="fas fa-boxes-stacked text-teal-400 w-5 text-center"></i> Controle de estoque com alertas de mínimo e esgotados
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="fas fa-right-left text-teal-400 w-5 text-center"></i> Empréstimos e devoluções de ferramentas com histórico
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="fas fa-file-invoice text-teal-400 w-5 text-center"></i> Relatórios padronizados em pt-BR (CSV, Excel e impressão)
+          </li>
+        </ul>
+      </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">Usuário</label>
-            <div class="relative">
-              <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-              <input id="login-user" type="text" placeholder="Digite seu usuário"
-                class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:bg-white outline-none transition"
-                onkeydown="if(event.key==='Enter')authModule.doLogin()">
+      <!-- Base: crédito -->
+      <div class="relative z-10 text-[11px] text-slate-400">ZANONI &amp; MARTINEZ InfraTech</div>
+    </div>
+
+    <!-- Lado do formulário -->
+    <div class="login-bg flex-1 flex items-center justify-center p-4 sm:p-8">
+      <div class="w-full max-w-md">
+        <!-- Card de acesso -->
+        <div class="bg-white rounded-2xl shadow-xl shadow-slate-300/50 overflow-hidden fade-in border border-slate-200">
+          <div class="h-1 bg-teal-600"></div>
+
+          <!-- Cabeçalho (marca compacta — visível também no mobile) -->
+          <div class="px-8 pt-8 pb-2 text-center">
+            <div class="lg:hidden w-14 h-14 rounded-xl bg-teal-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-600/30">
+              <i class="fas fa-toolbox text-white text-xl"></i>
             </div>
+            <h2 class="text-xl font-bold text-slate-900">Bem-vindo de volta</h2>
+            <p class="text-xs text-teal-700 uppercase tracking-wider mt-1 font-semibold">Acesse o sistema</p>
+            <p class="text-[10px] text-slate-400 mt-1">Polícia Penal — Núcleo de Infraestrutura e Logística</p>
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">Senha</label>
-            <div class="relative">
-              <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-              <input id="login-pass" type="password" placeholder="Digite sua senha"
-                class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:bg-white outline-none transition"
-                onkeydown="if(event.key==='Enter')authModule.doLogin()">
+          <!-- Formulário -->
+          <div class="px-8 py-6 space-y-4 bg-white">
+            <div id="login-error" class="hidden bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700 text-center"></div>
+
+            <div>
+              <label for="login-user" class="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">Usuário</label>
+              <div class="relative">
+                <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"></i>
+                <input id="login-user" type="text" placeholder="Digite seu usuário" autocomplete="username"
+                  class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:bg-white outline-none transition"
+                  onkeydown="if(event.key==='Enter')authModule.doLogin()">
+              </div>
             </div>
+
+            <div>
+              <label for="login-pass" class="block text-xs font-semibold text-slate-500 uppercase mb-1 tracking-wider">Senha</label>
+              <div class="relative">
+                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"></i>
+                <input id="login-pass" type="password" placeholder="Digite sua senha" autocomplete="current-password"
+                  class="w-full pl-9 pr-10 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:bg-white outline-none transition"
+                  onkeydown="if(event.key==='Enter')authModule.doLogin()">
+                <button type="button" aria-label="Mostrar senha" title="Mostrar senha"
+                  onclick="const p=document.getElementById('login-pass');const mostrar=p.type==='password';p.type=mostrar?'text':'password';this.querySelector('i').setAttribute('class',mostrar?'fas fa-eye-slash text-teal-600':'fas fa-eye text-slate-400');this.setAttribute('aria-label',mostrar?'Ocultar senha':'Mostrar senha');this.setAttribute('title',mostrar?'Ocultar senha':'Mostrar senha');p.focus();"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 flex items-center justify-center outline-none transition">
+                  <i class="fas fa-eye text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            <button id="login-btn" onclick="authModule.doLogin()"
+              class="app-button w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition shadow-lg shadow-teal-600/20 text-sm uppercase tracking-wide disabled:opacity-60 disabled:cursor-wait">
+              <i class="fas fa-sign-in-alt mr-2"></i>Entrar no Sistema
+            </button>
           </div>
 
-          <button id="login-btn" onclick="authModule.doLogin()"
-            class="app-button w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition shadow-lg shadow-teal-600/20 text-sm uppercase tracking-wide disabled:opacity-60 disabled:cursor-wait">
-            <i class="fas fa-sign-in-alt mr-2"></i>Entrar no Sistema
-          </button>
+          <!-- Footer -->
+          <div class="bg-slate-50 px-8 py-3 border-t border-slate-200 text-center flex items-center justify-between">
+            <p class="text-[10px] text-slate-400" data-app-version>v2.7.2</p>
+            <p class="text-[10px] text-slate-400">ZANONI &amp; MARTINEZ InfraTech</p>
+          </div>
         </div>
 
-        <!-- Footer -->
-        <div class="bg-slate-50 px-8 py-3 border-t border-slate-200 text-center flex items-center justify-between">
-          <p class="text-[10px] text-slate-400" data-app-version>v2.7.1</p>
-          <p class="text-[10px] text-slate-400">ZANONI & MARTINEZ InfraTech</p>
-        </div>
+        <p class="text-center text-[10px] text-slate-400 mt-4">
+          <i class="fas fa-shield-halved mr-1 text-teal-600"></i> Uso restrito a servidores autorizados
+        </p>
       </div>
     </div>
   </div>
@@ -215,12 +285,12 @@
   <!-- Scripts (versão ?v= força o navegador a recarregar após mudanças visuais) -->
   <!-- SheetJS CE: exportação Excel .xlsx (se offline, o sistema faz fallback para CSV pt-BR) -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  <script src="config.js?v=2.7.1"></script>
-  <script src="utils.js?v=2.7.1"></script>
-  <script src="estoque.js?v=2.7.1"></script>
-  <script src="ferramentas.js?v=2.7.1"></script>
-  <script src="indicadores.js?v=2.7.1"></script>
-  <script src="cadastros.js?v=2.7.1"></script>
-  <script src="app.js?v=2.7.1"></script>
+  <script src="config.js?v=2.7.2"></script>
+  <script src="utils.js?v=2.7.2"></script>
+  <script src="estoque.js?v=2.7.2"></script>
+  <script src="ferramentas.js?v=2.7.2"></script>
+  <script src="indicadores.js?v=2.7.2"></script>
+  <script src="cadastros.js?v=2.7.2"></script>
+  <script src="app.js?v=2.7.2"></script>
 </body>
 </html>
