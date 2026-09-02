@@ -352,13 +352,13 @@ function criarExecutorFalso() {
   const gIndex = await fetch(`${base}/`);
   ok('frontend é servido (index.html 200 + text/html)', gIndex.status === 200 && (gIndex.headers.get('content-type') || '').includes('text/html'));
   const gConfig = await (await fetch(`${base}/config.js`)).text();
-  ok('config.js served contém detecção Vercel/Neon', gConfig.includes('.vercel.app') && gConfig.includes('/api/'));
+  ok('config.js served contém detecção de backend API', gConfig.includes('.github.io') && gConfig.includes('/api/'));
   servidor.close();
 
   console.log('\n━━━ 5. Frontend — detecção de backend ━━━');
 
   const cfg = fs.readFileSync(path.join(ROOT, 'config.js'), 'utf8');
-  ok('config.js detecta host .vercel.app → Neon', /\.vercel\.app/.test(cfg));
+  ok('config.js usa API /api fora do GitHub Pages (inclui Vercel)', /\.github\.io/.test(cfg) && /!host\.endsWith\('\.github\.io'\)/.test(cfg));
   ok('config.js mantém Apps Script para GitHub Pages', /URL_BASE_APPS_SCRIPT\s*=\s*'https:\/\/script\.google\.com/.test(cfg));
   ok('config.js versão 3.0.0', /VERSAO:\s*'3\.0\.0'/.test(cfg));
   ok('config.js expõe CONFIG.BACKEND', /BACKEND:\s*neon\s*\?\s*'neon'\s*:\s*'appsscript'/.test(cfg));
