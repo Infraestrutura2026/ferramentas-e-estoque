@@ -66,6 +66,7 @@ const server = http.createServer((req, res) => {
   fs.readFile(caminho, (err, buf) => {
     if (err) { res.statusCode = 404; return res.end('404'); }
     res.setHeader('Content-Type', MIME[path.extname(caminho)] || 'application/octet-stream');
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate'); // dev: sempre revalidar
     res.end(buf);
   });
 });

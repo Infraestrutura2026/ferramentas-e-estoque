@@ -21,11 +21,17 @@ const URL_BASE_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycby5BtZrK5u
     neon = !!window.__NEON_API__; // override manual
   } else if (typeof location !== 'undefined') {
     const host = location.hostname || '';
-    neon = host.endsWith('.vercel.app') || host === 'localhost' || host === '127.0.0.1';
+    // Apps Script é usado APENAS no espelho do GitHub Pages.
+    // Em qualquer outro host (Vercel, localhost, previews, rede local etc.)
+    // usa a API /api do próprio servidor que serviu a página.
+    neon = !host.endsWith('.github.io') && location.protocol !== 'file:';
   } else {
     neon = false;
   }
   window.__BACKEND_NEON__ = neon;
+  if (typeof console !== 'undefined') {
+    console.log(`[CONFIG] host=${typeof location !== 'undefined' ? location.hostname : '?'} → backend=${neon ? 'API /api (mesmo servidor)' : 'Apps Script'}`);
+  }
 })();
 
 const CONFIG = buildConfig(URL_BASE_APPS_SCRIPT);

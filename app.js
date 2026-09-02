@@ -305,7 +305,10 @@ const app = {
     let hasNewData = false;
     settled.forEach((result, i) => {
       const aba = abas[i];
-      if (result.status === 'fulfilled' && Array.isArray(result.value) && result.value.length > 0) {
+      const src = this.fetchSources[aba];
+      const veioRemoto = src === 'remoto' || src === 'remoto-vazio';
+      if (result.status === 'fulfilled' && Array.isArray(result.value) && (result.value.length > 0 || veioRemoto)) {
+        // Aceita também resposta vazia legítima do servidor (limpa cache antigo)
         // Só considera mudança se tamanho ou conteúdo mudou (evita re-render desnecessário)
         const prevLen = (this.data[aba] || []).length;
         if (prevLen !== result.value.length) hasNewData = true;
@@ -351,7 +354,7 @@ const app = {
     } else if (locais.length > 0) {
       console.warn(`[SYNC] Sem resposta do servidor em: ${locais.join(', ')} — exibindo dados locais.`);
       if (force) {
-        this.showToast(`⚠️ Sem acesso ao servidor em ${locais.length} aba(s) — exibindo dados locais.`, 'warning');
+        this.showToast(`⚠️ Sem acesso ao servidor em: ${locais.join(', ')} — exibindo dados locais.`, 'warning');
       }
     } else if (force) {
       if (hasNewData) {
@@ -369,7 +372,9 @@ const app = {
   async refreshAba(aba) {
     try {
       const data = await this._fetchAba(aba);
-      if (Array.isArray(data) && data.length > 0) {
+      const src = this.fetchSources[aba];
+      const veioRemoto = src === 'remoto' || src === 'remoto-vazio';
+      if (Array.isArray(data) && (data.length > 0 || veioRemoto)) {
         this.data[aba] = data;
         localStorage.setItem(CONFIG.CACHE_KEYS[aba], JSON.stringify(data));
       }
@@ -393,9 +398,12 @@ const app = {
         this.fetchSources[aba] = 'remoto';
         return data;
       }
-      // Servidor respondeu, mas a aba está vazia (resposta legítima)
+      // Servidor respondeu, mas a aba está vazia (resposta legítima).
+      // O servidor é a fonte da verdade: retorna vazio sem cair no cache/CSV —
+      // senão um cache antigo manteria a aba marcada como "local" para sempre.
       this.fetchSources[aba] = 'remoto-vazio';
       console.warn(`[SYNC] ${aba}: resposta vazia do Sheets`);
+      return [];
     } catch (e) {
       console.warn(`[SYNC] ${aba} Sheets falhou:`, e.message);
     }
@@ -578,7 +586,7 @@ const app = {
             ${this._navItem('ferramentas', 'fa-tools', 'Ferramentas')}
             ${this._navItem('historico', 'fa-history', 'Histórico')}
             ${this._navItem('fornecedores', 'fa-truck', 'Fornecedores')}
-            ${this._navItem('pedidos', 'fa-shopping-cart', 'Pedidos')}
+            ${this._navItem('pedidos', 'fa-shopping-cart', 'Solicitações')}
             ${this._navItem('relatorios', 'fa-file-alt', 'Relatórios')}
             ${authModule.isAdmin() ? this._navItem('usuarios', 'fa-users-cog', 'Usuários') : ''}
           </nav>
@@ -655,7 +663,7 @@ const app = {
       dashboard: 'Dashboard', indicadores: 'Indicadores',
       emprestimos: 'Empréstimos de Ferramentas', estoque: 'Estoque',
       ferramentas: 'Ferramentas', historico: 'Histórico',
-      fornecedores: 'Fornecedores', pedidos: 'Pedidos',
+      fornecedores: 'Fornecedores', pedidos: 'Solicitações',
       usuarios: 'Usuários', relatorios: 'Relatórios'
     };
     const pt = document.getElementById('page-title');

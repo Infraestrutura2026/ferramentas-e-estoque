@@ -186,7 +186,7 @@ const pedidosModule = {
     container.innerHTML = `
       <div class="space-y-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          ${kpi('Total de Pedidos', todos.length, 'text-slate-900')}
+          ${kpi('Total de Solicitações', todos.length, 'text-slate-900')}
           ${kpi('Pendentes', pendentes, 'text-amber-600')}
           ${kpi('Entregues', entregues, 'text-emerald-600')}
           ${kpi('Valor Total', 'R$ ' + valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }), 'text-slate-900')}
@@ -194,7 +194,7 @@ const pedidosModule = {
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
-            <h2 class="text-lg font-bold text-slate-900">Pedidos de Compra</h2>
+            <h2 class="text-lg font-bold text-slate-900">Solicitações de Compra</h2>
             <div class="flex items-center gap-2">
               <div class="relative">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
@@ -248,7 +248,7 @@ const pedidosModule = {
                       <button onclick="pedidosModule.excluir('${utils.escapeHtml(p.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>`;
-                }).join('') || '<tr><td colspan="10" class="px-4 py-8 text-center text-slate-500">Nenhum pedido encontrado.</td></tr>'}
+                }).join('') || '<tr><td colspan="10" class="px-4 py-8 text-center text-slate-500">Nenhuma solicitação encontrada.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -264,14 +264,15 @@ const pedidosModule = {
 
   _fields(item = {}) {
     return [
-      { key: 'data', label: 'Data do Pedido', type: 'date', value: item.data || utils.today(), required: true },
+      { key: 'data', label: 'Data da Solicitação', type: 'date', value: item.data || utils.today(), required: true },
       { key: 'item', label: 'Item', type: 'text', value: item.item, required: true },
       { key: 'solicitante', label: 'Solicitante', type: 'text', value: item.solicitante, required: true },
       { key: 'quantidade', label: 'Quantidade', type: 'number', value: item.quantidade, required: true },
       { key: 'localUso', label: 'Local de Utilização', type: 'text', value: item.localUso,
         placeholder: 'Onde o item será usado (ex.: Almoxarifado, Oficina, Refeitório)' },
       { key: 'valorUnitario', label: 'Valor Unitário (R$)', type: 'number', value: item.valorUnitario },
-      { key: 'valorTotal', label: 'Valor Total (R$)', type: 'number', value: item.valorTotal },
+      { key: 'valorTotal', label: 'Valor Total (R$)', type: 'number', value: item.valorTotal,
+        placeholder: 'Calculado automaticamente (Qtd × Valor Unitário)' },
       { key: 'previsaoEntrega', label: 'Previsão de Entrega', type: 'date', value: item.previsaoEntrega },
       { key: 'dataEntrega', label: 'Data da Entrega', type: 'date', value: item.dataEntrega },
       { key: 'status', label: 'Status', type: 'select', value: item.status || 'Pendente',
@@ -283,8 +284,24 @@ const pedidosModule = {
   abrirModal(id) {
     const item = id ? (app.data[this.ABA] || []).find(p => p.id === id) : null;
     const fields = this._fields(item || {});
-    app.openModal(item ? 'Editar Pedido' : 'Novo Pedido de Compra', utils.formHtml(fields),
+    app.openModal(item ? 'Editar Solicitação' : 'Nova Solicitação', utils.formHtml(fields),
       () => this.salvar(fields, item), 'Salvar');
+    this._bindCalculoTotal();
+  },
+
+  /* Calcula o Valor Total automaticamente (Quantidade × Valor Unitário) */
+  _bindCalculoTotal() {
+    const qtd = document.getElementById('fld_quantidade');
+    const unit = document.getElementById('fld_valorUnitario');
+    const total = document.getElementById('fld_valorTotal');
+    if (!qtd || !unit || !total) return;
+    const calc = () => {
+      const q = parseFloat(String(qtd.value).replace(',', '.'));
+      const u = parseFloat(String(unit.value).replace(',', '.'));
+      if (!isNaN(q) && !isNaN(u)) total.value = (q * u).toFixed(2);
+    };
+    qtd.addEventListener('input', calc);
+    unit.addEventListener('input', calc);
   },
 
   async salvar(fields, item) {
@@ -297,12 +314,23 @@ const pedidosModule = {
       v.valorTotal = (parseFloat(v.quantidade) * parseFloat(v.valorUnitario)).toFixed(2);
     }
 
+    // Detecta transição de status para "Entregue" → dispara baixa no estoque
+    const eraEntregue = utils.normalize(item?.status || '').includes('entreg');
+    const ficouEntregue = utils.normalize(v.status || '').includes('entreg');
+    const jaDeuBaixa = String(item?.baixaEstoque || '') === 'sim';
+    const deveBaixar = ficouEntregue && !eraEntregue && !jaDeuBaixa;
+
     const payload = {
       ...(item || {}),
       id: item?.id || String((app.data[this.ABA] || []).length + 1),
       ...v,
       updatedAt: utils.now()
     };
+
+    if (deveBaixar) {
+      const baixou = await this._darBaixaEstoque(payload);
+      if (baixou) payload.baixaEstoque = 'sim';
+    }
 
     let sheetsOk = false;
     try {
@@ -319,15 +347,69 @@ const pedidosModule = {
     }
 
     app.closeModal();
-    app.showToast(sheetsOk ? 'Pedido salvo!' : 'Salvo localmente (modo offline).', sheetsOk ? 'success' : 'warning');
+    app.showToast(sheetsOk ? 'Solicitação salva!' : 'Salva localmente (modo offline).', sheetsOk ? 'success' : 'warning');
     await app.refreshAba(this.ABA);
   },
 
+  /* Dá baixa no estoque quando a solicitação é marcada como Entregue.
+     Localiza o item do estoque pelo nome e subtrai a quantidade solicitada. */
+  async _darBaixaEstoque(pedido) {
+    const nomePedido = utils.normalize(pedido.item || '');
+    const qtd = parseFloat(String(pedido.quantidade || '').replace(',', '.')) || 0;
+    if (!nomePedido || qtd <= 0) return false;
+
+    const estoque = app.data.estoque || [];
+    const itemEstoque = estoque.find(e => utils.normalize(e.nome || e.item || '') === nomePedido)
+      || estoque.find(e => utils.normalize(e.nome || e.item || '').includes(nomePedido) || nomePedido.includes(utils.normalize(e.nome || e.item || '')));
+
+    if (!itemEstoque) {
+      app.showToast(`Item "${pedido.item}" não encontrado no estoque — baixa não realizada.`, 'warning');
+      return false;
+    }
+
+    const atual = parseFloat(itemEstoque.quantidadeAtual) || 0;
+    const nova = Math.max(0, atual - qtd);
+    const payloadEstoque = { ...itemEstoque, quantidadeAtual: nova, updatedAt: utils.now() };
+
+    try {
+      await app.post(CONFIG.SHEETS.estoque, 'update', payloadEstoque);
+    } catch (e) {
+      console.warn('[PEDIDOS] Falha ao dar baixa no estoque (Sheets):', e.message);
+    }
+    Object.assign(itemEstoque, payloadEstoque);
+
+    // Registra a movimentação de saída
+    const mov = {
+      id: 'mov_' + Date.now(),
+      data: pedido.dataEntrega || utils.today(),
+      tipo: 'Saída',
+      item: itemEstoque.nome || itemEstoque.item || pedido.item,
+      quantidade: qtd,
+      local: pedido.localUso || itemEstoque.local || '',
+      usuario: (typeof authModule !== 'undefined' && authModule.getCurrentUser) ? authModule.getCurrentUser() : '',
+      observacao: `Baixa automática — solicitação entregue (${pedido.solicitante || ''})`
+    };
+    try {
+      await app.post(CONFIG.SHEETS.movimentacoes, 'add', mov);
+    } catch (e) {
+      console.warn('[PEDIDOS] Falha ao registrar movimentação (Sheets):', e.message);
+    }
+    if (!app.data.movimentacoes) app.data.movimentacoes = [];
+    app.data.movimentacoes.push(mov);
+
+    if (atual < qtd) {
+      app.showToast(`Baixa realizada, mas o estoque de "${mov.item}" tinha apenas ${atual} (solicitado: ${qtd}). Saldo zerado.`, 'warning');
+    } else {
+      app.showToast(`Baixa no estoque: ${qtd} × "${mov.item}" (saldo: ${nova}).`, 'success');
+    }
+    return true;
+  },
+
   async excluir(id) {
-    if (!confirm('Excluir este pedido?')) return;
+    if (!confirm('Excluir esta solicitação?')) return;
     try { await app.get(CONFIG.SHEETS[this.ABA], 'delete', { id }); } catch (e) { /* ok */ }
     app.data[this.ABA] = (app.data[this.ABA] || []).filter(p => p.id !== id);
-    app.showToast('Pedido removido.', 'success');
+    app.showToast('Solicitação removida.', 'success');
     await app.refreshAba(this.ABA);
   }
 };
