@@ -1,0 +1,85 @@
+/* ================================================================
+   Responsivo — Interface adaptativa ao tamanho do monitor (v2.7.8)
+   ================================================================ */
+
+/* --- Fonte fluida com clamp (14–17px, escala toda a interface via rem) ---*/
+:root {
+  font-size: clamp(0.875rem, 1.5vw, 1.0625rem); /* 14px–17px */
+  line-height: 1.6;
+}
+
+/* --- Conteúdo centralizado com max-width ---*/
+.main-content {
+  max-width: 1760px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* --- Menu lateral vira "trilho" (apenas ícones) entre 1024px e 1279px ---*/
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .sidebar .nav-link i {
+    font-size: 1.25rem;
+  }
+  .sidebar .nav-link span {
+    display: none;
+  }
+  .sidebar .nav-link {
+    width: 40px;
+    padding: 0.5rem 0;
+  }
+  .sidebar .nav-item {
+    justify-content: center;
+  }
+}
+
+/* --- Formulários de CRUD em 2 colunas em telas largas ---*/
+@media (min-width: 1400px) {
+  .crud-form .grid > div {
+    flex: 1;
+  }
+  .crud-form .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+/* --- Login: card max-w-lg e rolagem segura ---*/
+@media (max-width: 1023px) {
+  .login-card {
+    max-width: 90%;
+    width: 100%;
+  }
+}
+
+.login-card .p-8 {
+  padding: 1.5rem !important;
+}
+
+.login-card::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.login-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.login-card::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  border: 1px solid #eef2f6;
+}
+
+.login-card::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* --- Respect prefers-reduced-motion ---*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+}
