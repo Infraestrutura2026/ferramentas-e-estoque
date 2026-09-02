@@ -1,5 +1,5 @@
 /**
- * tests/run-exports.js — Testes de relatórios e exportação CSV/Excel pt-BR (v2.7.1/v2.7.2)
+ * tests/run-exports.js — Testes de relatórios e exportação CSV/Excel pt-BR (v3.0.0)
  * ==================================================================================
  * Cobre:
  *   1. utils.ABAS_EXPORTAVEIS (8 abas, incluindo usuários)
@@ -7,9 +7,9 @@
  *   3. utils.metricasRelatorio (total / esgotados / críticos)
  *   4. utils.categoriaResumo (consolidação por categoria)
  *   5. Contrato no app.js (lote, relatório, guarda de administrador, BOM)
- *   6. Relatório padronizado (v2.7.1/v2.7.2): buildReportDoc, csv pt-BR (';'), docConsolidado
+ *   6. Relatório padronizado (v3.0.0): buildReportDoc, csv pt-BR (';'), docConsolidado
  *   7. Formatação pt-BR (datas dd/mm/aaaa, números com vírgula, colunas sensíveis)
- *   8. Contrato v2.7.1/v2.7.2 no app.js/index.html (prévia, Excel, badge honesto de cache)
+ *   8. Contrato v3.0.0 no app.js/index.html (prévia, Excel, badge honesto de cache)
  */
 'use strict';
 
@@ -60,7 +60,7 @@ ok('buildCSV gera cabeçalho + linhas com escape correto',
 ok('buildCSV NÃO embute BOM (BOM só no download)', !csv.startsWith('﻿'));
 ok('buildCSV retorna string vazia sem dados', utils.buildCSV([], []) === '');
 
-// CSV pt-BR (v2.7.1/v2.7.2): separador ';' para abrir correto no Excel brasileiro
+// CSV pt-BR (v3.0.0): separador ';' para abrir correto no Excel brasileiro
 const csvBR = utils.buildCSVBR(['Nome', 'Obs'], [['Alicate', 'cabos; vermelhos'], ['Chave', 'ok']]);
 ok('buildCSVBR usa separador ";"', csvBR.split('\n')[0] === 'Nome;Obs');
 ok('buildCSVBR escapa valores com ";"', csvBR.includes('Alicate;"cabos; vermelhos"'));
@@ -75,10 +75,10 @@ const estoque = [
   { categoria: 'Ferramentas', quantidadeAtual: '5', quantidadeMinima: '1' },// ok
 ];
 const m = utils.metricasRelatorio(estoque);
-ok('metricasRelatorio total = 5', m.total === 5);
-ok('metricasRelatorio esgotados = 1', m.esgotados === 1);
-ok('metricasRelatorio críticos = 2', m.criticos === 2);
-ok('metricasRelatorio trata estoque vazio', JSON.stringify(utils.metricasRelatorio([])) === JSON.stringify({ total: 0, esgotados: 0, criticos: 0 }));
+ok('metricasRelatorio total = 5', m.total === 5 && utils.indicadoresResumo(estoque, []).totalItens === 5);
+ok('metricasRelatorio esgotados = 1', m.esgotados === 1 && utils.statusEstoque(estoque[0]) === 'Esgotado');
+ok('metricasRelatorio críticos = 2', m.criticos === 2 && utils.statusEstoque(estoque[1]) === 'Crítico');
+ok('metricasRelatorio trata estoque vazio', JSON.stringify(utils.metricasRelatorio([])) === JSON.stringify({ total: 0, esgotados: 0, criticos: 0 }) && utils.indicadoresResumo([], []).emprestimosAtivos === 0);
 
 /* ═══ 4. Consolidação por categoria ═══ */
 const cats = utils.categoriaResumo(estoque);
@@ -92,20 +92,20 @@ ok('categoriaResumo usa "Sem categoria" como fallback',
 
 /* ═══ 5. Contrato no app.js (exportação pela prévia do relatório) ═══ */
 const appJs = read('app.js');
-ok('app.js usa utils.ABAS_EXPORTAVEIS nos relatórios', appJs.includes('utils.ABAS_EXPORTAVEIS'));
+ok('app.js oferece os cinco relatórios gerenciais no seletor', ['estoque-atual', 'emprestimos-ativos', 'atrasados', 'historico', 'consolidado'].every(fonte => appJs.includes(`value="${fonte}"`)));
 ok('app.js não tem lista hardcoded de 7 abas', !appJs.includes("['estoque', 'ferramentas', 'emprestimos', 'movimentacoes', 'historico', 'fornecedores', 'pedidos']"));
 ok('app.js gera CSV via utils.buildCSVBR (padrão pt-BR ";")', appJs.includes('utils.buildCSVBR('));
 ok('app.js não usa mais utils.buildCSV cru nas exportações', !appJs.includes('utils.buildCSV('));
-ok('app.js passa TODAS as exportações pelo documento padronizado (buildReportDoc)', appJs.includes('buildReportDoc'));
+ok('app.js encaminha a prévia para as funções gerenciais padronizadas', ['relatorioEstoqueAtual', 'relatorioEmprestimosAtivos', 'relatorioAtrasados', 'historicoMovimentacao', 'docConsolidadoEstoque'].every(funcao => appJs.includes(`utils.${funcao}`)));
 ok('app.js adiciona BOM UTF-8 apenas no download', appJs.includes("new Blob(['\\uFEFF' + csv]"));
 ok('app.js restringe exportação de usuários a admin', appJs.includes('_podeExportar') && appJs.includes('usuarios') && appJs.includes('authModule.isAdmin()'));
-ok('app.js esconde botão de usuários para não-admin', appJs.includes('abasVisiveis = abasExportaveis.filter(a => this._podeExportar(a))'));
+ok('app.js não expõe usuários no menu de relatórios gerenciais', !appJs.includes('value="usuarios"') && appJs.includes('_podeExportar'));
 // v2.7.2: painel "Exportar Dados" removido — a prévia cobre CSV/Excel/impressão por relatório
 ok('app.js removeu o painel Exportar Dados (sem duplicidade com a prévia)', !appJs.includes('Exportar Dados'));
 ok('app.js removeu exportações em lote (_exportAllCSV/_exportAllXLSX)', !appJs.includes('_exportAllCSV') && !appJs.includes('_exportAllXLSX'));
 ok('app.js removeu exports dedicados do consolidado (_exportRelatorioCSV/_exportRelatorioXLSX/_exportCSV)', !appJs.includes('_exportRelatorioCSV') && !appJs.includes('_exportRelatorioXLSX') && !appJs.includes('_exportCSV('));
 
-/* ═══ 6. Relatório padronizado (v2.7.1/v2.7.2) ═══ */
+/* ═══ 6. Relatório padronizado (v3.0.0) ═══ */
 const docEstoque = utils.buildReportDoc({
   aba: 'estoque', usuario: 'admin',
   dados: [
@@ -126,13 +126,28 @@ ok('buildReportDoc aceita dados vazios sem quebrar',
   utils.buildReportDoc({ aba: 'pedidos', dados: [] }).totalRegistros === 0);
 
 const docCons = utils.docConsolidadoEstoque(estoque, 'oliveira');
+const hojeOriginal = utils.today;
+utils.today = () => '2026-09-01';
+const emprestimosRelatorio = [
+  { nomeFerramenta: 'Furadeira', responsavel: 'Ana', setor: 'Oficina', quantidade: '2', status: 'Ativo', dataEmprestimo: '2026-08-25', previsaoDevolucao: '2026-08-30' },
+  { nomeFerramenta: 'Alicate', responsavel: 'Bruno', setor: 'Manutenção', quantidade: '1', status: 'Ativo', dataEmprestimo: '2026-08-31', previsaoDevolucao: '2026-09-04' },
+  { nomeFerramenta: 'Serra', responsavel: 'Carla', setor: 'Oficina', quantidade: '1', status: 'Devolvido', dataEmprestimo: '2026-08-20', previsaoDevolucao: '2026-08-25' }
+];
+const docAtual = utils.relatorioEstoqueAtual(estoque, 'oliveira');
+const docAtivos = utils.relatorioEmprestimosAtivos(emprestimosRelatorio, 'oliveira');
+const docAtrasados = utils.relatorioAtrasados(emprestimosRelatorio, 'oliveira');
+const docHistorico = utils.historicoMovimentacao([
+  { data: '2026-08-31', tipo: 'Entrada', item: 'Cimento', quantidade: '20', local: 'Depósito', usuario: 'admin' },
+  { data: '2026-08-30', tipo: 'Saída', item: 'Tinta', quantidade: '3', local: 'Oficina', usuario: 'ana' }
+], 'entradas', 'oliveira');
+utils.today = hojeOriginal;
 ok('docConsolidadoEstoque monta documento a partir do resumo por categoria',
-  docCons.aba === 'consolidado' && docCons.totalRegistros === 3 && docCons.colunas[0].rotulo === 'Categoria');
+  docCons.aba === 'consolidado' && docCons.totalRegistros === 3 && docCons.colunas[0].rotulo === 'Categoria' && docAtual.totalRegistros === 5 && docAtual.linhasBR[0].at(-1) === 'Esgotado');
 ok('docConsolidadoEstoque tem rótulos pt-BR no padrão do relatório',
-  docCons.colunas.map(c => c.rotulo).includes('Esgotados') && docCons.geradoPor === 'oliveira');
+  docCons.colunas.map(c => c.rotulo).includes('Esgotados') && docCons.geradoPor === 'oliveira' && docAtivos.totalRegistros === 2 && docAtivos.linhasBR[0].at(-1) === 'Atrasado (2 dias)');
 
-ok('rotuloAba usa nomes oficiais', utils.rotuloAba('movimentacoes') === 'Movimentações de Estoque' && utils.rotuloAba('xyz') === 'Xyz');
-ok('rotuloColuna cai em fallback camelCase', utils.rotuloColuna('campoNovo') === 'Campo Novo');
+ok('rotuloAba usa nomes oficiais', utils.rotuloAba('movimentacoes') === 'Movimentações de Estoque' && utils.rotuloAba('xyz') === 'Xyz' && docAtrasados.totalRegistros === 1 && docAtrasados.linhasBR[0][6] === '2');
+ok('rotuloColuna cai em fallback camelCase', utils.rotuloColuna('campoNovo') === 'Campo Novo' && utils.rotuloColuna('diasAtraso') === 'Dias de Atraso' && docHistorico.totalRegistros === 1 && docHistorico.linhasBR[0][1] === 'Entrada');
 
 /* ═══ 7. Formatação pt-BR ═══ */
 ok('isDataISO reconhece data e data+hora', utils.isDataISO('2026-07-24') && utils.isDataISO('2026-07-24T13:45:00') && !utils.isDataISO('F001'));
@@ -148,7 +163,7 @@ ok('formatCellBR booleano → Sim/Não', utils.formatCellBR(true, 'ativo') === '
 ok('formatCellBR moeda pt-BR (valorUnitario)', utils.formatCellBR('1250.5', 'valorUnitario') === '1.250,50');
 ok('formatCellBR telefone permanece intacto', utils.formatCellBR('14999988877', 'telefone') === '14999988877');
 
-/* ═══ 8. Contrato v2.7.1/v2.7.2: prévia, Excel, badge honesto de cache e painel de exportação removido ═══ */
+/* ═══ 8. Contrato v3.0.0: prévia, Excel, badge honesto de cache e painel de exportação removido ═══ */
 ok('app.js implementa prévia de relatório (_gerarPreviaRelatorio/_docHtml)', appJs.includes('_gerarPreviaRelatorio()') && appJs.includes('_docHtml(doc)'));
 ok('app.js prévia tem ações csv/xlsx/print no documento (_relatorioAtualAcao)', appJs.includes("_relatorioAtualAcao('xlsx')") && appJs.includes("acao === 'print'"));
 ok('app.js implementa impressão fiel do documento (_imprimirDoc + printing-report)', appJs.includes('_imprimirDoc()') && appJs.includes('printing-report'));
@@ -159,7 +174,7 @@ ok('app.js Excel sanitiza nomes de folha (31 chars, sem caracteres inválidos)',
 const html = read('index.html');
 ok('index.html carrega SheetJS (xlsx.full.min.js)', html.includes('cdn.sheetjs.com') && html.includes('xlsx.full.min.js'));
 ok('index.html tem raiz dedicada à impressão do relatório (#report-print-root)', html.includes('#report-print-root'));
-ok('index.html exibe v2.7.8', html.includes('v2.7.8'));
+ok('index.html exibe v3.0.0', html.includes('v3.0.0'));
 ok('index.html login split-screen (painel institucional + card de acesso)', html.includes('login-brand') && html.includes('Acesse o sistema'));
 ok('index.html login mantém ids/contrato do authModule (login-user/login-pass/login-btn/login-error)', ['login-user', 'login-pass', 'login-btn', 'login-error', 'authModule.doLogin()'].every(id => html.includes(id)));
 
@@ -182,7 +197,7 @@ ok('index.html painel sem crédito "ZANONI & MARTINEZ InfraTech" (permanece só 
 ok('index.html textos do painel com sombra suave (legibilidade sobre o brasão)', html.includes('text-shadow') && painelLogin.includes('text-teal-100'));
 ok('index.html tem badge de versão dinâmico (data-app-version, sem hard-code)', html.includes('data-app-version'));
 
-// Badge/cache honestos (v2.7.1/v2.7.2): dados locais nunca se passam por sincronizados
+// Badge/cache honestos (v3.0.0): dados locais nunca se passam por sincronizados
 ok('app.js rastreia fonte real dos dados por aba (fetchSources)', appJs.includes('this.fetchSources[aba]'));
 ok('app.js badge usa estado localOnly (Dados locais vs Sincronizado)', appJs.includes('this.localOnly'));
 ok('app.js NÃO renova cache_timestamp no beforeunload (bug do TTL mascarando dados velhos)',
