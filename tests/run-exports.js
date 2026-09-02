@@ -159,7 +159,7 @@ ok('app.js Excel sanitiza nomes de folha (31 chars, sem caracteres inválidos)',
 const html = read('index.html');
 ok('index.html carrega SheetJS (xlsx.full.min.js)', html.includes('cdn.sheetjs.com') && html.includes('xlsx.full.min.js'));
 ok('index.html tem raiz dedicada à impressão do relatório (#report-print-root)', html.includes('#report-print-root'));
-ok('index.html exibe v2.7.7', html.includes('v2.7.7'));
+ok('index.html exibe v2.7.8', html.includes('v2.7.8'));
 ok('index.html login split-screen (painel institucional + card de acesso)', html.includes('login-brand') && html.includes('Acesse o sistema'));
 ok('index.html login mantém ids/contrato do authModule (login-user/login-pass/login-btn/login-error)', ['login-user', 'login-pass', 'login-btn', 'login-error', 'authModule.doLogin()'].every(id => html.includes(id)));
 

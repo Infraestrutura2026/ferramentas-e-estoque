@@ -1,4 +1,25 @@
 # Changelog — Ferramentas & Estoque
+## [2.7.8] — 2026-09-01
+
+### Melhorias
+
+- **Interface adaptativa ao tamanho do monitor**: fonte fluida com `clamp(14–17px, 1.5vw, 1.0625rem)` que escala toda a interface via `rem`, conteúdo centralizado com `max-width: 1760px`, menu lateral em "trilho" (apenas ícones) entre 1024px e 1279px, formulários de CRUD em 2 colunas em telas largas (1400px+), login com card `max-w-lg` e rolagem segura, e respeito a `prefers-reduced-motion`.
+
+### Assets
+
+- novo `assets/responsivo.css` com controles de responsividade (fonte, sidebar, formulários, login, motion)
+
+### Código
+
+- `app.js`: classes `rail-hidden`/`brand-block` na sidebar e `max-w-[1760px]` no conteúdo
+- `utils.js`: `formHtml` em grid 2 colunas em telas largas
+- `estoque.js`/`cadastros.js`: buscas com `max-w-full`
+- `index.html`: link do CSS e `?v=2.7.8` em todos os scripts e assets
+- `config.js`, `package.json`, `index.html`, `CHANGELOG.md`: versão 2.7.8
+
+### Testes
+
+- Versão `2.7.8` em `tests/run.js`, `tests/run-neon.js` e `tests/run-exports.js` (mantendo compatibilidade com v2.7.7)
 
 Todas as mudanças relevantes do sistema. Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
