@@ -70,7 +70,7 @@ const utils = {
      ──────────────────────────────────────────────── */
   formHtml(fields) {
     const inputCls = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition';
-    return `<div class="space-y-4">` + fields.map(f => {
+    return `<div class="crud-form">` + fields.map(f => {
       const req = f.required ? ' <span class="text-red-600">*</span>' : '';
       const label = `<label class="block text-xs font-semibold text-slate-600 uppercase mb-1">${this.escapeHtml(f.label)}${req}</label>`;
       let control = '';
@@ -278,6 +278,177 @@ const utils = {
     return Object.values(map).sort((a, b) => b.itens - a.itens || a.categoria.localeCompare(b.categoria, 'pt-BR'));
   },
 
+  /* ──────────────────────────────────────────────────────────────
+     RELATÓRIOS GERENCIAIS (v3.0.0)
+     Cada função entrega o mesmo documento padronizado usado na prévia,
+     no CSV, no Excel e na impressão. Assim, a informação consultada e a
+     informação exportada nunca divergem.
+     ────────────────────────────────────────────────────────────── */
+
+  /** Converte uma quantidade do cadastro para número, sem propagar NaN. */
+  quantidadeNumerica(valor) {
+    const numero = parseFloat(String(valor ?? '').replace(',', '.'));
+    return isFinite(numero) ? numero : 0;
+  },
+
+  /** Empréstimo finalizado/devolvido, independentemente da grafia do status. */
+  emprestimoDevolvido(emprestimo) {
+    return /devol/.test(this.normalize(emprestimo && emprestimo.status));
+  },
+
+  /** Diferença em dias de calendário entre uma data prevista e hoje. */
+  diasAtraso(dataPrevista, hoje = this.today()) {
+    const data = String(dataPrevista || '').slice(0, 10);
+    const referencia = String(hoje || '').slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || !/^\d{4}-\d{2}-\d{2}$/.test(referencia)) return 0;
+    const [ano, mes, dia] = data.split('-').map(Number);
+    const [anoHoje, mesHoje, diaHoje] = referencia.split('-').map(Number);
+    const prazoUTC = Date.UTC(ano, mes - 1, dia);
+    const hojeUTC = Date.UTC(anoHoje, mesHoje - 1, diaHoje);
+    return Math.max(0, Math.floor((hojeUTC - prazoUTC) / 86400000));
+  },
+
+  /** Estado operacional de um item para consulta rápida de estoque. */
+  statusEstoque(item) {
+    const quantidade = this.quantidadeNumerica(item && item.quantidadeAtual);
+    const minimo = this.quantidadeNumerica(item && item.quantidadeMinima);
+    if (quantidade <= 0) return 'Esgotado';
+    if (minimo > 0 && quantidade <= minimo) return 'Crítico';
+    return 'Regular';
+  },
+
+  /** Relatório operacional: situação atual de cada item de estoque. */
+  relatorioEstoqueAtual(estoque, usuario) {
+    const dados = (Array.isArray(estoque) ? estoque : []).map(item => ({
+      codigo: item.codigo || '',
+      nome: item.nome || item.item || '',
+      categoria: item.categoria || 'Sem categoria',
+      quantidadeAtual: this.quantidadeNumerica(item.quantidadeAtual),
+      quantidadeMinima: this.quantidadeNumerica(item.quantidadeMinima),
+      unidade: item.unidade || '',
+      local: item.local || '',
+      status: this.statusEstoque(item)
+    }));
+    return this.buildReportDoc({
+      aba: 'estoque_atual',
+      titulo: 'Relatório Gerencial — Estoque Atual',
+      usuario,
+      dados,
+      colunas: ['codigo', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'local', 'status']
+    });
+  },
+
+  /** Relatório operacional: retiradas que ainda aguardam devolução. */
+  relatorioEmprestimosAtivos(emprestimos, usuario) {
+    const hoje = this.today();
+    const dados = (Array.isArray(emprestimos) ? emprestimos : [])
+      .filter(emprestimo => !this.emprestimoDevolvido(emprestimo))
+      .map(emprestimo => {
+        const atraso = this.diasAtraso(emprestimo.previsaoDevolucao, hoje);
+        return {
+          ferramenta: emprestimo.nomeFerramenta || emprestimo.ferramenta || emprestimo.item || emprestimo.nome || '',
+          responsavel: emprestimo.responsavel || emprestimo.solicitante || '',
+          setor: emprestimo.setor || emprestimo.local || '',
+          quantidade: this.quantidadeNumerica(emprestimo.quantidade || 1),
+          dataEmprestimo: emprestimo.dataEmprestimo || emprestimo.data || '',
+          previsaoDevolucao: emprestimo.previsaoDevolucao || '',
+          status: atraso ? `Atrasado (${atraso} dia${atraso === 1 ? '' : 's'})` : 'Em uso'
+        };
+      })
+      .sort((a, b) => String(a.previsaoDevolucao).localeCompare(String(b.previsaoDevolucao)));
+    return this.buildReportDoc({
+      aba: 'emprestimos_ativos',
+      titulo: 'Relatório Gerencial — Empréstimos Ativos',
+      usuario,
+      dados,
+      colunas: ['ferramenta', 'responsavel', 'setor', 'quantidade', 'dataEmprestimo', 'previsaoDevolucao', 'status']
+    });
+  },
+
+  /** Relatório de alerta: somente empréstimos vencidos, com dias de atraso. */
+  relatorioAtrasados(emprestimos, usuario) {
+    const hoje = this.today();
+    const dados = (Array.isArray(emprestimos) ? emprestimos : [])
+      .filter(emprestimo => !this.emprestimoDevolvido(emprestimo))
+      .map(emprestimo => ({ emprestimo, diasAtraso: this.diasAtraso(emprestimo.previsaoDevolucao, hoje) }))
+      .filter(item => item.diasAtraso > 0)
+      .map(({ emprestimo, diasAtraso }) => ({
+        ferramenta: emprestimo.nomeFerramenta || emprestimo.ferramenta || emprestimo.item || emprestimo.nome || '',
+        responsavel: emprestimo.responsavel || emprestimo.solicitante || '',
+        setor: emprestimo.setor || emprestimo.local || '',
+        quantidade: this.quantidadeNumerica(emprestimo.quantidade || 1),
+        dataEmprestimo: emprestimo.dataEmprestimo || emprestimo.data || '',
+        previsaoDevolucao: emprestimo.previsaoDevolucao || '',
+        diasAtraso,
+        status: 'Atrasado'
+      }))
+      .sort((a, b) => b.diasAtraso - a.diasAtraso || String(a.previsaoDevolucao).localeCompare(String(b.previsaoDevolucao)));
+    return this.buildReportDoc({
+      aba: 'emprestimos_atrasados',
+      titulo: 'Relatório Gerencial — Empréstimos em Atraso',
+      usuario,
+      dados,
+      colunas: ['ferramenta', 'responsavel', 'setor', 'quantidade', 'dataEmprestimo', 'previsaoDevolucao', 'diasAtraso', 'status']
+    });
+  },
+
+  /** Indicadores consolidados para o painel de gestão e para tomada de decisão. */
+  indicadoresResumo(estoque, emprestimos) {
+    const itens = Array.isArray(estoque) ? estoque : [];
+    const retiradas = Array.isArray(emprestimos) ? emprestimos : [];
+    const metricas = this.metricasRelatorio(itens);
+    const emprestimosAtivos = retiradas.filter(emprestimo => !this.emprestimoDevolvido(emprestimo));
+    const emprestimosAtrasados = emprestimosAtivos.filter(emprestimo =>
+      this.diasAtraso(emprestimo.previsaoDevolucao) > 0
+    );
+    const itensRegulares = Math.max(0, metricas.total - metricas.esgotados - metricas.criticos);
+    return {
+      totalItens: metricas.total,
+      unidadesEmEstoque: itens.reduce((total, item) => total + this.quantidadeNumerica(item.quantidadeAtual), 0),
+      itensRegulares,
+      itensCriticos: metricas.criticos,
+      itensEsgotados: metricas.esgotados,
+      emprestimosAtivos: emprestimosAtivos.length,
+      emprestimosAtrasados: emprestimosAtrasados.length,
+      percentualAtencao: metricas.total ? Math.round(((metricas.esgotados + metricas.criticos) / metricas.total) * 100) : 0
+    };
+  },
+
+  /**
+   * Histórico de movimentações com filtro por tipo.
+   * `opcao`: todos, entradas ou saidas (também aceita entrada/saida).
+   */
+  historicoMovimentacao(movimentacoes, opcao = 'todos', usuario) {
+    const filtro = this.normalize(opcao).replace(/\s+/g, '');
+    const dados = (Array.isArray(movimentacoes) ? movimentacoes : [])
+      .filter(movimento => {
+        if (!filtro || filtro === 'todos') return true;
+        const tipo = this.normalize(movimento.tipo || movimento.operacao || movimento.acao || '');
+        if (filtro === 'entrada' || filtro === 'entradas') return /entrada|compra|receb/.test(tipo);
+        if (filtro === 'saida' || filtro === 'saidas') return /saida|retirada|baixa|consumo/.test(tipo);
+        return tipo.includes(filtro);
+      })
+      .map(movimento => ({
+        data: movimento.data || movimento.dataHora || movimento.createdAt || '',
+        tipo: movimento.tipo || movimento.operacao || movimento.acao || '',
+        item: movimento.itemNome || movimento.item || movimento.nome || '',
+        quantidade: this.quantidadeNumerica(movimento.quantidade),
+        local: movimento.local || movimento.setor || '',
+        usuario: movimento.usuario || movimento.responsavel || '',
+        observacao: movimento.observacao || movimento.detalhes || ''
+      }))
+      .sort((a, b) => String(b.data).localeCompare(String(a.data)));
+    const rotulos = { entrada: 'Entradas', entradas: 'Entradas', saida: 'Saídas', saidas: 'Saídas' };
+    const complemento = rotulos[filtro] ? ` — ${rotulos[filtro]}` : '';
+    return this.buildReportDoc({
+      aba: 'historico_movimentacoes',
+      titulo: `Relatório Gerencial — Histórico de Movimentações${complemento}`,
+      usuario,
+      dados,
+      colunas: ['data', 'tipo', 'item', 'quantidade', 'local', 'usuario', 'observacao']
+    });
+  },
+
   /* ══════════════════════════════════════════════════════════════
      RELATÓRIO PADRONIZADO + EXPORTAÇÃO pt-BR (v2.7.1 · v2.7.2: coluna ID oculta)
      Um único "documento" de relatório alimenta a prévia em tela,
@@ -300,7 +471,8 @@ const utils = {
   ROTULOS_COLUNAS: {
     id: 'ID', nome: 'Nome', codigo: 'Código', categoria: 'Categoria', descricao: 'Descrição',
     quantidadeAtual: 'Qtd. Atual', quantidadeMinima: 'Qtd. Mínima', quantidade: 'Quantidade',
-    unidade: 'Unid.', local: 'Local', data: 'Data', estado: 'Estado', status: 'Status',
+    unidade: 'Unid.', local: 'Local', setor: 'Setor', data: 'Data', estado: 'Estado', status: 'Status',
+    diasAtraso: 'Dias de Atraso',
     tipo: 'Tipo', item: 'Item', usuario: 'Usuário', observacao: 'Observação',
     responsavel: 'Responsável', motivo: 'Motivo', ferramentaId: 'ID Ferramenta',
     nomeFerramenta: 'Ferramenta', dataEmprestimo: 'Data Empréstimo',

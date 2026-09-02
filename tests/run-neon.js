@@ -360,7 +360,7 @@ function criarExecutorFalso() {
   const cfg = fs.readFileSync(path.join(ROOT, 'config.js'), 'utf8');
   ok('config.js detecta host .vercel.app → Neon', /\.vercel\.app/.test(cfg));
   ok('config.js mantém Apps Script para GitHub Pages', /URL_BASE_APPS_SCRIPT\s*=\s*'https:\/\/script\.google\.com/.test(cfg));
-  ok('config.js versão 2.7.8', /VERSAO:\s*'2\.7\.8'/.test(cfg));
+  ok('config.js versão 3.0.0', /VERSAO:\s*'3\.0\.0'/.test(cfg));
   ok('config.js expõe CONFIG.BACKEND', /BACKEND:\s*neon\s*\?\s*'neon'\s*:\s*'appsscript'/.test(cfg));
   const appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
   ok('app.js extrai aba de /api/<aba>', appJs.includes('([a-z]+)') && /_extractAbaFromUrl/.test(appJs));

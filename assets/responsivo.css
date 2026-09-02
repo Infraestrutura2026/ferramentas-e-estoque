@@ -1,58 +1,82 @@
 /* ================================================================
-   Responsivo — Interface adaptativa ao tamanho do monitor (v2.7.8)
+   Responsivo — Interface adaptativa ao tamanho do monitor (v3.0.0)
    ================================================================ */
 
-/* --- Fonte fluida com clamp (14–17px, escala toda a interface via rem) ---*/
+/* Escala tipográfica fluida: 14 px em telas menores, até 17 px em monitores grandes. */
 :root {
-  font-size: clamp(0.875rem, 1.5vw, 1.0625rem); /* 14px–17px */
+  font-size: clamp(0.875rem, 1.5vw, 1.0625rem);
   line-height: 1.6;
 }
 
-/* --- Conteúdo centralizado com max-width ---*/
+/* Área útil centralizada, sem desperdiçar leitura em monitores ultrawide. */
 .main-content {
+  width: 100%;
   max-width: 1760px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  margin-inline: auto;
 }
 
-/* --- Menu lateral vira "trilho" (apenas ícones) entre 1024px e 1279px ---*/
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .sidebar .nav-link i {
-    font-size: 1.25rem;
+/* Formulários de CRUD: uma coluna como padrão, duas quando há espaço suficiente. */
+.crud-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 1400px) {
+  .crud-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .sidebar .nav-link span {
+
+  /* Observações ocupam as duas colunas para não prejudicar a escrita. */
+  .crud-form > div:has(textarea) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Entre notebook e desktop, a sidebar torna-se um trilho de navegação por ícones. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .sidebar {
+    width: 4.5rem !important;
+  }
+
+  .sidebar .brand-block,
+  .sidebar .nav-item span,
+  .sidebar .btn-danger span,
+  .sidebar #sync-status {
     display: none;
   }
-  .sidebar .nav-link {
-    width: 40px;
-    padding: 0.5rem 0;
+
+  .sidebar nav {
+    padding-inline: 0.625rem;
   }
+
   .sidebar .nav-item {
     justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  .sidebar .nav-item i {
+    width: auto;
+    font-size: 1.125rem;
+  }
+
+  .sidebar .btn-danger {
+    padding-inline: 0;
   }
 }
 
-/* --- Formulários de CRUD em 2 colunas em telas largas ---*/
-@media (min-width: 1400px) {
-  .crud-form .grid > div {
-    flex: 1;
-  }
-  .crud-form .grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
+/* Login: cabe sempre na viewport e permite rolar somente quando necessário. */
+.login-bg {
+  min-height: 100%;
+  overflow-y: auto;
 }
 
-/* --- Login: card max-w-lg e rolagem segura ---*/
-@media (max-width: 1023px) {
-  .login-card {
-    max-width: 90%;
-    width: 100%;
-  }
-}
-
-.login-card .p-8 {
-  padding: 1.5rem !important;
+.login-card {
+  width: 100%;
+  max-width: 32rem;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
 }
 
 .login-card::-webkit-scrollbar {
@@ -74,12 +98,14 @@
   background: #94a3b8;
 }
 
-/* --- Respect prefers-reduced-motion ---*/
+/* Pessoas que reduzem movimento no sistema operacional recebem UI sem animações. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0s !important;
-    transition-duration: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

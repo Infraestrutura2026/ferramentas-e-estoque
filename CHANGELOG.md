@@ -1,4 +1,32 @@
 # Changelog — Ferramentas & Estoque
+
+## [3.0.0] — 2026-09-01
+
+### Implementação de relatórios gerenciais
+
+- **Estoque atual**: consulta item a item com saldo, mínimo e status operacional (regular, crítico ou esgotado).
+- **Empréstimos ativos**: informa claramente qual ferramenta foi retirada, por quem, para qual setor e a previsão de devolução.
+- **Empréstimos em atraso**: destaca apenas retiradas vencidas e calcula os dias de atraso por data de calendário.
+- **Histórico de movimentações**: permite gerar o histórico completo ou filtrado por entradas e saídas.
+- **Consolidado por categoria**: mantém a visão agregada de itens, quantidades e esgotados.
+- **Painel gerencial**: novos indicadores consolidados de estoque e empréstimos, usados tanto no Dashboard quanto na área de Relatórios.
+
+Todos os relatórios usam o mesmo documento padronizado para prévia, CSV pt-BR, Excel e impressão, com cabeçalho institucional e dados formatados em português brasileiro.
+
+### Responsividade e experiência
+
+- Conteúdo limitado e centralizado em `1760px`, com tipografia fluida entre 14px e 17px.
+- Menu lateral em modo trilho entre 1024px e 1279px, preservando acesso por tooltip e leitor de tela.
+- Formulários de CRUD em duas colunas em monitores largos; campos de observação preservam largura integral.
+- Card de login com largura `max-w-lg`, altura segura e rolagem quando necessária.
+- Animações respeitam `prefers-reduced-motion`.
+
+### Versão e validação
+
+- Versão centralizada em `3.0.0` no `config.js`, `package.json`, lockfile, badge e URLs de cache dos assets.
+- Testes de versão e de contratos dos relatórios atualizados.
+- Suite completa: **196/196 testes aprovados**.
+
 ## [2.7.8] — 2026-09-01
 
 ### Melhorias

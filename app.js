@@ -231,7 +231,7 @@ const app = {
 
   /* ── Inicialização ── */
   async init() {
-    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '2.7.2') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
+    console.log('[APP] Iniciando sistema v' + (CONFIG?.VERSAO || '—') + ' — backend: ' + (CONFIG?.BACKEND || '?') + '...');
     this._renderLayout();
     this._bindNavigation();
     this._bindGlobalEvents();
@@ -557,8 +557,8 @@ const app = {
     root.innerHTML = `
       <div class="min-h-screen bg-[#eef2f6] flex">
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-white text-slate-900 flex flex-col shadow-xl transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 -translate-x-full">
-          <div class="px-5 py-5 border-b border-slate-200">
+        <aside id="sidebar" class="sidebar w-64 bg-white text-slate-900 flex flex-col shadow-xl transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 -translate-x-full">
+          <div class="brand-block px-5 py-5 border-b border-slate-200">
             <div class="flex items-center gap-3 mb-1">
               <div class="w-10 h-10 rounded-lg bg-teal-600 flex items-center justify-center shadow-lg shrink-0">
                 <i class="fas fa-toolbox text-white text-lg"></i>
@@ -619,7 +619,7 @@ const app = {
           </header>
 
           <!-- Conteúdo -->
-          <main id="main-content" class="flex-1 p-4 lg:p-6 overflow-auto">
+          <main id="main-content" class="main-content flex-1 p-4 lg:p-6 overflow-auto">
             <div class="flex items-center justify-center h-64">
               <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
             </div>
@@ -633,7 +633,7 @@ const app = {
 
   _navItem(page, icon, label) {
     return `
-      <button data-page="${page}" onclick="app.navigate('${page}')" class="nav-item group w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-lg border border-transparent text-left text-sm font-medium text-slate-600 hover:bg-teal-600 hover:text-white hover:border-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 transition-colors duration-150">
+      <button data-page="${page}" onclick="app.navigate('${page}')" title="${label}" aria-label="${label}" class="nav-item group w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-lg border border-transparent text-left text-sm font-medium text-slate-600 hover:bg-teal-600 hover:text-white hover:border-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 transition-colors duration-150">
         <i class="fas ${icon} w-5 shrink-0 text-center transition-colors duration-150 group-hover:text-white"></i>
         <span class="flex-1 min-w-0 leading-snug text-left">${label}</span>
       </button>
@@ -778,25 +778,15 @@ const app = {
     const estoque = app.data.estoque || [];
     const ferramentas = app.data.ferramentas || [];
     const emprestimos = app.data.emprestimos || [];
-    const hoje = utils.today();
+    const resumo = utils.indicadoresResumo(estoque, emprestimos);
 
-    const totalItens = estoque.length;
+    const totalItens = resumo.totalItens;
     const totalFerramentas = ferramentas.length;
-
-    const emprestimosAtivos = emprestimos.filter(e => !utils.normalize(e.status).includes('devol'));
-    const emprestimosAtrasados = emprestimosAtivos.filter(e => e.previsaoDevolucao && e.previsaoDevolucao < hoje);
-
-    const zerados = estoque.filter(i => (parseFloat(i.quantidadeAtual) || 0) === 0).length;
-    const criticos = estoque.filter(i => {
-      const q = parseFloat(i.quantidadeAtual) || 0;
-      const m = parseFloat(i.quantidadeMinima) || 0;
-      return q > 0 && q <= m;
-    }).length;
-    const ok = estoque.filter(i => {
-      const q = parseFloat(i.quantidadeAtual) || 0;
-      const m = parseFloat(i.quantidadeMinima) || 0;
-      return q > m;
-    }).length;
+    const emprestimosAtivos = emprestimos.filter(e => !utils.emprestimoDevolvido(e));
+    const emprestimosAtrasados = emprestimosAtivos.filter(e => utils.diasAtraso(e.previsaoDevolucao) > 0);
+    const zerados = resumo.itensEsgotados;
+    const criticos = resumo.itensCriticos;
+    const ok = resumo.itensRegulares;
 
     const movs = (app.data.movimentacoes || []).slice(-5).reverse();
 
@@ -911,94 +901,156 @@ const app = {
     `;
   },
 
-  /* ── Relatórios ── */
+  /* ── Relatórios gerenciais (v3.0.0) ── */
   _renderRelatorios(container) {
-    const estoque = app.data.estoque || [];
-    const { total, esgotados: zerados, criticos } = utils.metricasRelatorio(estoque);
+    const estoque = this.data.estoque || [];
+    const emprestimos = this.data.emprestimos || [];
+    const resumo = utils.indicadoresResumo(estoque, emprestimos);
     const catMap = utils.categoriaResumo(estoque);
-    const abasExportaveis = utils.ABAS_EXPORTAVEIS; // inclui usuários (8 abas)
-    const abasVisiveis = abasExportaveis.filter(a => this._podeExportar(a));
+    this._docPreviaAtual = null;
+
+    const card = (titulo, valor, detalhe, cor) => `
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <p class="text-[11px] text-slate-500 uppercase font-semibold tracking-wide">${titulo}</p>
+        <p class="text-2xl font-bold ${cor} mt-1">${valor}</p>
+        <p class="text-[11px] text-slate-400 mt-1">${detalhe}</p>
+      </div>`;
 
     container.innerHTML = `
       <div class="space-y-6">
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h2 class="text-lg font-bold text-slate-900 mb-4">📊 Relatório de Estoque</h2>
-          <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="bg-slate-50 rounded-lg p-4 text-center">
-              <p class="text-2xl font-bold text-slate-900">${total}</p>
-              <p class="text-xs text-slate-500 uppercase">Total de Itens</p>
+        <section aria-labelledby="indicadores-relatorios" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:p-6">
+          <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <div>
+              <h2 id="indicadores-relatorios" class="text-lg font-bold text-slate-900">📊 Painel gerencial</h2>
+              <p class="text-xs text-slate-500 mt-1">Visão rápida de estoque e empréstimos para apoiar a gestão.</p>
             </div>
-            <div class="bg-red-50 rounded-lg p-4 text-center">
-              <p class="text-2xl font-bold text-red-600">${zerados}</p>
-              <p class="text-xs text-red-700/90 uppercase">Esgotados</p>
-            </div>
-            <div class="bg-amber-50 rounded-lg p-4 text-center">
-              <p class="text-2xl font-bold text-amber-600">${criticos}</p>
-              <p class="text-xs text-amber-700/90 uppercase">Críticos</p>
+            <span class="text-xs font-semibold ${resumo.percentualAtencao ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200'} border rounded-full px-3 py-1">
+              ${resumo.percentualAtencao}% dos itens exigem atenção
+            </span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+            ${card('Itens cadastrados', resumo.totalItens, `${utils.numeroBR(resumo.unidadesEmEstoque)} unidades em estoque`, 'text-slate-900')}
+            ${card('Estoque regular', resumo.itensRegulares, 'Acima do nível mínimo', 'text-emerald-600')}
+            ${card('Nível crítico', resumo.itensCriticos, 'Reposição deve ser avaliada', resumo.itensCriticos ? 'text-amber-600' : 'text-slate-900')}
+            ${card('Esgotados', resumo.itensEsgotados, 'Sem saldo disponível', resumo.itensEsgotados ? 'text-red-600' : 'text-slate-900')}
+            ${card('Empréstimos', resumo.emprestimosAtivos, `${resumo.emprestimosAtrasados} em atraso`, resumo.emprestimosAtrasados ? 'text-red-600' : 'text-teal-700')}
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:p-6">
+          <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-slate-700">Situação por categoria</h3>
+              <p class="text-xs text-slate-400 mt-1">Resumo do saldo dos materiais cadastrados.</p>
             </div>
           </div>
-
-          <h3 class="text-sm font-bold text-slate-700 mb-3">Por Categoria</h3>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead><tr class="bg-slate-50 border-b border-slate-200">
-                <th class="px-4 py-2 text-left font-semibold text-slate-600">Categoria</th>
-                <th class="px-4 py-2 text-center font-semibold text-slate-600">Itens</th>
-                <th class="px-4 py-2 text-center font-semibold text-slate-600">Qtd Total</th>
-                <th class="px-4 py-2 text-center font-semibold text-slate-600">Esgotados</th>
+                <th class="px-4 py-2.5 text-left font-semibold text-slate-600">Categoria</th>
+                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Itens</th>
+                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Qtd. total</th>
+                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Esgotados</th>
               </tr></thead>
               <tbody>
                 ${catMap.map(info => `
                   <tr class="border-b border-slate-100 hover:bg-slate-50">
-                    <td class="px-4 py-2">${utils.categoriaBadge(info.categoria)}</td>
-                    <td class="px-4 py-2 text-center font-medium">${info.itens}</td>
-                    <td class="px-4 py-2 text-center font-mono">${info.qtdTotal}</td>
-                    <td class="px-4 py-2 text-center">
-                      ${info.esgotados > 0 ? `<span class="text-red-600 font-bold">${info.esgotados}</span>` : '<span class="text-slate-500">—</span>'}
+                    <td class="px-4 py-2.5">${utils.categoriaBadge(info.categoria)}</td>
+                    <td class="px-4 py-2.5 text-center font-medium">${utils.numeroBR(info.itens)}</td>
+                    <td class="px-4 py-2.5 text-center font-mono">${utils.numeroBR(info.qtdTotal)}</td>
+                    <td class="px-4 py-2.5 text-center">
+                      ${info.esgotados > 0 ? `<span class="text-red-600 font-bold">${utils.numeroBR(info.esgotados)}</span>` : '<span class="text-slate-500">—</span>'}
                     </td>
                   </tr>
-                `).join('') || '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Sem dados de estoque.</td></tr>'}
+                `).join('') || '<tr><td colspan="4" class="px-4 py-7 text-center text-slate-500">Sem dados de estoque.</td></tr>'}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-sm font-bold text-slate-700 mb-1">🖥️ Prévia de Relatório Padronizado</h3>
-          <p class="text-xs text-slate-400 mb-4">Escolha o relatório e clique em <strong>Gerar Prévia</strong>: o documento exibido é exatamente o que sai no <strong>CSV</strong>, no <strong>Excel</strong> e na <strong>impressão</strong> — cabeçalho institucional, metadados e dados em pt-BR (datas dd/mm/aaaa, números com vírgula). As ações de exportação ficam no próprio documento, sem duplicidade. A aba Usuários é restrita a administradores.</p>
-          <div class="flex flex-wrap items-center gap-3 mb-4 no-print">
-            <label class="text-xs font-semibold text-slate-500 uppercase">Relatório:</label>
-            <select id="rel-fonte" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
-              <option value="consolidado">Relatório de Estoque — Consolidado por Categoria</option>
-              ${abasVisiveis.map(aba => `<option value="${aba}">${utils.escapeHtml(utils.rotuloAba(aba))}</option>`).join('')}
-            </select>
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:p-6">
+          <h3 class="text-sm font-bold text-slate-700 mb-1">🖥️ Relatórios para consulta e exportação</h3>
+          <p class="text-xs text-slate-400 mb-4">A prévia, o CSV, o Excel e a impressão usam o mesmo documento padronizado, com cabeçalho institucional e dados no formato pt-BR.</p>
+          <div class="flex flex-wrap items-end gap-3 mb-4 no-print">
+            <div class="min-w-[250px] flex-1 max-w-xl">
+              <label for="rel-fonte" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Relatório</label>
+              <select id="rel-fonte" onchange="app._alternarFiltroHistorico()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+                <option value="estoque-atual">Estoque Atual</option>
+                <option value="emprestimos-ativos">Empréstimos Ativos</option>
+                <option value="atrasados">Empréstimos em Atraso</option>
+                <option value="historico">Histórico de Movimentações</option>
+                <option value="consolidado">Consolidado por Categoria</option>
+              </select>
+            </div>
+            <div id="rel-historico-opcoes" class="hidden min-w-[190px]">
+              <label for="rel-historico-filtro" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Exibir no histórico</label>
+              <select id="rel-historico-filtro" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+                <option value="todos">Todos os movimentos</option>
+                <option value="entradas">Somente entradas</option>
+                <option value="saidas">Somente saídas</option>
+              </select>
+            </div>
             <button onclick="app._gerarPreviaRelatorio()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
-              <i class="fas fa-eye mr-1"></i> Gerar Prévia
+              <i class="fas fa-eye mr-1"></i> Gerar prévia
             </button>
           </div>
-          <div id="rel-preview" class="hidden"></div>
-        </div>
+          <div id="rel-preview" class="hidden" aria-live="polite"></div>
+        </section>
       </div>
     `;
+  },
+
+  /** Exibe as opções de filtro somente no relatório de histórico. */
+  _alternarFiltroHistorico() {
+    const fonte = document.getElementById('rel-fonte');
+    const opcoes = document.getElementById('rel-historico-opcoes');
+    if (opcoes) opcoes.classList.toggle('hidden', !fonte || fonte.value !== 'historico');
   },
 
   /* ── Prévia de relatório padronizado (v2.7.1) ── */
   _docPreviaAtual: null,
 
-  /** Gera a prévia em tela do documento padronizado (consolidado ou aba individual). */
+  /** Gera a prévia do relatório gerencial selecionado. */
   _gerarPreviaRelatorio() {
-    const sel = document.getElementById('rel-fonte');
-    const fonte = sel ? sel.value : 'consolidado';
+    const fonte = document.getElementById('rel-fonte')?.value || 'estoque-atual';
+    const filtroHistorico = document.getElementById('rel-historico-filtro')?.value || 'todos';
     const usuario = (typeof authModule !== 'undefined' && authModule.getCurrentUser()) || 'sistema';
+    const estoque = this.data.estoque || [];
+    const emprestimos = this.data.emprestimos || [];
+    const movimentacoes = this.data.movimentacoes || [];
+    const titulos = {
+      'estoque-atual': 'estoque atual',
+      'emprestimos-ativos': 'empréstimos ativos',
+      atrasados: 'empréstimos em atraso',
+      historico: 'histórico de movimentações',
+      consolidado: 'consolidado por categoria'
+    };
     let doc;
-    if (fonte === 'consolidado') {
-      doc = utils.docConsolidadoEstoque(app.data.estoque || [], usuario);
-      if (!doc.totalRegistros) { app.showToast('Nenhum dado de estoque para o relatório.', 'warning'); return; }
-    } else {
-      if (!this._podeExportar(fonte)) { app.showToast('Relatório de usuários é restrito a administradores.', 'warning'); return; }
-      const dados = app.data[fonte] || [];
-      if (!dados.length) { app.showToast(`A aba "${utils.rotuloAba(fonte)}" não tem dados para o relatório.`, 'warning'); return; }
-      doc = utils.buildReportDoc({ aba: fonte, usuario, dados });
+
+    switch (fonte) {
+      case 'estoque-atual':
+        doc = utils.relatorioEstoqueAtual(estoque, usuario);
+        break;
+      case 'emprestimos-ativos':
+        doc = utils.relatorioEmprestimosAtivos(emprestimos, usuario);
+        break;
+      case 'atrasados':
+        doc = utils.relatorioAtrasados(emprestimos, usuario);
+        break;
+      case 'historico':
+        doc = utils.historicoMovimentacao(movimentacoes, filtroHistorico, usuario);
+        break;
+      case 'consolidado':
+        doc = utils.docConsolidadoEstoque(estoque, usuario);
+        break;
+      default:
+        this.showToast('Selecione um relatório válido.', 'warning');
+        return;
+    }
+
+    if (!doc.totalRegistros) {
+      this.showToast(`Não há registros para o relatório de ${titulos[fonte] || 'dados selecionados'}.`, 'warning');
+      return;
     }
     this._docPreviaAtual = doc;
     const el = document.getElementById('rel-preview');

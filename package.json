@@ -1,6 +1,6 @@
 {
   "name": "ferramentas-e-estoque",
-  "version": "2.7.8",
+  "version": "3.0.0",
   "description": "Sistema web de controle de estoque e empréstimo de ferramentas — frontend estático + API serverless (Vercel) com PostgreSQL Neon; espelho offline no GitHub Pages via Apps Script.",
   "main": "app.js",
   "directories": {
