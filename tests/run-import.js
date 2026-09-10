@@ -118,6 +118,12 @@ function parserDoApp() {
   const seed = fs.readFileSync(path.join(ROOT, 'api', '_lib', 'seed-data.js'), 'utf8');
   ok('seed regenerado acompanha o estoque', seed.includes('193') || seed.includes('Registro de gaveta 80 mm'));
 
+  const importados = real.filter(r => /^id_[a-z0-9]+_\d+$/.test(r.id) && r.data === '2026-09-10');
+  ok('os 84 itens importados estão categorizados', importados.length === 84 && importados.every(r => r.categoria), `sem categoria=${importados.filter(r => !r.categoria).length}`);
+  ok('82 itens classificados como Hidráulica', importados.filter(r => r.categoria === 'Hidráulica').length === 82);
+  ok('2 itens classificados como Construção (prego e arame)', importados.filter(r => r.categoria === 'Construção').map(r => r.nome).sort().join('|') === 'Arame recozido – 2 kg|Prego 18 x 24');
+  ok('itens antigos sem categoria não foram alterados', real.filter(r => !r.categoria).length === 3);
+
   console.log(`\n${passed} passed, ${failed} failed — total ${passed + failed}`);
   process.exit(failed ? 1 : 0);
 })()

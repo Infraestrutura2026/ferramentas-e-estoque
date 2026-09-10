@@ -1320,7 +1320,7 @@ module.exports = {
     {
       "id": "id_wtp73b9ji_1789050996711",
       "nome": "Registro de gaveta 80 mm – metal",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1332,7 +1332,7 @@ module.exports = {
     {
       "id": "id_nqdtozdzw_1789050996711",
       "nome": "Registro de esfera 80 mm – metal",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1344,7 +1344,7 @@ module.exports = {
     {
       "id": "id_spj31u0ds_1789050996711",
       "nome": "Registro de esfera 50 mm – metal",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "9",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1356,7 +1356,7 @@ module.exports = {
     {
       "id": "id_14rbgoncs_1789050996711",
       "nome": "Registro de esfera 40 mm – metal",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1368,7 +1368,7 @@ module.exports = {
     {
       "id": "id_4cy3zhor0_1789050996711",
       "nome": "Registro de gaveta 50 mm – metal",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "14",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1380,7 +1380,7 @@ module.exports = {
     {
       "id": "id_b4a2khlao_1789050996711",
       "nome": "Registro de gaveta 32 mm – metal",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1392,7 +1392,7 @@ module.exports = {
     {
       "id": "id_i1dqkyoev_1789050996711",
       "nome": "Redução 100 mm x 50 mm – branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "88",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1404,7 +1404,7 @@ module.exports = {
     {
       "id": "id_gpnmsx40e_1789050996711",
       "nome": "Conexão tipo T 50 mm – descida branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "6",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1416,7 +1416,7 @@ module.exports = {
     {
       "id": "id_ljurry4li_1789050996711",
       "nome": "Conexão tipo Y 75 mm – descida branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "8",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1428,7 +1428,7 @@ module.exports = {
     {
       "id": "id_vctqobuf3_1789050996711",
       "nome": "Conexão tipo T 25 mm – descida branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "13",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1440,7 +1440,7 @@ module.exports = {
     {
       "id": "id_d6j8gkxx7_1789050996711",
       "nome": "Conexão tipo Y 100 mm x 75 mm x 100 mm – descida branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1452,7 +1452,7 @@ module.exports = {
     {
       "id": "id_rot2bfjxt_1789050996712",
       "nome": "Conexão tipo Y 100 mm – branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1464,7 +1464,7 @@ module.exports = {
     {
       "id": "id_63nlm6cz3_1789050996712",
       "nome": "Luva correr 100 mm – branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1476,7 +1476,7 @@ module.exports = {
     {
       "id": "id_uodhjctka_1789050996712",
       "nome": "Luva lisa 100 mm – branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1488,7 +1488,7 @@ module.exports = {
     {
       "id": "id_ervxld19u_1789050996712",
       "nome": "Curva 75 mm – branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "5",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1500,7 +1500,7 @@ module.exports = {
     {
       "id": "id_bu5cozngg_1789050996712",
       "nome": "Conexão tipo T 85 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "5",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1512,7 +1512,7 @@ module.exports = {
     {
       "id": "id_ee5b28m75_1789050996712",
       "nome": "Conexão tipo T 85 mm x 60 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1524,7 +1524,7 @@ module.exports = {
     {
       "id": "id_magopvm0e_1789050996712",
       "nome": "Conexão tipo T 75 mm x 50 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1536,7 +1536,7 @@ module.exports = {
     {
       "id": "id_8i6xxa09h_1789050996712",
       "nome": "Cotovelo 110 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1548,7 +1548,7 @@ module.exports = {
     {
       "id": "id_z53yx2rcr_1789050996712",
       "nome": "Luva correr 110 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1560,7 +1560,7 @@ module.exports = {
     {
       "id": "id_yergrubhy_1789050996712",
       "nome": "União 85 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1572,7 +1572,7 @@ module.exports = {
     {
       "id": "id_cqlbltacm_1789050996712",
       "nome": "Conexão 50 mm x 25 mm",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "45",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1584,7 +1584,7 @@ module.exports = {
     {
       "id": "id_6vs7bdqkt_1789050996712",
       "nome": "Curva 50 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "8",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1596,7 +1596,7 @@ module.exports = {
     {
       "id": "id_qims6jqc3_1789050996712",
       "nome": "Curva 45° de 50 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1608,7 +1608,7 @@ module.exports = {
     {
       "id": "id_mnzidw4l1_1789050996712",
       "nome": "Cotovelo 45° de 75 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "4",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1620,7 +1620,7 @@ module.exports = {
     {
       "id": "id_vwthv09jb_1789050996712",
       "nome": "Cotovelo 60 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1632,7 +1632,7 @@ module.exports = {
     {
       "id": "id_uhac222qw_1789050996712",
       "nome": "Cotovelo 75 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1644,7 +1644,7 @@ module.exports = {
     {
       "id": "id_z4owseewq_1789050996712",
       "nome": "Cotovelo 85 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1656,7 +1656,7 @@ module.exports = {
     {
       "id": "id_og6eovo1b_1789050996712",
       "nome": "Conexão tipo T 60 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "5",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1668,7 +1668,7 @@ module.exports = {
     {
       "id": "id_rse1t967x_1789050996712",
       "nome": "Luva correr 60 mm – marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1680,7 +1680,7 @@ module.exports = {
     {
       "id": "id_0vixd9g2o_1789050996712",
       "nome": "Cotovelo 22 mm x 1/2\" com rosca branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "10",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1692,7 +1692,7 @@ module.exports = {
     {
       "id": "id_qwtk91eis_1789050996712",
       "nome": "Luva 22 mm branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "7",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1704,7 +1704,7 @@ module.exports = {
     {
       "id": "id_y8zhcjs3l_1789050996712",
       "nome": "Cotovelo 22 mm branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1716,7 +1716,7 @@ module.exports = {
     {
       "id": "id_zhjod3ryl_1789050996712",
       "nome": "Conexão 22 mm x 3/4\" com rosca branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1728,7 +1728,7 @@ module.exports = {
     {
       "id": "id_796p12x8y_1789050996712",
       "nome": "Conector tipo T 25 mm x 1/2\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1740,7 +1740,7 @@ module.exports = {
     {
       "id": "id_b3ms1zyct_1789050996712",
       "nome": "Conector tipo T 3/4\" com rosca branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1752,7 +1752,7 @@ module.exports = {
     {
       "id": "id_fb24b8pr8_1789050996712",
       "nome": "Cotovelo 3/4\" com rosca branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1764,7 +1764,7 @@ module.exports = {
     {
       "id": "id_mzijawsmy_1789050996712",
       "nome": "Cotovelo 25 mm x 3/4\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1776,7 +1776,7 @@ module.exports = {
     {
       "id": "id_89n8gv5te_1789050996712",
       "nome": "Luva 25 mm x 3/4\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1788,7 +1788,7 @@ module.exports = {
     {
       "id": "id_e578pm82n_1789050996712",
       "nome": "Luva 25 mm x 1/2\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1800,7 +1800,7 @@ module.exports = {
     {
       "id": "id_uwbe7j79p_1789050996712",
       "nome": "Niple 1/2\" branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "7",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1812,7 +1812,7 @@ module.exports = {
     {
       "id": "id_2br0cv6jz_1789050996712",
       "nome": "Bucha metálica 3/4\" x 1/2\"",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1824,7 +1824,7 @@ module.exports = {
     {
       "id": "id_tcgshl4bd_1789050996712",
       "nome": "Bucha PVC 3/4\" x 1/2\"",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "5",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1836,7 +1836,7 @@ module.exports = {
     {
       "id": "id_ycuidjfub_1789050996712",
       "nome": "Tampão 1/2\" com rosca branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "23",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1848,7 +1848,7 @@ module.exports = {
     {
       "id": "id_dn721slm5_1789050996712",
       "nome": "Tampão 22 mm branco liso",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "5",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1860,7 +1860,7 @@ module.exports = {
     {
       "id": "id_duvet5hw8_1789050996712",
       "nome": "Tampão 20 mm marrom liso",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1872,7 +1872,7 @@ module.exports = {
     {
       "id": "id_f3h3aljgz_1789050996712",
       "nome": "Tampão 3/4\" com rosca interna branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1884,7 +1884,7 @@ module.exports = {
     {
       "id": "id_ldxq5hk4m_1789050996712",
       "nome": "Luva 25 mm x 3/4\" com rosca marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "6",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1896,7 +1896,7 @@ module.exports = {
     {
       "id": "id_qqpxw9ve9_1789050996712",
       "nome": "Luva 25 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "90",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1908,7 +1908,7 @@ module.exports = {
     {
       "id": "id_d3dnxaxcv_1789050996712",
       "nome": "Cotovelo 32 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "4",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1920,7 +1920,7 @@ module.exports = {
     {
       "id": "id_k6i013py2_1789050996712",
       "nome": "Conexão tipo T marrom 32 mm",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1932,7 +1932,7 @@ module.exports = {
     {
       "id": "id_tggmb5pex_1789050996712",
       "nome": "Luva de correr 32 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1944,7 +1944,7 @@ module.exports = {
     {
       "id": "id_cpvfhmiud_1789050996712",
       "nome": "Engate 40 cm",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "10",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1956,7 +1956,7 @@ module.exports = {
     {
       "id": "id_annz5za2y_1789050996712",
       "nome": "Cotovelo 40 mm branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "20",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1968,7 +1968,7 @@ module.exports = {
     {
       "id": "id_b5peuxcdp_1789050996712",
       "nome": "Spud sanfonado",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "25",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -1980,7 +1980,7 @@ module.exports = {
     {
       "id": "id_h2mhigfir_1789050996712",
       "nome": "Prego 18 x 24",
-      "categoria": "",
+      "categoria": "Construção",
       "quantidadeAtual": "45",
       "quantidadeMinima": "",
       "unidade": "pct",
@@ -1992,7 +1992,7 @@ module.exports = {
     {
       "id": "id_ttfm8u3jo_1789050996712",
       "nome": "Arame recozido – 2 kg",
-      "categoria": "",
+      "categoria": "Construção",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "rolos",
@@ -2004,7 +2004,7 @@ module.exports = {
     {
       "id": "id_0t1jduc29_1789050996712",
       "nome": "Cola para tubos e conexões",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "13",
       "quantidadeMinima": "",
       "unidade": "tubos",
@@ -2016,7 +2016,7 @@ module.exports = {
     {
       "id": "id_3h4tvagyh_1789050996712",
       "nome": "Anel de vedação 100 mm – 20 un./pacote",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "7",
       "quantidadeMinima": "",
       "unidade": "pct",
@@ -2028,7 +2028,7 @@ module.exports = {
     {
       "id": "id_zbs2z6354_1789050996712",
       "nome": "Cotovelo azul 40 mm",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "12",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2040,7 +2040,7 @@ module.exports = {
     {
       "id": "id_z3trzq8hc_1789050996712",
       "nome": "Cotovelo 45° 40 mm branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "10",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2052,7 +2052,7 @@ module.exports = {
     {
       "id": "id_rjdev9hsh_1789050996712",
       "nome": "Cotovelo 50 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "7",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2064,7 +2064,7 @@ module.exports = {
     {
       "id": "id_m4q8bxj58_1789050996712",
       "nome": "Cotovelo 45° 50 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "4",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2076,7 +2076,7 @@ module.exports = {
     {
       "id": "id_w4negckat_1789050996712",
       "nome": "Conexão tipo T 50 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2088,7 +2088,7 @@ module.exports = {
     {
       "id": "id_o5r1sei3j_1789050996712",
       "nome": "Luva com rosca 50 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2100,7 +2100,7 @@ module.exports = {
     {
       "id": "id_mqp52jfjx_1789050996712",
       "nome": "Cotovelo 40 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "14",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2112,7 +2112,7 @@ module.exports = {
     {
       "id": "id_ilwfq2u0e_1789050996712",
       "nome": "Tampão 40 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "8",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2124,7 +2124,7 @@ module.exports = {
     {
       "id": "id_2b48xrdu1_1789050996712",
       "nome": "Conexão tipo T de 40 x 25 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "8",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2136,7 +2136,7 @@ module.exports = {
     {
       "id": "id_it5s8lsjp_1789050996712",
       "nome": "Conexão tipo T 40 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2148,7 +2148,7 @@ module.exports = {
     {
       "id": "id_bzgo8d5tj_1789050996712",
       "nome": "Luva com rosca 40 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2160,7 +2160,7 @@ module.exports = {
     {
       "id": "id_jk97avpqa_1789050996712",
       "nome": "Redução de 50 mm para 25 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2172,7 +2172,7 @@ module.exports = {
     {
       "id": "id_qhquslh6b_1789050996712",
       "nome": "Redução de 50 mm para 32 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2184,7 +2184,7 @@ module.exports = {
     {
       "id": "id_z9aa40j2f_1789050996712",
       "nome": "Conexão tipo T 40 mm branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "6",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2196,7 +2196,7 @@ module.exports = {
     {
       "id": "id_as64t2xls_1789050996712",
       "nome": "Luva 40 mm branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "5",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2208,7 +2208,7 @@ module.exports = {
     {
       "id": "id_hqohqesod_1789050996712",
       "nome": "Luva com rosca 20 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "269",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2220,7 +2220,7 @@ module.exports = {
     {
       "id": "id_fjwo3rlz5_1789050996712",
       "nome": "Luva conexão 22 x 1/2\" branca com rosca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2232,7 +2232,7 @@ module.exports = {
     {
       "id": "id_zvbvreas1_1789050996712",
       "nome": "Conexão tipo T 20 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "31",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2244,7 +2244,7 @@ module.exports = {
     {
       "id": "id_2t0ecp30n_1789050996712",
       "nome": "Cotovelo 20 mm marrom",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "34",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2256,7 +2256,7 @@ module.exports = {
     {
       "id": "id_xumgioxgv_1789050996712",
       "nome": "Cotovelo 25 x 1/2\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "14",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2268,7 +2268,7 @@ module.exports = {
     {
       "id": "id_yh73idrwg_1789050996712",
       "nome": "Cotovelo 20 mm x 1/2\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2280,7 +2280,7 @@ module.exports = {
     {
       "id": "id_4mjp9xxhh_1789050996712",
       "nome": "Conexão tipo T 20 mm x 1/2\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "3",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2292,7 +2292,7 @@ module.exports = {
     {
       "id": "id_yej1thxay_1789050996712",
       "nome": "Luva conexão 25 mm x 1/2\" com rosca azul",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "10",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2304,7 +2304,7 @@ module.exports = {
     {
       "id": "id_fbqg13gd3_1789050996712",
       "nome": "Niple paralelo com rosca 3/4\" branco",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "2",
       "quantidadeMinima": "",
       "unidade": "un",
@@ -2316,7 +2316,7 @@ module.exports = {
     {
       "id": "id_oztlxfq6k_1789050996712",
       "nome": "Conexão tipo T 22 mm branca",
-      "categoria": "",
+      "categoria": "Hidráulica",
       "quantidadeAtual": "9",
       "quantidadeMinima": "",
       "unidade": "un",

@@ -228,7 +228,7 @@ tests/
 
 ## 🧪 Testes
 
-Validações executadas (**236 testes**, com CI no GitHub Actions):
+Validações executadas (**240 testes**, com CI no GitHub Actions):
 
 ```bash
 npm test   # roda as seis suítes
@@ -237,7 +237,7 @@ node tests/run-contract.js # 17 — contrato do Apps Script
 node tests/run-neon.js     # 57 — API Neon/Vercel (SQL em lote, segurança, HTTP)
 node tests/run-migrate.js  # 15 — migração online em lotes (sem rede/banco real)
 node tests/run-exports.js  # 85 — relatórios e exportação CSV (lote, 8 abas, admin)
-node tests/run-import.js   # 39 — importação de itens para o estoque
+node tests/run-import.js   # 43 — importação de itens para o estoque
 ```
 
 - Sintaxe de todos os módulos (`node --check`);
