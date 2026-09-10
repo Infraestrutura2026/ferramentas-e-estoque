@@ -18,6 +18,15 @@
   duplicatas não voltam ao CSV nem ao seed.
 - Suite completa: **243/243 testes aprovados**.
 
+### Solicitações: campo Item busca no estoque (2026-09-10)
+
+- Nova Solicitação agora tem o campo Item ligado ao estoque: ao digitar, abre a
+  lista de sugestões com o nome exato do item + saldo, unidade e local.
+- Segue o mesmo padrão do campo Ferramenta nos empréstimos (datalist); continua
+  permitindo digitar um item novo que ainda não existe no estoque.
+- Efeito colateral positivo: como o nome salvo passa a ser o exato do estoque,
+  a baixa automática ao marcar "Entregue" localiza o item sem ambiguidade.
+
 ## [3.0.0] — 2026-09-01
 
 ### Implementação de relatórios gerenciais

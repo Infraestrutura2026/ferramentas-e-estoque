@@ -183,6 +183,8 @@ const pedidosModule = {
     const entregues = todos.filter(p => utils.normalize(p.status).includes('entreg')).length;
     const valorTotal = todos.reduce((s, p) => s + (parseFloat(String(p.valorTotal).replace(',', '.')) || 0), 0);
 
+    const estoqueOpts = this._estoqueOpts();
+
     container.innerHTML = `
       <div class="space-y-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -254,6 +256,7 @@ const pedidosModule = {
           </div>
           ${utils.paginationControls('pedidosModule', pg.page, pg.pages, pg.total)}
         </div>
+        <datalist id="dlEstoquePedidos">${estoqueOpts}</datalist>
       </div>
     `;
   },
@@ -262,10 +265,29 @@ const pedidosModule = {
   setFiltroStatus(v) { this.filtroStatus = v; this.pagina = 1; this.render(document.getElementById('main-content')); },
   setPage(p) { this.pagina = p; this.render(document.getElementById('main-content')); },
 
+  /* Opções do estoque para o datalist do campo Item: nome exato do estoque
+     (é esse nome que a baixa automática usa para localizar o item). */
+  _estoqueOpts() {
+    const vistos = new Set();
+    const itens = [];
+    for (const e of (app.data.estoque || [])) {
+      const nome = e.nome || e.item || '';
+      if (!nome || vistos.has(nome)) continue;
+      vistos.add(nome);
+      itens.push({ nome, saldo: e.quantidadeAtual, unidade: e.unidade, local: e.local });
+    }
+    itens.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    return itens.map(({ nome, saldo, unidade, local }) => {
+      const detalhe = [`saldo ${saldo ?? '—'}`, unidade || '', local || ''].filter(Boolean).join(' · ');
+      return `<option value="${utils.escapeHtml(nome)}">${utils.escapeHtml(detalhe ? nome + ' — ' + detalhe : nome)}</option>`;
+    }).join('');
+  },
+
   _fields(item = {}) {
     return [
       { key: 'data', label: 'Data da Solicitação', type: 'date', value: item.data || utils.today(), required: true },
-      { key: 'item', label: 'Item', type: 'text', value: item.item, required: true },
+      { key: 'item', label: 'Item', type: 'text', value: item.item, required: true,
+        placeholder: 'Digite para buscar no estoque…' },
       { key: 'solicitante', label: 'Solicitante', type: 'text', value: item.solicitante, required: true },
       { key: 'quantidade', label: 'Quantidade', type: 'number', value: item.quantidade, required: true },
       { key: 'localUso', label: 'Local de Utilização', type: 'text', value: item.localUso,
@@ -284,8 +306,17 @@ const pedidosModule = {
   abrirModal(id) {
     const item = id ? (app.data[this.ABA] || []).find(p => p.id === id) : null;
     const fields = this._fields(item || {});
-    app.openModal(item ? 'Editar Solicitação' : 'Nova Solicitação', utils.formHtml(fields),
+    const totalEstoque = (app.data.estoque || []).filter(e => e.nome || e.item).length;
+    const dicaEstoque = totalEstoque > 0
+      ? `Digite o nome do item para buscar entre os ${totalEstoque} itens do estoque.`
+      : 'Estoque ainda não carregado — digite o nome do item manualmente.';
+    app.openModal(item ? 'Editar Solicitação' : 'Nova Solicitação', utils.formHtml(fields) + `
+      <div class="mt-2 text-[11px] text-slate-500"><i class="fas fa-info-circle mr-1"></i>${dicaEstoque}</div>
+    `,
       () => this.salvar(fields, item), 'Salvar');
+    // Conecta o datalist do estoque ao campo Item (selecionável com o nome exato do estoque)
+    const inp = document.getElementById('fld_item');
+    if (inp) inp.setAttribute('list', 'dlEstoquePedidos');
     this._bindCalculoTotal();
   },
 
