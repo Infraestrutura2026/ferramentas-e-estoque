@@ -104,6 +104,42 @@ https://<projeto>.vercel.app/api/setup?migrate=1
 Essa URL também é não destrutiva: adiciona somente chaves ausentes do seed e
 não remove nem atualiza registros existentes.
 
+## 📥 Importando uma lista de itens para o estoque
+
+Para lançar uma contagem/lista recebida (papel, planilha ou e-mail) sem digitar
+item a item na tela:
+
+```bash
+# 1) cole a lista num arquivo — uma linha por item, na ordem que preferir
+#    (nome, quantidade, mínimo, unidade, categoria, local)
+# 2) prévia: mostra o que vai acontecer sem gravar nada
+npm run import:estoque -- --arquivo data/importar-2026-09-10.txt
+
+# 3) grava em data/estoque.csv e regenera o seed automaticamente
+npm run import:estoque -- --arquivo data/importar-2026-09-10.txt --gravar
+```
+
+Formatos aceitos: texto livre separado por vírgula, `;`, tab ou `|`
+(`Tomada 20A, Elétrica, 40, 10, un, Almoxarifado`, `Registro 3/4 | 12 un | Hidráulica`)
+ou CSV com cabeçalho (`nome;categoria;quantidade;minimo;unidade;local` — os
+títulos são reconhecidos em português, com ou sem acento). Linhas começando com
+`#` e cabeçalhos repetidos no meio do arquivo são ignorados.
+
+Regras do importador:
+
+| Situação | Comportamento |
+|----------|---------------|
+| Item com o mesmo nome já cadastrado | **soma** a quantidade e atualiza `updatedAt` (`--duplicados novo` cria separado; `--duplicados parar` ignora) |
+| Repetição dentro do próprio arquivo | somada em um único lançamento |
+| Campo que veio vazio | **fica vazio** — nada é inventado (`--min-padrao 10` preenche o mínimo, se quiser) |
+| Nomes com aspas de polegada (`1/2"`) | preservados com escape RFC 4180 |
+
+> ⚠️ O importador **não é idempotente**: rodar duas vezes com a mesma lista
+> soma as quantidades outra vez. Confira a prévia antes de usar `--gravar`.
+
+Depois de gravar, publique online com `npm run migrate:online` (veja a seção
+acima) ou abra `https://<projeto>.vercel.app/api/setup?migrate=1`.
+
 ## 🌐 Publicando online (acesso por outros computadores)
 
 ### Produção — Vercel + Neon (recomendado, v2.6.1)
@@ -174,6 +210,7 @@ api/              ★ v2.6.0 — Backend serverless Vercel + Neon
   _lib/seed-data.js Carga inicial embutida (gerada de data/*.csv)
 dev/server.js     Servidor local idêntico à produção (API em memória)
 scripts/gen-seed.js Regenera o seed-data.js após atualizar CSVs
+scripts/import-estoque.js Importa lista colada/CSV para data/estoque.csv
 scripts/migrate-online.js Migra data/*.csv para PostgreSQL ou API online
 vercel.json       Configuração das funções + headers CORS
 apps-script/      Backend legado do espelho (Google Sheets)
@@ -186,19 +223,21 @@ tests/
   run-neon.js     Testes da API Neon/Vercel (SQL, segurança, contrato, HTTP)
   run-migrate.js  Testes da migração online em lotes
   run-exports.js  Testes de relatórios e exportação CSV (v2.6.1)
+  run-import.js   Testes do importador de itens do estoque
 ```
 
 ## 🧪 Testes
 
-Validações executadas na v2.6.1 (**135 testes**, com CI no GitHub Actions):
+Validações executadas (**240 testes**, com CI no GitHub Actions):
 
 ```bash
-npm test   # roda as cinco suítes
+npm test   # roda as seis suítes
 node tests/run.js          # 23 — geral (sintaxe, CSV, utils, módulos)
-node tests/run-contract.js # 15 — contrato do Apps Script
-node tests/run-neon.js     # 53 — API Neon/Vercel (SQL em lote, segurança, HTTP)
+node tests/run-contract.js # 17 — contrato do Apps Script
+node tests/run-neon.js     # 57 — API Neon/Vercel (SQL em lote, segurança, HTTP)
 node tests/run-migrate.js  # 15 — migração online em lotes (sem rede/banco real)
-node tests/run-exports.js  # 29 — relatórios e exportação CSV (lote, 8 abas, admin)
+node tests/run-exports.js  # 85 — relatórios e exportação CSV (lote, 8 abas, admin)
+node tests/run-import.js   # 43 — importação de itens para o estoque
 ```
 
 - Sintaxe de todos os módulos (`node --check`);

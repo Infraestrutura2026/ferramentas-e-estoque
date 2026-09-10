@@ -1,0 +1,88 @@
+Quantidade	Unidade	Descrição
+1	UN	Registro de gaveta 80 mm – metal
+2	UN	Registro de esfera 80 mm – metal
+3	UN	Registro de esfera 50 mm – metal
+1	UN	Registro de esfera 40 mm – metal
+14	UN	Registro de gaveta 50 mm – metal
+1	UN	Registro de gaveta 32 mm – metal
+6	UN	Registro de esfera 50 mm – metal
+88	UN	Redução 100 mm x 50 mm – branca
+6	UN	Conexão tipo T 50 mm – descida branca
+8	UN	Conexão tipo Y 75 mm – descida branca
+13	UN	Conexão tipo T 25 mm – descida branca
+2	UN	Conexão tipo Y 100 mm x 75 mm x 100 mm – descida branca
+1	UN	Conexão tipo Y 100 mm – branca
+3	UN	Luva correr 100 mm – branca
+3	UN	Luva lisa 100 mm – branca
+5	UN	Curva 75 mm – branca
+5	UN	Conexão tipo T 85 mm – marrom
+2	UN	Conexão tipo T 85 mm x 60 mm – marrom
+1	UN	Conexão tipo T 75 mm x 50 mm – marrom
+3	UN	Cotovelo 110 mm – marrom
+1	UN	Luva correr 110 mm – marrom
+1	UN	União 85 mm – marrom
+45	UN	Conexão 50 mm x 25 mm
+8	UN	Curva 50 mm – marrom
+2	UN	Curva 45° de 50 mm – marrom
+4	UN	Cotovelo 45° de 75 mm – marrom
+1	UN	Cotovelo 60 mm – marrom
+2	UN	Cotovelo 75 mm – marrom
+1	UN	Cotovelo 85 mm – marrom
+5	UN	Conexão tipo T 60 mm – marrom
+3	UN	Luva correr 60 mm – marrom
+Quantidade	Unidade	Descrição
+10	UN	Cotovelo 22 mm x 1/2" com rosca branco
+7	UN	Luva 22 mm branca
+1	UN	Cotovelo 22 mm branco
+3	UN	Conexão 22 mm x 3/4" com rosca branco
+1	UN	Cotovelo 22 mm branco
+1	UN	Conector tipo T 25 mm x 1/2" com rosca azul
+1	UN	Conector tipo T 3/4" com rosca branco
+3	UN	Cotovelo 3/4" com rosca branco
+3	UN	Cotovelo 25 mm x 3/4" com rosca azul
+1	UN	Luva 25 mm x 3/4" com rosca azul
+1	UN	Luva 25 mm x 1/2" com rosca azul
+7	UN	Niple 1/2" branco
+1	UN	Bucha metálica 3/4" x 1/2"
+5	UN	Bucha PVC 3/4" x 1/2"
+23	UN	Tampão 1/2" com rosca branco
+5	UN	Tampão 22 mm branco liso
+2	UN	Tampão 20 mm marrom liso
+1	UN	Tampão 3/4" com rosca interna branco
+6	UN	Luva 25 mm x 3/4" com rosca marrom
+90	UN	Luva 25 mm marrom
+4	UN	Cotovelo 32 mm marrom
+1	UN	Conexão tipo T marrom 32 mm
+1	UN	Luva de correr 32 mm marrom
+10	UN	Engate 40 cm
+20	UN	Cotovelo 40 mm branco
+25	UN	Spud sanfonado
+45	PCT	Prego 18 x 24
+2	ROLOS	Arame recozido – 2 kg
+13	TUBOS	Cola para tubos e conexões
+7	PCT	Anel de vedação 100 mm – 20 un./pacote
+12	UN	Cotovelo azul 40 mm
+10	UN	Cotovelo 45° 40 mm branco
+7	UN	Cotovelo 50 mm marrom
+4	UN	Cotovelo 45° 50 mm marrom
+1	UN	Conexão tipo T 50 mm marrom
+1	UN	Luva com rosca 50 mm marrom
+14	UN	Cotovelo 40 mm marrom
+8	UN	Tampão 40 mm marrom
+8	UN	Conexão tipo T de 40 x 25 mm marrom
+2	UN	Conexão tipo T 40 mm marrom
+1	UN	Luva com rosca 40 mm marrom
+2	UN	Redução de 50 mm para 25 mm marrom
+2	UN	Redução de 50 mm para 32 mm marrom
+6	UN	Conexão tipo T 40 mm branca
+5	UN	Luva 40 mm branca
+269	UN	Luva com rosca 20 mm marrom
+2	UN	Luva conexão 22 x 1/2" branca com rosca
+31	UN	Conexão tipo T 20 mm marrom
+34	UN	Cotovelo 20 mm marrom
+14	UN	Cotovelo 25 x 1/2" com rosca azul
+1	UN	Cotovelo 20 mm x 1/2" com rosca azul
+3	UN	Conexão tipo T 20 mm x 1/2" com rosca azul
+10	UN	Luva conexão 25 mm x 1/2" com rosca azul
+2	UN	Niple paralelo com rosca 3/4" branco
+9	UN	Conexão tipo T 22 mm branca
