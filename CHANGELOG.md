@@ -1,5 +1,23 @@
 # Changelog — Ferramentas & Estoque
 
+## [Não publicado]
+
+### Limpeza de duplicatas do estoque (2026-09-10)
+
+- Removidos 21 cadastros duplicados com nome antigo diretamente no banco online
+  (estoque 239 → 218); cada um tinha equivalente com nome novo e mesma quantidade.
+- `eadb5aa2` mantido online por decisão: o registro divergiu do CSV
+  ("Disjuntor unipolar 10A", qtd 30, revisado em 08/09) e o suposto equivalente
+  ("Disjuntor trifásico 10A") é outro produto; só a linha obsoleta saiu do CSV/seed.
+- `data/estoque.csv`: removidas as 24 linhas obsoletas — 193 → 169 itens, total 300 → 276
+  (as 21 acima + `eadb5aa2` + as 2 já apagadas online: `4ced635a`, `b832e72f`).
+- `api/_lib/seed-data.js` regenerado (`npm run gen`); sem isso um futuro
+  `/api/setup?migrate=1` re-inseriria as duplicatas.
+- Testes sem números fixos: `run-migrate` deriva o total das linhas dos CSVs e o
+  `run-import` deriva o lote da fonte de importação; regressão garante que as 24
+  duplicatas não voltam ao CSV nem ao seed.
+- Suite completa: **243/243 testes aprovados**.
+
 ## [3.0.0] — 2026-09-01
 
 ### Implementação de relatórios gerenciais
