@@ -190,18 +190,6 @@ module.exports = {
       "updatedAt": "2026-07-24"
     },
     {
-      "id": "4552dffe-a9f7-4a31-a",
-      "nome": "Fio vermelho 6mm - bonina",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "10",
-      "quantidadeMinima": "2",
-      "unidade": "un",
-      "local": "",
-      "data": "2026-07-24",
-      "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
-    },
-    {
       "id": "9d5ee2c8-5078-47b1-b",
       "nome": "Fio azul 6mm - bobina",
       "categoria": "Elétrica",
@@ -562,18 +550,6 @@ module.exports = {
       "updatedAt": "2026-07-24"
     },
     {
-      "id": "eadb5aa2-e22a-42a5-a",
-      "nome": "Disjuntor 10A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "2",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "2026-07-24",
-      "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
-    },
-    {
       "id": "89a49e24-2629-4fb6-b",
       "nome": "Disjuntor C25",
       "categoria": "Elétrica",
@@ -620,18 +596,6 @@ module.exports = {
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
       "updatedAt": "2026-07-24"
-    },
-    {
-      "id": "434573aa-6669-477e-9a71-d16536a24f61",
-      "nome": "Fusível 20A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "7",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
     },
     {
       "id": "c03c8734-d5da-4f1c-a70a-b1e5edc17d05",
@@ -682,42 +646,6 @@ module.exports = {
       "updatedAt": ""
     },
     {
-      "id": "db1af47f-1993-48fe-9231-7c8b7ed72f80",
-      "nome": "Plafons c/ bocal",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "100",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "e1fc6d9c-0418-4490-9232-c196f888568c",
-      "nome": "Suporte 90° de pivô 23cm cabo azul",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "30",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "3a353ec2-f157-420e-a2ba-fb6f16bd6e7b",
-      "nome": "Suporte 90° de pivô 23cm cabo preto",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "11",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
       "id": "888c0f96-58d1-4c38-843d-d407f40f822f",
       "nome": "Suporte 90° de pivô 23cm cinza pergameno",
       "categoria": "Elétrica",
@@ -754,58 +682,10 @@ module.exports = {
       "updatedAt": ""
     },
     {
-      "id": "508bbee4-aa10-4705-9396-3d51d1c6515c",
-      "nome": "Espuma grafite",
-      "categoria": "Construção",
-      "quantidadeAtual": "24",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "8210a6ca-244f-4edd-9683-9b734518cf1f",
-      "nome": "Tubo de cola PVC",
-      "categoria": "Hidráulica",
-      "quantidadeAtual": "122",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
       "id": "cbd60682-f61c-489f-974c-e16e5b28ff87",
       "nome": "Armação curta 25mm x 3/4 polegadas",
       "categoria": "Hidráulica",
       "quantidadeAtual": "90",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "bbdfec97-fc09-4525-8e57-855be71659b1",
-      "nome": "Luva 25mm",
-      "categoria": "Hidráulica",
-      "quantidadeAtual": "200",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "3f205877-3d91-43ae-b263-93273d4bb395",
-      "nome": "Joelho lateral 25mm x 1/2 polegadas rosca",
-      "categoria": "Hidráulica",
-      "quantidadeAtual": "150",
       "quantidadeMinima": "10",
       "unidade": "un",
       "local": "",
@@ -826,66 +706,6 @@ module.exports = {
       "updatedAt": ""
     },
     {
-      "id": "4ced635a-0403-47be-ab86-6f3eeef2c3ca",
-      "nome": "Disjuntor tripolar 32A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "9",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "b832e72f-52a7-4092-b261-f7fd86130e0b",
-      "nome": "Disjuntor tripolar 63A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "13",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "988d47ab-d75e-40fa-8112-d1fd079041b8",
-      "nome": "Disjuntor bipolar 32A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "16",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "0d26f7f8-8ffb-4922-bf07-a7075d79868f",
-      "nome": "Disjuntor bipolar 16A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "23",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "62780823-4a26-4951-be80-f76e321db78c",
-      "nome": "Disjuntor bipolar 10A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "16",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
       "id": "367a6558-7fb7-4199-97ec-fcad5feb97fc",
       "nome": "Disjuntor tripolar 16A",
       "categoria": "Elétrica",
@@ -898,44 +718,8 @@ module.exports = {
       "updatedAt": ""
     },
     {
-      "id": "09ec42d3-91e9-4076-93be-57594c9e80e4",
-      "nome": "Módulo p/ acionamento eletrônico",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "7",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "11a090e7-13e7-4621-b1b3-0afcb37407e5",
-      "nome": "Fio de alimentação 12V",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "13",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
       "id": "17e5addb-757d-495f-8ab0-8fc9f838090c",
       "nome": "Lâmpada LED varetinha 15W",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "1",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "bd398ad7-0a17-4953-a4e2-99aad1298e44",
-      "nome": "Luminária emergência",
       "categoria": "Elétrica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "1",
@@ -958,83 +742,11 @@ module.exports = {
       "updatedAt": ""
     },
     {
-      "id": "096a9b33-a67b-42af-82f5-42ae45e38920",
-      "nome": "Plug de tomada macho 20A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "15",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "e35f293b-b34c-45e5-b9f0-613b81aa5663",
-      "nome": "Plug de tomada fêmea 20A",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "15",
-      "quantidadeMinima": "10",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "1be252a7-7804-438c-9240-403cdf3e83fe",
-      "nome": "Adaptador bainha p/ cabo de gração",
-      "categoria": "Elétrica",
-      "quantidadeAtual": "9",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "ff7946da-215d-42d1-ad48-d85b7db059a2",
-      "nome": "Fita aluminizada 45mm x 4,5m",
-      "categoria": "Construção",
-      "quantidadeAtual": "6",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
       "id": "feb43f39-ec7c-4845-93d4-d4a4745ee7c8",
       "nome": "Cortador de tubo de cobre",
       "categoria": "Hidráulica",
       "quantidadeAtual": "1",
       "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "d042a1d1-b2f1-4e69-9dfa-d383074105f4",
-      "nome": "Fita PVC 10x18cm",
-      "categoria": "Hidráulica",
-      "quantidadeAtual": "9",
-      "quantidadeMinima": "1",
-      "unidade": "un",
-      "local": "",
-      "data": "",
-      "createdAt": "",
-      "updatedAt": ""
-    },
-    {
-      "id": "1c3f9c89-b7f7-4be8-9326-de8222097efe",
-      "nome": "Reforço de torneira Sima rebitado",
-      "categoria": "Hidráulica",
-      "quantidadeAtual": "100",
-      "quantidadeMinima": "10",
       "unidade": "un",
       "local": "",
       "data": "",

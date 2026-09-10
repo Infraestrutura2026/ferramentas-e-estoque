@@ -27,7 +27,21 @@ function ok(name, condition, message = '') {
 (async function main() {
   const fonte = carregarFonte(path.join(ROOT, 'data'));
   ok('migrate carrega os 8 CSVs', ABAS_VALIDAS.every(aba => fonte.registros[aba]));
-  ok('migrate carrega 300 registros da fonte', totalRegistros(fonte.registros) === 300);
+  // Esperado derivado dos próprios CSVs (contagem crua de linhas, sem o cabeçalho),
+  // por um caminho independente do carregarFonte/parseCSV — sem número fixo.
+  const esperadoPorAba = {};
+  for (const aba of ABAS_VALIDAS) {
+    const bruto = fs.readFileSync(path.join(ROOT, 'data', `${aba}.csv`), 'utf8');
+    const linhas = bruto.split(/\r?\n/);
+    if (linhas.length && linhas[linhas.length - 1] === '') linhas.pop();
+    const conteudo = linhas.filter(l => l !== '');
+    esperadoPorAba[aba] = conteudo.length ? conteudo.length - 1 : 0;
+  }
+  const totalEsperado = Object.values(esperadoPorAba).reduce((s, n) => s + n, 0);
+  ok('migrate carrega todas as linhas de cada CSV',
+    ABAS_VALIDAS.every(aba => (fonte.registros[aba] || []).length === esperadoPorAba[aba]),
+    JSON.stringify(esperadoPorAba));
+  ok(`migrate carrega ${totalEsperado} registros da fonte`, totalRegistros(fonte.registros) === totalEsperado);
   ok('migrate valida a chave usuario da aba usuarios', fonte.registros.usuarios.every(r => r.usuario));
   ok('normaliza base sem duplicar /api', normalizarBaseAPI('https://projeto.vercel.app/') === 'https://projeto.vercel.app/api');
   ok('normaliza base que já termina em /api', normalizarBaseAPI('https://projeto.vercel.app/api/') === 'https://projeto.vercel.app/api');
@@ -107,7 +121,15 @@ function ok(name, condition, message = '') {
   await setupHandler(req, res);
   const setupResposta = JSON.parse(res.corpo);
   ok('setup?migrate=1 retorna sucesso', setupResposta.success === true && setupResposta.message.includes('Migração'));
-  ok('setup?migrate=1 completa tabelas parcialmente carregadas', setupResposta.contagens.estoque === 193 && setupResposta.contagens.ferramentas === 64 && setupResposta.contagens.usuarios === 3);
+  // Completa até o tamanho real da fonte (derivado dos CSVs), sem número fixo.
+  const esperadoEstoque = fonte.registros.estoque.length;
+  const esperadoFerramentas = fonte.registros.ferramentas.length;
+  const esperadoUsuarios = fonte.registros.usuarios.length;
+  ok('setup?migrate=1 completa tabelas parcialmente carregadas',
+    setupResposta.contagens.estoque === esperadoEstoque &&
+    setupResposta.contagens.ferramentas === esperadoFerramentas &&
+    setupResposta.contagens.usuarios === esperadoUsuarios,
+    JSON.stringify(setupResposta.contagens));
 
   console.log(`\n${passed} passed, ${failed} failed — total ${passed + failed}`);
   process.exit(failed ? 1 : 0);

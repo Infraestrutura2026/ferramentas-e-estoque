@@ -110,16 +110,46 @@ function parserDoApp() {
     fs.rmSync(alvo, { force: true });
   }
 
-  /* ── estado real do repositório ── */
+  /* ── estado real do repositório (sem números fixos: tudo derivado dos arquivos) ── */
   const real = parseCSV(fs.readFileSync(path.join(ROOT, 'data', 'estoque.csv'), 'utf8'));
-  ok('data/estoque.csv tem 193 itens', real.length === 193, `itens=${real.length}`);
-  ok('data/estoque.csv mantém os 109 itens anteriores', real.filter(r => !/^id_/.test(r.id)).length === 109);
-  ok('ids únicos em data/estoque.csv', new Set(real.map(r => r.id)).size === real.length);
-  const seed = fs.readFileSync(path.join(ROOT, 'api', '_lib', 'seed-data.js'), 'utf8');
-  ok('seed regenerado acompanha o estoque', seed.includes('193') || seed.includes('Registro de gaveta 80 mm'));
-
+  const antigos = real.filter(r => !/^id_/.test(r.id));
   const importados = real.filter(r => /^id_[a-z0-9]+_\d+$/.test(r.id) && r.data === '2026-09-10');
-  ok('os 84 itens importados estão categorizados', importados.length === 84 && importados.every(r => r.categoria), `sem categoria=${importados.filter(r => !r.categoria).length}`);
+  // Tamanho esperado do lote derivado da própria fonte: re-simula a importação
+  // sobre um estoque vazio (sem gravar) e conta quantos nomes únicos a lista gera.
+  const simulado = rodar(fs.readFileSync(ORIGEM, 'utf8'), {
+    destino: path.join(os.tmpdir(), `estoque-vazio-${process.pid}-${Date.now()}.csv`),
+    duplicados: 'somar', minPadrao: '', gravar: false,
+  });
+  const loteEsperado = simulado.criados.length;
+  ok('lote importado está completo (derivado da fonte)', importados.length === loteEsperado, `${importados.length}/${loteEsperado}`);
+  ok('data/estoque.csv = antigos + lote importado', real.length === antigos.length + importados.length, `itens=${real.length} antigos=${antigos.length} importados=${importados.length}`);
+  ok('ids únicos em data/estoque.csv', new Set(real.map(r => r.id)).size === real.length);
+  const seedData = require('../api/_lib/seed-data');
+  ok('seed regenerado acompanha o estoque', seedData.estoque.length === real.length && seedData.estoque.some(r => r.nome === 'Registro de gaveta 80 mm – metal'), `seed=${seedData.estoque.length} csv=${real.length}`);
+
+  // Regressão da limpeza de 2026-09-10: as 24 duplicatas removidas não voltam
+  // ao CSV nem ao seed (senão um futuro /api/setup?migrate=1 as re-insere online).
+  // Inclui eadb5aa2 (linha obsoleta "Disjuntor 10A"): o registro online divergiu
+  // ("Disjuntor unipolar 10A", qtd 30) e foi mantido por decisão — o seed não
+  // deve carregar sombra obsoleta dele, e o migrate só insere chaves ausentes.
+  const DUPLICATAS_REMOVIDAS = [
+    '0d26f7f8-8ffb-4922-bf07-a7075d79868f', '434573aa-6669-477e-9a71-d16536a24f61',
+    'bbdfec97-fc09-4525-8e57-855be71659b1', '096a9b33-a67b-42af-82f5-42ae45e38920',
+    'e35f293b-b34c-45e5-b9f0-613b81aa5663', '09ec42d3-91e9-4076-93be-57594c9e80e4',
+    '8210a6ca-244f-4edd-9683-9b734518cf1f', '3f205877-3d91-43ae-b263-93273d4bb395',
+    'e1fc6d9c-0418-4490-9232-c196f888568c', '3a353ec2-f157-420e-a2ba-fb6f16bd6e7b',
+    'bd398ad7-0a17-4953-a4e2-99aad1298e44', 'ff7946da-215d-42d1-ad48-d85b7db059a2',
+    'd042a1d1-b2f1-4e69-9dfa-d383074105f4', '4552dffe-a9f7-4a31-a',
+    'eadb5aa2-e22a-42a5-a', '11a090e7-13e7-4621-b1b3-0afcb37407e5',
+    '988d47ab-d75e-40fa-8112-d1fd079041b8', '62780823-4a26-4951-be80-f76e321db78c',
+    '1be252a7-7804-438c-9240-403cdf3e83fe', '1c3f9c89-b7f7-4be8-9326-de8222097efe',
+    'db1af47f-1993-48fe-9231-7c8b7ed72f80', '508bbee4-aa10-4705-9396-3d51d1c6515c',
+    '4ced635a-0403-47be-ab86-6f3eeef2c3ca', 'b832e72f-52a7-4092-b261-f7fd86130e0b',
+  ];
+  ok('24 duplicatas removidas não estão no CSV', DUPLICATAS_REMOVIDAS.every(id => !real.some(r => r.id === id)));
+  ok('24 duplicatas removidas não estão no seed', DUPLICATAS_REMOVIDAS.every(id => !seedData.estoque.some(r => r.id === id)));
+
+  ok('itens importados estão categorizados', importados.every(r => r.categoria), `sem categoria=${importados.filter(r => !r.categoria).length}`);
   ok('82 itens classificados como Hidráulica', importados.filter(r => r.categoria === 'Hidráulica').length === 82);
   ok('2 itens classificados como Construção (prego e arame)', importados.filter(r => r.categoria === 'Construção').map(r => r.nome).sort().join('|') === 'Arame recozido – 2 kg|Prego 18 x 24');
   ok('itens antigos sem categoria não foram alterados', real.filter(r => !r.categoria).length === 3);
