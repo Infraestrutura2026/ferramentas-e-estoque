@@ -2,6 +2,29 @@
 
 ## [Não publicado]
 
+### Menu Histórico: Data · Ação · Item · Quantidade · Solicitante · Responsável (2026-09-12)
+
+- A tabela do Histórico passa a exibir exatamente essas 6 colunas, nessa ordem.
+  A antiga coluna **Detalhes** saiu da tabela — o texto continua acessível como
+  dica (tooltip) ao passar o mouse na linha.
+- Lista agora é **unificada**: agrega Registros do Histórico, Movimentações de
+  Estoque, Pedidos de Compra e Empréstimos de Ferramentas, sempre do mais
+  recente para o mais antigo, com novo filtro "fonte" e busca que alcança item,
+  ação, quantidade, solicitante e responsável.
+- Quantidade ganhou coluna própria (antes vinha espremida dentro do Item como
+  `(×N)`); registros antigos sem o campo têm a quantidade **deduzida do texto**
+  do detalhe: `-2 un — Reforma celas` → `2`, `3 unidades danificadas` → `3`.
+  Datas/horas no texto são ignoradas e nada é inventado quando não há número
+  (a célula mostra `—`).
+- Solicitante vem do campo próprio do pedido, do empréstimo ou da observação da
+  baixa automática (`solicitação entregue (Nome)`); na movimentação, o
+  `usuario` continua como Responsável.
+- Datas com hora passaram a sair em pt-BR (`2026-07-27 16:43:08` → `27/07/2026 16:43`)
+  usando `utils.formatDataBR`; antes o valor cru aparecia na célula.
+- Unificação e render testados em `tests/run-historico.js` (39 testes): o
+  `historicoModule.render()` do `app.js` é executado de ponta a ponta num sandbox,
+  e a suíte passa a ser `npm test` com 282 testes.
+
 ### Limpeza de duplicatas do estoque (2026-09-10)
 
 - Removidos 21 cadastros duplicados com nome antigo diretamente no banco online

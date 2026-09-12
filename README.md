@@ -22,7 +22,7 @@ Apps Script/CSV. Guia completo: **[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**.
 | **Empréstimos** | **Registrar empréstimo, registrar devolução, destacar atrasos**, busca e filtros |
 | Estoque | CRUD completo de itens, mínimos de reposição, status OK/Crítico/Esgotado |
 | Ferramentas | CRUD completo (código, categoria, estado, local, responsável) |
-| Histórico | Movimentações + manutenções, com busca e paginação |
+| Histórico | **Data, Ação, Item, Quantidade, Solicitante e Responsável** — lista unificada de movimentações, pedidos, empréstimos e manutenções, com busca, filtro por fonte e paginação |
 | Fornecedores | CRUD completo |
 | Pedidos | Pedidos de compra com valores, previsão de entrega e status |
 | Usuários | Gestão centralizada de acessos (somente admin) |
