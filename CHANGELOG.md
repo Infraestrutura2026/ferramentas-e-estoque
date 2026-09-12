@@ -2,6 +2,19 @@
 
 ## [Não publicado]
 
+### Botão "Sair" no topo, ao lado do usuário logado (2026-09-12)
+
+- O botão de sair do sistema saiu do rodapé do menu lateral e foi para a barra
+  superior, à direita, logo depois do nome/perfil e do avatar de quem está logado.
+- Mantém o vermelho de ação destrutiva (`btn-danger`), com `title`/`aria-label`
+  "Sair do sistema"; em telas estreitas fica só o ícone (o texto some abaixo de
+  640 px e na faixa de sidebar em trilho, 1024–1279 px).
+- O rodapé da sidebar mantém apenas o status de sincronização (`#sync-status`);
+  as regras mortas `.sidebar .btn-danger` saíram do `assets/responsivo.css`.
+- `tests/run-layout.js` (13 testes) executa `app._renderLayout()` num sandbox e
+  confere que o logout está na topbar depois do nome do usuário, que a sidebar
+  não tem mais o botão e que existe um único botão de logout na casca.
+
 ### Menu Histórico: Data · Ação · Item · Quantidade · Solicitante · Responsável (2026-09-12)
 
 - A tabela do Histórico passa a exibir exatamente essas 6 colunas, nessa ordem.
@@ -23,7 +36,7 @@
   usando `utils.formatDataBR`; antes o valor cru aparecia na célula.
 - Unificação e render testados em `tests/run-historico.js` (39 testes): o
   `historicoModule.render()` do `app.js` é executado de ponta a ponta num sandbox,
-  e a suíte passa a ser `npm test` com 282 testes.
+  e a suíte passa a ser `npm test` com 295 testes.
 
 ### Limpeza de duplicatas do estoque (2026-09-10)
 

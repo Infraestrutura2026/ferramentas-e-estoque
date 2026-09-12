@@ -591,11 +591,7 @@ const app = {
             ${authModule.isAdmin() ? this._navItem('usuarios', 'fa-users-cog', 'Usuários') : ''}
           </nav>
 
-          <div class="px-3 py-3 border-t border-slate-200 space-y-2">
-            <button onclick="authModule.logout()" class="btn-danger w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition border border-red-200">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Sair</span>
-            </button>
+          <div class="px-3 py-3 border-t border-slate-200">
             <p id="sync-status" class="text-[10px] text-slate-500 text-center">Aguardando sincronização...</p>
           </div>
         </aside>
@@ -623,6 +619,11 @@ const app = {
               <div class="w-8 h-8 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center text-xs font-bold border-2 border-teal-600 shrink-0" title="${utils.escapeHtml(usuario)}">
                 ${utils.escapeHtml(usuario.charAt(0).toUpperCase())}
               </div>
+              <button onclick="authModule.logout()" title="Sair do sistema" aria-label="Sair do sistema"
+                class="logout-btn btn-danger flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 text-red-700 text-xs font-semibold border border-red-200 transition">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="hidden sm:inline">Sair</span>
+              </button>
             </div>
           </header>
 
