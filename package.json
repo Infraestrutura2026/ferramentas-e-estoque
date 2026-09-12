@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node dev/server.js",
-    "test": "node tests/run.js && node tests/run-contract.js && node tests/run-neon.js && node tests/run-migrate.js && node tests/run-exports.js && node tests/run-import.js",
+    "test": "node tests/run.js && node tests/run-contract.js && node tests/run-neon.js && node tests/run-migrate.js && node tests/run-exports.js && node tests/run-import.js && node tests/run-historico.js && node tests/run-layout.js",
     "test:exports": "node tests/run-exports.js",
     "test:import": "node tests/run-import.js",
     "import:estoque": "node scripts/import-estoque.js",

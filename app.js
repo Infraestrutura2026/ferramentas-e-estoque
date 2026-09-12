@@ -591,11 +591,7 @@ const app = {
             ${authModule.isAdmin() ? this._navItem('usuarios', 'fa-users-cog', 'Usuários') : ''}
           </nav>
 
-          <div class="px-3 py-3 border-t border-slate-200 space-y-2">
-            <button onclick="authModule.logout()" class="btn-danger w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition border border-red-200">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Sair</span>
-            </button>
+          <div class="px-3 py-3 border-t border-slate-200">
             <p id="sync-status" class="text-[10px] text-slate-500 text-center">Aguardando sincronização...</p>
           </div>
         </aside>
@@ -623,6 +619,11 @@ const app = {
               <div class="w-8 h-8 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center text-xs font-bold border-2 border-teal-600 shrink-0" title="${utils.escapeHtml(usuario)}">
                 ${utils.escapeHtml(usuario.charAt(0).toUpperCase())}
               </div>
+              <button onclick="authModule.logout()" title="Sair do sistema" aria-label="Sair do sistema"
+                class="logout-btn btn-danger flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 text-red-700 text-xs font-semibold border border-red-200 transition">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="hidden sm:inline">Sair</span>
+              </button>
             </div>
           </header>
 
@@ -1558,47 +1559,58 @@ const emprestimosModule = {
 };
 
 /* ================================================================
-   HISTÓRICO — leitura com mapeamento correto das colunas
+   HISTÓRICO — Data · Ação · Item · Quantidade · Solicitante · Responsável
+   Lista unificada: Histórico + Movimentações + Pedidos + Empréstimos
+   (a unificação fica em utils.historicoUnificado — coberta por
+    tests/run-historico.js, que executa este render de ponta a ponta)
    ================================================================ */
 const historicoModule = {
   pagina: 1,
   busca: '',
+  fonte: '',
+
+  /** Linhas do histórico já unificadas (e filtradas pela fonte escolhida). */
+  _linhas() {
+    const linhas = utils.historicoUnificado(app.data || {});
+    return this.fonte ? linhas.filter(l => l.fonte === this.fonte) : linhas;
+  },
 
   render(container) {
-    const hist = [...(app.data.historico || []), ...(app.data.movimentacoes || []).map(m => ({
-      id: m.id,
-      acao: m.tipo || m.operacao || '',
-      item: m.itemNome || m.item || m.nome || '',
-      detalhes: m.observacao || '',
-      responsavel: m.usuario || m.responsavel || '',
-      data: m.data || m.dataHora || '',
-      quantidade: m.quantidade || ''
-    }))];
+    let items = this._linhas();
 
-    // Mais recente primeiro
-    hist.sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')));
-
-    let items = hist;
     if (this.busca) {
       const b = utils.normalize(this.busca);
       items = items.filter(h =>
         utils.normalize(h.item).includes(b) ||
         utils.normalize(h.acao).includes(b) ||
+        utils.normalize(h.quantidade).includes(b) ||
+        utils.normalize(h.solicitante).includes(b) ||
         utils.normalize(h.responsavel).includes(b) ||
         utils.normalize(h.detalhes).includes(b));
     }
 
     const pg = utils.paginate(items, this.pagina, 15);
+    const rotuloFonte = f => (utils.FONTES_HISTORICO.find(x => x.valor === f) || {}).rotulo || f;
 
     container.innerHTML = `
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
-          <h2 class="text-lg font-bold text-slate-900">Histórico de Movimentações</h2>
-          <div class="relative min-w-[220px]">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-            <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar..."
-              class="w-full pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
-              oninput="historicoModule.setBusca(this.value)">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Histórico</h2>
+            <p class="text-xs text-slate-500">Movimentações, pedidos, empréstimos e registros de manutenção</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select aria-label="Filtrar por fonte" onchange="historicoModule.setFonte(this.value)"
+              class="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
+              <option value="">Todas as fontes</option>
+              ${utils.FONTES_HISTORICO.map(f => `<option value="${f.valor}" ${this.fonte === f.valor ? 'selected' : ''}>${utils.escapeHtml(f.rotulo)}</option>`).join('')}
+            </select>
+            <div class="relative min-w-[220px]">
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+              <input type="text" value="${utils.escapeHtml(this.busca)}" placeholder="Buscar item, solicitante ou responsável..."
+                class="w-full pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                oninput="historicoModule.setBusca(this.value)">
+            </div>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -1607,24 +1619,32 @@ const historicoModule = {
               <th class="px-4 py-3 text-left font-semibold text-slate-600">Data</th>
               <th class="px-4 py-3 text-left font-semibold text-slate-600">Ação</th>
               <th class="px-4 py-3 text-left font-semibold text-slate-600">Item</th>
-              <th class="px-4 py-3 text-left font-semibold text-slate-600">Detalhes</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-600">Quantidade</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-600">Solicitante</th>
               <th class="px-4 py-3 text-left font-semibold text-slate-600">Responsável</th>
             </tr></thead>
             <tbody>
               ${pg.rows.map(h => {
                 const op = utils.normalize(h.acao);
-                const opClass = op.includes('entrada') || op.includes('compra') ? 'text-emerald-600'
-                  : op.includes('saida') || op.includes('retirada') ? 'text-red-600'
+                const opClass = op.includes('entrada') || op.includes('compra') || op.includes('devolu') ? 'text-emerald-600'
+                  : op.includes('saida') || op.includes('retirada') || op.includes('baixa') ? 'text-red-600'
                   : op.includes('manut') || op.includes('defeito') ? 'text-amber-600'
+                  : op.includes('pedido') || op.includes('emprestimo') ? 'text-sky-600'
                   : 'text-slate-700';
-                return `<tr class="border-b border-slate-100 hover:bg-slate-50">
-                  <td class="px-4 py-3 text-slate-500 whitespace-nowrap">${utils.formatDate(h.data)}</td>
-                  <td class="px-4 py-3 font-semibold ${opClass}">${utils.escapeHtml(h.acao || '—')}</td>
-                  <td class="px-4 py-3 text-slate-900 font-medium">${utils.escapeHtml(h.item || '—')}${h.quantidade ? ` <span class="text-slate-500 font-mono text-xs">(×${utils.escapeHtml(h.quantidade)})</span>` : ''}</td>
-                  <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(h.detalhes || '—')}</td>
+                const dica = h.detalhes ? ` title="${utils.escapeHtml(h.detalhes)}"` : '';
+                const dataBR = h.data ? utils.formatDataBR(h.data) : '';
+                return `<tr class="border-b border-slate-100 hover:bg-slate-50"${dica}>
+                  <td class="px-4 py-3 text-slate-500 whitespace-nowrap">${utils.escapeHtml(dataBR || '—')}</td>
+                  <td class="px-4 py-3 font-semibold ${opClass}">
+                    ${utils.escapeHtml(h.acao || '—')}
+                    <span class="block text-[10px] font-normal uppercase tracking-wide text-slate-400">${utils.escapeHtml(rotuloFonte(h.fonte))}</span>
+                  </td>
+                  <td class="px-4 py-3 text-slate-900 font-medium">${utils.escapeHtml(h.item || '—')}</td>
+                  <td class="px-4 py-3 text-center font-mono text-slate-700">${utils.escapeHtml(h.quantidade || '—')}</td>
+                  <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(h.solicitante || '—')}</td>
                   <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(h.responsavel || '—')}</td>
                 </tr>`;
-              }).join('') || '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Nenhum histórico encontrado.</td></tr>'}
+              }).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Nenhum histórico encontrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -1634,6 +1654,7 @@ const historicoModule = {
   },
 
   setBusca(v) { this.busca = v; this.pagina = 1; this.render(document.getElementById('main-content')); },
+  setFonte(v) { this.fonte = v; this.pagina = 1; this.render(document.getElementById('main-content')); },
   setPage(p) { this.pagina = p; this.render(document.getElementById('main-content')); }
 };
 

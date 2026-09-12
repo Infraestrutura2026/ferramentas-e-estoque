@@ -41,7 +41,6 @@
 
   .sidebar .brand-block,
   .sidebar .nav-item span,
-  .sidebar .btn-danger span,
   .sidebar #sync-status {
     display: none;
   }
@@ -61,8 +60,14 @@
     font-size: 1.125rem;
   }
 
-  .sidebar .btn-danger {
-    padding-inline: 0;
+  /* Botão Sair mora no topo (ao lado do nome do usuário); nesta faixa
+     ele fica só com o ícone para não apertar a barra superior. */
+  .logout-btn span {
+    display: none;
+  }
+
+  .logout-btn {
+    padding-inline: 0.625rem;
   }
 }
 

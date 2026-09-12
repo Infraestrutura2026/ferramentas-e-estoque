@@ -291,6 +291,57 @@ const utils = {
     return isFinite(numero) ? numero : 0;
   },
 
+  /**
+   * Quantidade pronta para exibição: número em padrão pt-BR, texto quando não é
+   * número e '' quando o campo está vazio (a tela mostra '—').
+   * '20' → '20' · '2.5' → '2,5' · 'caixa' → 'caixa' · '' → ''
+   */
+  quantidadeExibida(valor) {
+    const bruto = String(valor ?? '').trim();
+    if (!bruto) return '';
+    const numero = parseFloat(bruto.replace(',', '.'));
+    if (!isFinite(numero)) return bruto;
+    return this.numeroBR(Math.abs(numero));
+  },
+
+  /** Unidades de medida reconhecidas ao deduzir quantidade de um texto livre. */
+  UNIDADES_TEXTO: 'un\\.?s?|unid\\.?(?:ade)?s?|pe[çc]a?s?|p[çc]s?|pcs?|cx\\.?s?|caixa?s?|kg|litro?s?|l|ml|m[²2]?|pct\\.?|fardo?s?|rolo?s?|pares?|jogo?s?|saco?s?|pote?s?|gal[ãa]o|folha?s?|metro?s?',
+
+  /**
+   * Deduz a quantidade de um texto livre.
+   * Os registros antigos do Histórico não têm coluna própria de quantidade —
+   * o número está no detalhe ("-2 un — Reforma celas", "3 unidades danificadas").
+   * Datas e horas são descartadas para não virarem quantidade.
+   * @returns {string} número em pt-BR ou '' quando não há quantidade no texto.
+   */
+  quantidadeDoTexto(texto) {
+    const bruto = String(texto ?? '');
+    if (!bruto.trim()) return '';
+    const limpo = bruto
+      .replace(/\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?/g, ' ')
+      .replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g, ' ')
+      .replace(/\d{1,2}:\d{2}/g, ' ');
+    // 1º) número acompanhado de unidade de medida  2º) número com sinal (-2)
+    const achado = limpo.match(new RegExp(`(\\d+(?:[.,]\\d+)?)\\s*(?:${this.UNIDADES_TEXTO})\\b`, 'i')) ||
+      limpo.match(/([+-]\s*\d+(?:[.,]\d+)?)\b/);
+    if (!achado) return '';
+    const numero = parseFloat(achado[1].replace(/\s/g, '').replace(',', '.'));
+    if (!isFinite(numero)) return '';
+    return this.numeroBR(Math.abs(numero));
+  },
+
+  /**
+   * Recupera o solicitante de uma movimentação criada pela baixa automática de
+   * um pedido: "Baixa automática — solicitação entregue (Osvaldo Martinez)".
+   * @returns {string} nome do solicitante ou '' quando a observação não o traz.
+   */
+  solicitanteDaObservacao(observacao) {
+    const achado = String(observacao || '')
+      .match(/solicita[çc][aã]o\s+entregue\s*[:(-]?\s*\(([^)]+)\)/i);
+    const nome = achado ? achado[1].trim() : '';
+    return nome && nome !== 'undefined' ? nome : '';
+  },
+
   /** Empréstimo finalizado/devolvido, independentemente da grafia do status. */
   emprestimoDevolvido(emprestimo) {
     return /devol/.test(this.normalize(emprestimo && emprestimo.status));
@@ -412,6 +463,95 @@ const utils = {
       emprestimosAtrasados: emprestimosAtrasados.length,
       percentualAtencao: metricas.total ? Math.round(((metricas.esgotados + metricas.criticos) / metricas.total) * 100) : 0
     };
+  },
+
+  /* ────────────────────────────────────────────────
+     HISTÓRICO UNIFICADO (menu Histórico)
+     Uma única lista com as colunas:
+       Data · Ação · Item · Quantidade · Solicitante · Responsável
+     Fontes agregadas: Histórico, Movimentações, Pedidos e Empréstimos.
+     Função pura (sem DOM) — testada em tests/run-historico.js.
+     ──────────────────────────────────────────────── */
+
+  /** Fontes do histórico unificado (alimenta o filtro da tela). */
+  FONTES_HISTORICO: [
+    { valor: 'historico', rotulo: 'Registros do Histórico' },
+    { valor: 'movimentacoes', rotulo: 'Movimentações de Estoque' },
+    { valor: 'pedidos', rotulo: 'Pedidos de Compra' },
+    { valor: 'emprestimos', rotulo: 'Empréstimos de Ferramentas' }
+  ],
+
+  /**
+   * Une as quatro fontes do menu Histórico num formato único de linha:
+   * `{ id, fonte, data, acao, item, quantidade, solicitante, responsavel, detalhes }`
+   * (ordenado do mais recente para o mais antigo).
+   * `detalhes` não vira coluna — fica como dica (tooltip) da linha.
+   * @param {{historico?:Array, movimentacoes?:Array, pedidos?:Array, emprestimos?:Array}} dados
+   */
+  historicoUnificado(dados) {
+    const d = dados || {};
+    const linhas = [];
+    const agregar = (fonte, lista, mapear) => {
+      (Array.isArray(lista) ? lista : []).forEach((registro, indice) => {
+        if (!registro) return;
+        const linha = mapear(registro);
+        linha.fonte = fonte;
+        linha.id = linha.id || `${fonte}-${indice}`;
+        linhas.push(linha);
+      });
+    };
+
+    // 1) Aba Histórico — manutenções e registros livres.
+    //    Registros antigos não têm quantidade: deduz do texto do detalhe.
+    agregar('historico', d.historico, h => ({
+      id: h.id,
+      data: h.data || h.createdAt || '',
+      acao: h.acao || h.operacao || h.tipo || 'Registro',
+      item: h.item || h.nome || '',
+      quantidade: this.quantidadeExibida(h.quantidade) || this.quantidadeDoTexto(h.detalhes || h.observacao),
+      solicitante: h.solicitante || '',
+      responsavel: h.responsavel || '',
+      detalhes: h.detalhes || h.observacao || ''
+    }));
+
+    // 2) Movimentações de estoque — entradas e saídas.
+    //    O solicitante vem do campo próprio ou da baixa automática de um pedido.
+    agregar('movimentacoes', d.movimentacoes, m => ({
+      id: m.id,
+      data: m.data || m.dataHora || m.createdAt || '',
+      acao: m.tipo || m.operacao || m.acao || 'Movimentação',
+      item: m.itemNome || m.item || m.nome || '',
+      quantidade: this.quantidadeExibida(m.quantidade),
+      solicitante: m.solicitante || this.solicitanteDaObservacao(m.observacao),
+      responsavel: m.responsavel || m.usuario || '',
+      detalhes: m.observacao || ''
+    }));
+
+    // 3) Pedidos de compra — quem pediu é o solicitante.
+    agregar('pedidos', d.pedidos, p => ({
+      id: p.id,
+      data: p.data || p.dataEntrega || p.createdAt || '',
+      acao: p.status ? `Pedido — ${p.status}` : 'Pedido',
+      item: p.item || p.nome || '',
+      quantidade: this.quantidadeExibida(p.quantidade),
+      solicitante: p.solicitante || '',
+      responsavel: p.responsavel || '',
+      detalhes: p.observacao || ''
+    }));
+
+    // 4) Empréstimos de ferramentas — retirada e devolução.
+    agregar('emprestimos', d.emprestimos, e => ({
+      id: e.id,
+      data: e.dataEmprestimo || e.data || e.dataDevolucao || '',
+      acao: this.emprestimoDevolvido(e) ? 'Devolução' : 'Empréstimo',
+      item: e.nomeFerramenta || e.ferramenta || e.item || e.nome || '',
+      quantidade: this.quantidadeExibida(e.quantidade),
+      solicitante: e.solicitante || '',
+      responsavel: e.responsavel || '',
+      detalhes: e.motivo || e.observacao || ''
+    }));
+
+    return linhas.sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')));
   },
 
   /**

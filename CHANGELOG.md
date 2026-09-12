@@ -2,6 +2,42 @@
 
 ## [Não publicado]
 
+### Botão "Sair" no topo, ao lado do usuário logado (2026-09-12)
+
+- O botão de sair do sistema saiu do rodapé do menu lateral e foi para a barra
+  superior, à direita, logo depois do nome/perfil e do avatar de quem está logado.
+- Mantém o vermelho de ação destrutiva (`btn-danger`), com `title`/`aria-label`
+  "Sair do sistema"; em telas estreitas fica só o ícone (o texto some abaixo de
+  640 px e na faixa de sidebar em trilho, 1024–1279 px).
+- O rodapé da sidebar mantém apenas o status de sincronização (`#sync-status`);
+  as regras mortas `.sidebar .btn-danger` saíram do `assets/responsivo.css`.
+- `tests/run-layout.js` (13 testes) executa `app._renderLayout()` num sandbox e
+  confere que o logout está na topbar depois do nome do usuário, que a sidebar
+  não tem mais o botão e que existe um único botão de logout na casca.
+
+### Menu Histórico: Data · Ação · Item · Quantidade · Solicitante · Responsável (2026-09-12)
+
+- A tabela do Histórico passa a exibir exatamente essas 6 colunas, nessa ordem.
+  A antiga coluna **Detalhes** saiu da tabela — o texto continua acessível como
+  dica (tooltip) ao passar o mouse na linha.
+- Lista agora é **unificada**: agrega Registros do Histórico, Movimentações de
+  Estoque, Pedidos de Compra e Empréstimos de Ferramentas, sempre do mais
+  recente para o mais antigo, com novo filtro "fonte" e busca que alcança item,
+  ação, quantidade, solicitante e responsável.
+- Quantidade ganhou coluna própria (antes vinha espremida dentro do Item como
+  `(×N)`); registros antigos sem o campo têm a quantidade **deduzida do texto**
+  do detalhe: `-2 un — Reforma celas` → `2`, `3 unidades danificadas` → `3`.
+  Datas/horas no texto são ignoradas e nada é inventado quando não há número
+  (a célula mostra `—`).
+- Solicitante vem do campo próprio do pedido, do empréstimo ou da observação da
+  baixa automática (`solicitação entregue (Nome)`); na movimentação, o
+  `usuario` continua como Responsável.
+- Datas com hora passaram a sair em pt-BR (`2026-07-27 16:43:08` → `27/07/2026 16:43`)
+  usando `utils.formatDataBR`; antes o valor cru aparecia na célula.
+- Unificação e render testados em `tests/run-historico.js` (39 testes): o
+  `historicoModule.render()` do `app.js` é executado de ponta a ponta num sandbox,
+  e a suíte passa a ser `npm test` com 295 testes.
+
 ### Limpeza de duplicatas do estoque (2026-09-10)
 
 - Removidos 21 cadastros duplicados com nome antigo diretamente no banco online
