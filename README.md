@@ -20,10 +20,10 @@ Apps Script/CSV. Guia completo: **[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**.
 | Dashboard | Resumo geral, alertas de itens críticos/esgotados e **empréstimos atrasados** |
 | Indicadores | Gráficos (Chart.js), saúde do estoque, top 10 críticos |
 | **Empréstimos** | **Registrar empréstimo, registrar devolução, destacar atrasos**, busca e filtros |
-| Estoque | CRUD completo de itens, mínimos de reposição, status OK/Crítico/Esgotado |
+| Estoque | CRUD completo de itens, mínimos de reposição, status OK/Crítico/Esgotado, **fornecedor e valor unitário** por item |
 | Ferramentas | CRUD completo (código, categoria, estado, local, responsável) |
 | Histórico | **Data, Ação, Item, Quantidade, Solicitante e Responsável** — lista unificada de movimentações, pedidos, empréstimos e manutenções, com busca, filtro por fonte e paginação |
-| Fornecedores | CRUD completo |
+| Fornecedores | CRUD completo + **limpar o cadastro inteiro** (exclusão em lote com confirmação) |
 | Pedidos | Pedidos de compra com valores, previsão de entrega e status |
 | Usuários | Gestão centralizada de acessos (somente admin) |
 | Relatórios | Totais por categoria + exportação CSV de todas as abas + impressão |

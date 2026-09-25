@@ -146,6 +146,27 @@ ok('docConsolidadoEstoque monta documento a partir do resumo por categoria',
 ok('docConsolidadoEstoque tem rótulos pt-BR no padrão do relatório',
   docCons.colunas.map(c => c.rotulo).includes('Esgotados') && docCons.geradoPor === 'oliveira' && docAtivos.totalRegistros === 2 && docAtivos.linhasBR[0].at(-1) === 'Atrasado (2 dias)');
 
+/* ── Estoque Atual: fornecedor e valor unitário (novas colunas do cadastro) ── */
+{
+  const comForn = [
+    { nome: 'Cimento CP-II 50kg', categoria: 'Construção', quantidadeAtual: '12', quantidadeMinima: '4', unidade: 'sc', local: 'Depósito', fornecedor: 'Casa do Construtor', valorUnitario: '48,90', codigo: 'CIM50' },
+    { nome: 'Tubo PVC 25mm', categoria: 'Hidráulica', quantidadeAtual: '5', quantidadeMinima: '1', unidade: 'm', local: '', fornecedor: '', valorUnitario: '' }
+  ];
+  const docForn = utils.relatorioEstoqueAtual(comForn, 'admin');
+  const chaves = docForn.colunas.map(c => c.key);
+  ok('relatório Estoque Atual inclui Fornecedor e Valor Unit.',
+    chaves.includes('fornecedor') && chaves.includes('valorUnitario') &&
+    docForn.colunas.map(c => c.rotulo).includes('Fornecedor') &&
+    docForn.colunas.map(c => c.rotulo).includes('Valor Unit. (R$)'), chaves.join(','));
+  ok('relatório normaliza o valor para número e mantém o padrão pt-BR',
+    docForn.linhasBR[0][chaves.indexOf('valorUnitario')] === '48,90' &&
+    docForn.linhasXLSX[0][chaves.indexOf('valorUnitario')] === 48.9,
+    JSON.stringify(docForn.linhasBR[0]));
+  ok('item sem valor unitário fica com a célula vazia (não vira R$ 0,00)',
+    docForn.linhasBR[1][chaves.indexOf('valorUnitario')] === '' &&
+    docForn.linhasBR[1][chaves.indexOf('fornecedor')] === '', JSON.stringify(docForn.linhasBR[1]));
+}
+
 ok('rotuloAba usa nomes oficiais', utils.rotuloAba('movimentacoes') === 'Movimentações de Estoque' && utils.rotuloAba('xyz') === 'Xyz' && docAtrasados.totalRegistros === 1 && docAtrasados.linhasBR[0][6] === '2');
 ok('rotuloColuna cai em fallback camelCase', utils.rotuloColuna('campoNovo') === 'Campo Novo' && utils.rotuloColuna('diasAtraso') === 'Dias de Atraso' && docHistorico.totalRegistros === 1 && docHistorico.linhasBR[0][1] === 'Entrada');
 

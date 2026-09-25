@@ -1,170 +1,170 @@
-id,nome,categoria,quantidadeAtual,quantidadeMinima,unidade,local,data,createdAt,updatedAt
-ea3ce453-900d-4046-a,Sifão pia 70 cm,Hidráulica,268,10,un,caixa na garagem da frota,2026-07-24,2026-07-24,2026-07-24
-3d5a28e3-ad9f-48bf-8,Chuveiro,Hidráulica,197,10,un,caixa na garagem da frota,2026-07-24,2026-07-24,2026-07-24
-cab792e9-1030-4095-a,Tubo de ligação sanfonado (vaso),Hidráulica,115,10,un,,2026-07-24,2026-07-24,2026-07-24
-122e284f-09fa-449b-8,Flexível plástico,Hidráulica,130,10,un,,2026-07-24,2026-07-24,2026-07-24
-8c52e31b-61d3-4594-8,Torneira plástica branca,Hidráulica,34,10,un,,2026-07-24,2026-07-24,2026-07-24
-985be8c3-e9f3-4911-b,Engate vaso sanitário,Hidráulica,144,10,un,,2026-07-24,2026-07-24,2026-07-24
-99074f4f-29e4-43cd-a,Parafuso p/ vaso sanitário,Hidráulica,300,10,un,,2026-07-24,2026-07-24,2026-07-24
-ae561657-af6d-4caa-a,Abraçadeira para cano,Hidráulica,600,20,un,,2026-07-24,2026-07-24,2026-07-24
-fe4fb390-0e07-4e4c-a,Tubo para descarga,Hidráulica,28,10,un,,2026-07-24,2026-07-24,2026-07-24
-a2c0fe4e-9219-42fe-a,Joelho 90 de esgoto,Hidráulica,65,10,un,,2026-07-24,2026-07-24,2026-07-24
-47cbd190-9398-46a6-b,Assento para vaso,Hidráulica,3,1,un,,2026-07-24,2026-07-24,2026-07-24
-0d4febf9-363a-4a73-b,Caixa de ligação esgoto,Hidráulica,7,2,un,,2026-07-24,2026-07-24,2026-07-24
-37bae24d-30f3-4370-9,Caixa acoplada vaso sanitário,Hidráulica,1,1,un,,2026-07-24,2026-07-24,2026-07-24
-38fc1b93-dee8-4067-8,Caixa de descarga para vaso,Hidráulica,114,10,un,,2026-07-24,2026-07-24,2026-07-24
-f5f3787c-479f-4e7d-9,Fio branco 6mm - bobina,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24
-9d5ee2c8-5078-47b1-b,Fio azul 6mm - bobina,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24
-2dc1a25a-d7cb-46b5-b,Fio preto 6mm - Bobina,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24
-1f7ba7d3-69b5-4878-a,Fio verde 4mm - bobina,Elétrica,7,2,un,,2026-07-24,2026-07-24,2026-07-24
-ef4e6b20-af66-49af-8,Fio azul 4mm - bobina,Elétrica,5,2,un,,2026-07-24,2026-07-24,2026-07-24
-4faa5492-b469-4f8f-9,Fio preto 4mm - bobina,Elétrica,4,2,un,,2026-07-24,2026-07-24,2026-07-24
-6f1abc4f-3542-49ec-8,"Fio vermelho 2,50mm - bobina",Elétrica,15,2,un,,2026-07-24,2026-07-24,2026-07-24
-22677d70-adfe-4adc-9,"Fio azul 2,50mm - bobina",Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24
-7d3a90dc-a5b8-44be-8,"Fio branco 2,50mm - bobina",Elétrica,9,2,un,,2026-07-24,2026-07-24,2026-07-24
-8f8d66f6-ea4f-4534-9,Tomada 2 polos 10A/250V,Elétrica,52,5,un,,2026-07-24,2026-07-24,2026-07-24
-ca9fdc7b-f0c1-4450-b,Tomada externa 2 polos + T 10A,Elétrica,106,10,un,,2026-07-24,2026-07-24,2026-07-24
-980a6efb-3de9-48da-9,Tomada 1 completa 10A,Elétrica,24,10,un,,2026-07-24,2026-07-24,2026-07-24
-79af884c-d245-4398-b,Interruptor 1 completo,Elétrica,99,10,un,,2026-07-24,2026-07-24,2026-07-24
-0d2a0b36-c0b1-4cab-b,Interruptor de 3 completos,Elétrica,23,5,un,,2026-07-24,2026-07-24,2026-07-24
-d5792262-7422-4e87-9,Tomada 2 polos 10A (caixas + unidades),Elétrica,23,8,un,,2026-07-24,2026-07-24,2026-07-24
-ac35d98c-552e-4da4-9,Soquete liso spot porcelana,Elétrica,190,10,un,,2026-07-24,2026-07-24,2026-07-24
-eb988714-4afd-4cfc-b,Soquete completo uso interno,Elétrica,98,10,un,,2026-07-24,2026-07-24,2026-07-24
-22ef9840-3d6f-4aa2-b,Limpador de para-brisa S10,Automotivo,3,1,un,,2026-07-24,2026-07-24,2026-07-24
-4caadc9d-6a78-4aa7-8,Limpador de para-brisa Cargo,Automotivo,1,1,un,,2026-07-24,2026-07-24,2026-07-24
-d1d9c766-e470-45d8-8,Parafuso prisioneiro de motor elétrico,,59,10,un,,2026-07-24,2026-07-24,2026-07-24
-4572bed0-a8a9-443b-9,Cabo de serra de mão completo,Construção,3,1,un,,2026-07-24,2026-07-24,2026-07-24
-baa084cc-09b0-49c3-a,Galão de higienizador de ar condicionado 5L,,1,1,un,,2026-07-24,2026-07-24,2026-07-24
-76f6120c-ca71-44cb-9,Refletor IP66 6500K branco frio bivolt,Elétrica,13,2,un,,2026-07-24,2026-07-24,2026-07-24
-2cceaf4f-6d1b-418c-a,Lâmpada 100W bivolt 127/220V,Elétrica,1,1,un,,2026-07-24,2026-07-24,2026-07-24
-cdb8740f-8990-4af0-a,Placa 4x2,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24
-2753eacf-ce8d-43db-b,Central de cerca elétrica,Segurança/Elétrica,2,1,un,,2026-07-24,2026-07-24,2026-07-24
-68d8a244-0417-4ca1-9,Fita veda rosca,Hidráulica,82,10,un,,2026-07-24,2026-07-24,2026-07-24
-1bb9956c-6a14-42af-a,"Disco corte inox 180x1.6 - ( 7 polegadas de diâmetro e 1,6 mm de espessura)",Construção,48,10,un,,2026-07-24,2026-07-24,2026-07-24
-91c3befd-3bc2-4934-b,Disco de desbaste - 4.1/2 polegadas (115 mm),Construção,50,10,un,,2026-07-24,2026-07-24,2026-07-24
-492bc36e-5fc4-4bda-a,Disjuntor 1x16A,Elétrica,1,1,un,,2026-07-24,2026-07-24,2026-07-24
-7ac50fd3-f325-4aba-8,Disjuntor 1x25A,Elétrica,1,1,un,,2026-07-24,2026-07-24,2026-07-24
-89a49e24-2629-4fb6-b,Disjuntor C25,Elétrica,15,5,un,,2026-07-24,2026-07-24,2026-07-24
-f5685d1c-770c-490d-9,DPS T2 - (Dispositivo de Proteção contra Surtos de Classe 2),Elétrica,6,2,un,,2026-07-24,2026-07-24,2026-07-24
-920e6450-837f-46a3-9,Fechadura interna porta soprana,Construção,6,1,un,,2026-07-24,2026-07-24,2026-07-24
-d5d11734-1555-4ec4-8,Fechadura WC porta soprana,Construção,3,1,un,,2026-07-24,2026-07-24,2026-07-24
-c03c8734-d5da-4f1c-a70a-b1e5edc17d05,Fechadura de banheiro,Construção,3,1,un,,,,
-864f9069-6850-4b1c-95f2-fcbc7feef964,Fechadura interna,Construção,6,1,un,,,,
-5f767ecc-aea9-458d-9910-fd705821e68b,Esteio diversos,Construção,1,1,cx,,,,
-601b57cf-5f0d-4783-8394-8ebde3753848,Pá limpa-vidro 11 polegadas p/ caminhão 14000,Automotivo,1,1,un,,,,
-888c0f96-58d1-4c38-843d-d407f40f822f,Suporte 90° de pivô 23cm cinza pergameno,Elétrica,5,1,un,,,,
-fb668a6b-52b6-4675-858c-868ba94d4436,Mio de scaria,,3,1,un,,,,
-d6b09687-8686-4c32-95f9-6db40fd62067,Disco de desbaste 7 polegadas,Construção,54,10,un,,,,
-cbd60682-f61c-489f-974c-e16e5b28ff87,Armação curta 25mm x 3/4 polegadas,Hidráulica,90,10,un,,,,
-78e133f7-8c24-44f7-aaa4-ed0e78b9f0a4,Joelho 3/4 polegadas,Hidráulica,200,10,un,,,,
-367a6558-7fb7-4199-97ec-fcad5feb97fc,Disjuntor tripolar 16A,Elétrica,2,1,un,,,,
-17e5addb-757d-495f-8ab0-8fc9f838090c,Lâmpada LED varetinha 15W,Elétrica,1,1,un,,,,
-5c8c6559-b1d0-43bd-948c-d1291e8ed037,Cânin c/ interrupedano,Elétrica,4,1,un,,,,
-feb43f39-ec7c-4845-93d4-d4a4745ee7c8,Cortador de tubo de cobre,Hidráulica,1,1,un,,,,
-e54f5d1b-90c7-4fea-97fb-8f03573dc79c,Tapeton articular,Automotivo,4,1,un,,,,
-03e12d56-1797-4000-9d73-72ca675338c6,Par de novo cunhador,Construção,1,1,un,,,,
-cce02b0b-1f45-4081-b12c-9b84ecb17c77,Papel auto-abrasivo 4x13,Construção,4800,10,un,,,,
-db7321b6-fcf4-4a61-96fb-1586c191a8ac,Disco de corte planejado 230x20cm,Construção,2,1,un,,,,
-4e0f697d-6ca8-4732-9310-0b4d8c404bae,Lâmina de aço de serra,Construção,42,10,un,,,,
-1a333753-95c8-4817-a4b1-ea68a9e071e8,Rolo cabo flex 10mt 6mm² branco,Elétrica,9,10,un,,,,
-86fdbcf0-792a-40a1-8d8a-c070f560ead4,Rolo cabo flex 10mt 6mm² preto,Elétrica,9,10,un,,,,
-e6b81f24-56dd-4a26-98dd-aa151ad6cefc,Rolo cabo flex 10mt 6mm² azul,Elétrica,7,1,un,,,,
-f3038fcc-782d-4262-b8d4-c0839f29945c,Rolo cabo flex 10mt 6mm² vermelho,Elétrica,10,10,un,,,,
-3f73825b-7186-415a-a55d-dccd10d51118,"Rolo cabo flex 10mt 2,5mm² preto",Elétrica,41,10,un,,,,
-2e396a2c-2665-4b51-8820-eed400785c87,"Rolo cabo flex 10mt 4,0mm² azul",Elétrica,4,1,un,,,,
-0f7890cc-17bc-41d6-9349-72ab55fccd95,"Rolo cabo flex 10mt 4,0mm² verde",Elétrica,7,1,un,,,,
-a407790f-3ec7-4460-8a46-a5aa2196ad9b,"Rolo cabo flex 10mt 2,5mm² branco",Elétrica,8,1,un,,,,
-7b3c97ea-0ddc-4445-b46e-cd9886abf9d7,"Rolo cabo flex 10mt 2,5mm² vermelho",Elétrica,43,10,un,,,,
-1159c46a-38e1-4e35-8884-9c8e66da106c,"Rolo cabo flex paralelo 2x2,5mm² branco",Elétrica,100,10,un,,,,
-1428cd68-d960-44c9-9c7d-8fed429c471f,Placa 4x2 1 posto horizontal + suporte,Elétrica,35,10,un,,,,
-bf113a1d-f3d0-4b3f-b372-2b7ca4e3ca87,Disjuntor bipolar 25A,Elétrica,15,10,un,,,,
-81d26a0a-db7d-4619-9d95-c85ad48a05ec,DPS - dispositivo protetor de surto,Elétrica,10,10,un,,,,
-78eff7e7-7920-4c5f-90f8-fa0be3b9895f,Caixas c/ 10x tomadas 2P+T 10A,Elétrica,20,10,un,,,,
-7b695a1b-dd5e-496d-ad99-fdc1437360e8,Tomadas soquete porcelana 10A,Elétrica,320,10,un,,,,
-445b43c9-cf3d-4ebc-ab30-8a5df733c4be,Lanternins 3 postos,Elétrica,23,10,un,,,,
-b41fe200-a670-4fa2-8b80-047521a54bd3,Lanternim 1 posto vertical,Elétrica,75,10,un,,,,
-7e214b26-7952-48b4-afd7-5aa84cd02222,Tomadas c/ placa 20A,Elétrica,11,10,un,,,,
-id_wtp73b9ji_1789050996711,Registro de gaveta 80 mm – metal,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_nqdtozdzw_1789050996711,Registro de esfera 80 mm – metal,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_spj31u0ds_1789050996711,Registro de esfera 50 mm – metal,Hidráulica,9,,un,,2026-09-10,2026-09-10,2026-09-10
-id_14rbgoncs_1789050996711,Registro de esfera 40 mm – metal,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_4cy3zhor0_1789050996711,Registro de gaveta 50 mm – metal,Hidráulica,14,,un,,2026-09-10,2026-09-10,2026-09-10
-id_b4a2khlao_1789050996711,Registro de gaveta 32 mm – metal,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_i1dqkyoev_1789050996711,Redução 100 mm x 50 mm – branca,Hidráulica,88,,un,,2026-09-10,2026-09-10,2026-09-10
-id_gpnmsx40e_1789050996711,Conexão tipo T 50 mm – descida branca,Hidráulica,6,,un,,2026-09-10,2026-09-10,2026-09-10
-id_ljurry4li_1789050996711,Conexão tipo Y 75 mm – descida branca,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10
-id_vctqobuf3_1789050996711,Conexão tipo T 25 mm – descida branca,Hidráulica,13,,un,,2026-09-10,2026-09-10,2026-09-10
-id_d6j8gkxx7_1789050996711,Conexão tipo Y 100 mm x 75 mm x 100 mm – descida branca,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_rot2bfjxt_1789050996712,Conexão tipo Y 100 mm – branca,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_63nlm6cz3_1789050996712,Luva correr 100 mm – branca,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_uodhjctka_1789050996712,Luva lisa 100 mm – branca,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_ervxld19u_1789050996712,Curva 75 mm – branca,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10
-id_bu5cozngg_1789050996712,Conexão tipo T 85 mm – marrom,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10
-id_ee5b28m75_1789050996712,Conexão tipo T 85 mm x 60 mm – marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_magopvm0e_1789050996712,Conexão tipo T 75 mm x 50 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_8i6xxa09h_1789050996712,Cotovelo 110 mm – marrom,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_z53yx2rcr_1789050996712,Luva correr 110 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_yergrubhy_1789050996712,União 85 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_cqlbltacm_1789050996712,Conexão 50 mm x 25 mm,Hidráulica,45,,un,,2026-09-10,2026-09-10,2026-09-10
-id_6vs7bdqkt_1789050996712,Curva 50 mm – marrom,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10
-id_qims6jqc3_1789050996712,Curva 45° de 50 mm – marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_mnzidw4l1_1789050996712,Cotovelo 45° de 75 mm – marrom,Hidráulica,4,,un,,2026-09-10,2026-09-10,2026-09-10
-id_vwthv09jb_1789050996712,Cotovelo 60 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_uhac222qw_1789050996712,Cotovelo 75 mm – marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_z4owseewq_1789050996712,Cotovelo 85 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_og6eovo1b_1789050996712,Conexão tipo T 60 mm – marrom,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10
-id_rse1t967x_1789050996712,Luva correr 60 mm – marrom,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_0vixd9g2o_1789050996712,"Cotovelo 22 mm x 1/2"" com rosca branco",Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10
-id_qwtk91eis_1789050996712,Luva 22 mm branca,Hidráulica,7,,un,,2026-09-10,2026-09-10,2026-09-10
-id_y8zhcjs3l_1789050996712,Cotovelo 22 mm branco,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_zhjod3ryl_1789050996712,"Conexão 22 mm x 3/4"" com rosca branco",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_796p12x8y_1789050996712,"Conector tipo T 25 mm x 1/2"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_b3ms1zyct_1789050996712,"Conector tipo T 3/4"" com rosca branco",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_fb24b8pr8_1789050996712,"Cotovelo 3/4"" com rosca branco",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_mzijawsmy_1789050996712,"Cotovelo 25 mm x 3/4"" com rosca azul",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_89n8gv5te_1789050996712,"Luva 25 mm x 3/4"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_e578pm82n_1789050996712,"Luva 25 mm x 1/2"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_uwbe7j79p_1789050996712,"Niple 1/2"" branco",Hidráulica,7,,un,,2026-09-10,2026-09-10,2026-09-10
-id_2br0cv6jz_1789050996712,"Bucha metálica 3/4"" x 1/2""",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_tcgshl4bd_1789050996712,"Bucha PVC 3/4"" x 1/2""",Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10
-id_ycuidjfub_1789050996712,"Tampão 1/2"" com rosca branco",Hidráulica,23,,un,,2026-09-10,2026-09-10,2026-09-10
-id_dn721slm5_1789050996712,Tampão 22 mm branco liso,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10
-id_duvet5hw8_1789050996712,Tampão 20 mm marrom liso,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_f3h3aljgz_1789050996712,"Tampão 3/4"" com rosca interna branco",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_ldxq5hk4m_1789050996712,"Luva 25 mm x 3/4"" com rosca marrom",Hidráulica,6,,un,,2026-09-10,2026-09-10,2026-09-10
-id_qqpxw9ve9_1789050996712,Luva 25 mm marrom,Hidráulica,90,,un,,2026-09-10,2026-09-10,2026-09-10
-id_d3dnxaxcv_1789050996712,Cotovelo 32 mm marrom,Hidráulica,4,,un,,2026-09-10,2026-09-10,2026-09-10
-id_k6i013py2_1789050996712,Conexão tipo T marrom 32 mm,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_tggmb5pex_1789050996712,Luva de correr 32 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_cpvfhmiud_1789050996712,Engate 40 cm,Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10
-id_annz5za2y_1789050996712,Cotovelo 40 mm branco,Hidráulica,20,,un,,2026-09-10,2026-09-10,2026-09-10
-id_b5peuxcdp_1789050996712,Spud sanfonado,Hidráulica,25,,un,,2026-09-10,2026-09-10,2026-09-10
-id_h2mhigfir_1789050996712,Prego 18 x 24,Construção,45,,pct,,2026-09-10,2026-09-10,2026-09-10
-id_ttfm8u3jo_1789050996712,Arame recozido – 2 kg,Construção,2,,rolos,,2026-09-10,2026-09-10,2026-09-10
-id_0t1jduc29_1789050996712,Cola para tubos e conexões,Hidráulica,13,,tubos,,2026-09-10,2026-09-10,2026-09-10
-id_3h4tvagyh_1789050996712,Anel de vedação 100 mm – 20 un./pacote,Hidráulica,7,,pct,,2026-09-10,2026-09-10,2026-09-10
-id_zbs2z6354_1789050996712,Cotovelo azul 40 mm,Hidráulica,12,,un,,2026-09-10,2026-09-10,2026-09-10
-id_z3trzq8hc_1789050996712,Cotovelo 45° 40 mm branco,Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10
-id_rjdev9hsh_1789050996712,Cotovelo 50 mm marrom,Hidráulica,7,,un,,2026-09-10,2026-09-10,2026-09-10
-id_m4q8bxj58_1789050996712,Cotovelo 45° 50 mm marrom,Hidráulica,4,,un,,2026-09-10,2026-09-10,2026-09-10
-id_w4negckat_1789050996712,Conexão tipo T 50 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_o5r1sei3j_1789050996712,Luva com rosca 50 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_mqp52jfjx_1789050996712,Cotovelo 40 mm marrom,Hidráulica,14,,un,,2026-09-10,2026-09-10,2026-09-10
-id_ilwfq2u0e_1789050996712,Tampão 40 mm marrom,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10
-id_2b48xrdu1_1789050996712,Conexão tipo T de 40 x 25 mm marrom,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10
-id_it5s8lsjp_1789050996712,Conexão tipo T 40 mm marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_bzgo8d5tj_1789050996712,Luva com rosca 40 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_jk97avpqa_1789050996712,Redução de 50 mm para 25 mm marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_qhquslh6b_1789050996712,Redução de 50 mm para 32 mm marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_z9aa40j2f_1789050996712,Conexão tipo T 40 mm branca,Hidráulica,6,,un,,2026-09-10,2026-09-10,2026-09-10
-id_as64t2xls_1789050996712,Luva 40 mm branca,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10
-id_hqohqesod_1789050996712,Luva com rosca 20 mm marrom,Hidráulica,269,,un,,2026-09-10,2026-09-10,2026-09-10
-id_fjwo3rlz5_1789050996712,"Luva conexão 22 x 1/2"" branca com rosca",Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_zvbvreas1_1789050996712,Conexão tipo T 20 mm marrom,Hidráulica,31,,un,,2026-09-10,2026-09-10,2026-09-10
-id_2t0ecp30n_1789050996712,Cotovelo 20 mm marrom,Hidráulica,34,,un,,2026-09-10,2026-09-10,2026-09-10
-id_xumgioxgv_1789050996712,"Cotovelo 25 x 1/2"" com rosca azul",Hidráulica,14,,un,,2026-09-10,2026-09-10,2026-09-10
-id_yh73idrwg_1789050996712,"Cotovelo 20 mm x 1/2"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10
-id_4mjp9xxhh_1789050996712,"Conexão tipo T 20 mm x 1/2"" com rosca azul",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10
-id_yej1thxay_1789050996712,"Luva conexão 25 mm x 1/2"" com rosca azul",Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10
-id_fbqg13gd3_1789050996712,"Niple paralelo com rosca 3/4"" branco",Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10
-id_oztlxfq6k_1789050996712,Conexão tipo T 22 mm branca,Hidráulica,9,,un,,2026-09-10,2026-09-10,2026-09-10
+id,nome,categoria,quantidadeAtual,quantidadeMinima,unidade,local,data,createdAt,updatedAt,fornecedor,valorUnitario
+ea3ce453-900d-4046-a,Sifão pia 70 cm,Hidráulica,268,10,un,caixa na garagem da frota,2026-07-24,2026-07-24,2026-07-24,,
+3d5a28e3-ad9f-48bf-8,Chuveiro,Hidráulica,197,10,un,caixa na garagem da frota,2026-07-24,2026-07-24,2026-07-24,,
+cab792e9-1030-4095-a,Tubo de ligação sanfonado (vaso),Hidráulica,115,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+122e284f-09fa-449b-8,Flexível plástico,Hidráulica,130,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+8c52e31b-61d3-4594-8,Torneira plástica branca,Hidráulica,34,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+985be8c3-e9f3-4911-b,Engate vaso sanitário,Hidráulica,144,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+99074f4f-29e4-43cd-a,Parafuso p/ vaso sanitário,Hidráulica,300,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+ae561657-af6d-4caa-a,Abraçadeira para cano,Hidráulica,600,20,un,,2026-07-24,2026-07-24,2026-07-24,,
+fe4fb390-0e07-4e4c-a,Tubo para descarga,Hidráulica,28,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+a2c0fe4e-9219-42fe-a,Joelho 90 de esgoto,Hidráulica,65,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+47cbd190-9398-46a6-b,Assento para vaso,Hidráulica,3,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+0d4febf9-363a-4a73-b,Caixa de ligação esgoto,Hidráulica,7,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+37bae24d-30f3-4370-9,Caixa acoplada vaso sanitário,Hidráulica,1,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+38fc1b93-dee8-4067-8,Caixa de descarga para vaso,Hidráulica,114,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+f5f3787c-479f-4e7d-9,Fio branco 6mm - bobina,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+9d5ee2c8-5078-47b1-b,Fio azul 6mm - bobina,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+2dc1a25a-d7cb-46b5-b,Fio preto 6mm - Bobina,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+1f7ba7d3-69b5-4878-a,Fio verde 4mm - bobina,Elétrica,7,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+ef4e6b20-af66-49af-8,Fio azul 4mm - bobina,Elétrica,5,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+4faa5492-b469-4f8f-9,Fio preto 4mm - bobina,Elétrica,4,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+6f1abc4f-3542-49ec-8,"Fio vermelho 2,50mm - bobina",Elétrica,15,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+22677d70-adfe-4adc-9,"Fio azul 2,50mm - bobina",Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+7d3a90dc-a5b8-44be-8,"Fio branco 2,50mm - bobina",Elétrica,9,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+8f8d66f6-ea4f-4534-9,Tomada 2 polos 10A/250V,Elétrica,52,5,un,,2026-07-24,2026-07-24,2026-07-24,,
+ca9fdc7b-f0c1-4450-b,Tomada externa 2 polos + T 10A,Elétrica,106,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+980a6efb-3de9-48da-9,Tomada 1 completa 10A,Elétrica,24,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+79af884c-d245-4398-b,Interruptor 1 completo,Elétrica,99,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+0d2a0b36-c0b1-4cab-b,Interruptor de 3 completos,Elétrica,23,5,un,,2026-07-24,2026-07-24,2026-07-24,,
+d5792262-7422-4e87-9,Tomada 2 polos 10A (caixas + unidades),Elétrica,23,8,un,,2026-07-24,2026-07-24,2026-07-24,,
+ac35d98c-552e-4da4-9,Soquete liso spot porcelana,Elétrica,190,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+eb988714-4afd-4cfc-b,Soquete completo uso interno,Elétrica,98,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+22ef9840-3d6f-4aa2-b,Limpador de para-brisa S10,Automotivo,3,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+4caadc9d-6a78-4aa7-8,Limpador de para-brisa Cargo,Automotivo,1,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+d1d9c766-e470-45d8-8,Parafuso prisioneiro de motor elétrico,,59,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+4572bed0-a8a9-443b-9,Cabo de serra de mão completo,Construção,3,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+baa084cc-09b0-49c3-a,Galão de higienizador de ar condicionado 5L,,1,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+76f6120c-ca71-44cb-9,Refletor IP66 6500K branco frio bivolt,Elétrica,13,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+2cceaf4f-6d1b-418c-a,Lâmpada 100W bivolt 127/220V,Elétrica,1,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+cdb8740f-8990-4af0-a,Placa 4x2,Elétrica,10,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+2753eacf-ce8d-43db-b,Central de cerca elétrica,Segurança/Elétrica,2,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+68d8a244-0417-4ca1-9,Fita veda rosca,Hidráulica,82,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+1bb9956c-6a14-42af-a,"Disco corte inox 180x1.6 - ( 7 polegadas de diâmetro e 1,6 mm de espessura)",Construção,48,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+91c3befd-3bc2-4934-b,Disco de desbaste - 4.1/2 polegadas (115 mm),Construção,50,10,un,,2026-07-24,2026-07-24,2026-07-24,,
+492bc36e-5fc4-4bda-a,Disjuntor 1x16A,Elétrica,1,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+7ac50fd3-f325-4aba-8,Disjuntor 1x25A,Elétrica,1,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+89a49e24-2629-4fb6-b,Disjuntor C25,Elétrica,15,5,un,,2026-07-24,2026-07-24,2026-07-24,,
+f5685d1c-770c-490d-9,DPS T2 - (Dispositivo de Proteção contra Surtos de Classe 2),Elétrica,6,2,un,,2026-07-24,2026-07-24,2026-07-24,,
+920e6450-837f-46a3-9,Fechadura interna porta soprana,Construção,6,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+d5d11734-1555-4ec4-8,Fechadura WC porta soprana,Construção,3,1,un,,2026-07-24,2026-07-24,2026-07-24,,
+c03c8734-d5da-4f1c-a70a-b1e5edc17d05,Fechadura de banheiro,Construção,3,1,un,,,,,,
+864f9069-6850-4b1c-95f2-fcbc7feef964,Fechadura interna,Construção,6,1,un,,,,,,
+5f767ecc-aea9-458d-9910-fd705821e68b,Esteio diversos,Construção,1,1,cx,,,,,,
+601b57cf-5f0d-4783-8394-8ebde3753848,Pá limpa-vidro 11 polegadas p/ caminhão 14000,Automotivo,1,1,un,,,,,,
+888c0f96-58d1-4c38-843d-d407f40f822f,Suporte 90° de pivô 23cm cinza pergameno,Elétrica,5,1,un,,,,,,
+fb668a6b-52b6-4675-858c-868ba94d4436,Mio de scaria,,3,1,un,,,,,,
+d6b09687-8686-4c32-95f9-6db40fd62067,Disco de desbaste 7 polegadas,Construção,54,10,un,,,,,,
+cbd60682-f61c-489f-974c-e16e5b28ff87,Armação curta 25mm x 3/4 polegadas,Hidráulica,90,10,un,,,,,,
+78e133f7-8c24-44f7-aaa4-ed0e78b9f0a4,Joelho 3/4 polegadas,Hidráulica,200,10,un,,,,,,
+367a6558-7fb7-4199-97ec-fcad5feb97fc,Disjuntor tripolar 16A,Elétrica,2,1,un,,,,,,
+17e5addb-757d-495f-8ab0-8fc9f838090c,Lâmpada LED varetinha 15W,Elétrica,1,1,un,,,,,,
+5c8c6559-b1d0-43bd-948c-d1291e8ed037,Cânin c/ interrupedano,Elétrica,4,1,un,,,,,,
+feb43f39-ec7c-4845-93d4-d4a4745ee7c8,Cortador de tubo de cobre,Hidráulica,1,1,un,,,,,,
+e54f5d1b-90c7-4fea-97fb-8f03573dc79c,Tapeton articular,Automotivo,4,1,un,,,,,,
+03e12d56-1797-4000-9d73-72ca675338c6,Par de novo cunhador,Construção,1,1,un,,,,,,
+cce02b0b-1f45-4081-b12c-9b84ecb17c77,Papel auto-abrasivo 4x13,Construção,4800,10,un,,,,,,
+db7321b6-fcf4-4a61-96fb-1586c191a8ac,Disco de corte planejado 230x20cm,Construção,2,1,un,,,,,,
+4e0f697d-6ca8-4732-9310-0b4d8c404bae,Lâmina de aço de serra,Construção,42,10,un,,,,,,
+1a333753-95c8-4817-a4b1-ea68a9e071e8,Rolo cabo flex 10mt 6mm² branco,Elétrica,9,10,un,,,,,,
+86fdbcf0-792a-40a1-8d8a-c070f560ead4,Rolo cabo flex 10mt 6mm² preto,Elétrica,9,10,un,,,,,,
+e6b81f24-56dd-4a26-98dd-aa151ad6cefc,Rolo cabo flex 10mt 6mm² azul,Elétrica,7,1,un,,,,,,
+f3038fcc-782d-4262-b8d4-c0839f29945c,Rolo cabo flex 10mt 6mm² vermelho,Elétrica,10,10,un,,,,,,
+3f73825b-7186-415a-a55d-dccd10d51118,"Rolo cabo flex 10mt 2,5mm² preto",Elétrica,41,10,un,,,,,,
+2e396a2c-2665-4b51-8820-eed400785c87,"Rolo cabo flex 10mt 4,0mm² azul",Elétrica,4,1,un,,,,,,
+0f7890cc-17bc-41d6-9349-72ab55fccd95,"Rolo cabo flex 10mt 4,0mm² verde",Elétrica,7,1,un,,,,,,
+a407790f-3ec7-4460-8a46-a5aa2196ad9b,"Rolo cabo flex 10mt 2,5mm² branco",Elétrica,8,1,un,,,,,,
+7b3c97ea-0ddc-4445-b46e-cd9886abf9d7,"Rolo cabo flex 10mt 2,5mm² vermelho",Elétrica,43,10,un,,,,,,
+1159c46a-38e1-4e35-8884-9c8e66da106c,"Rolo cabo flex paralelo 2x2,5mm² branco",Elétrica,100,10,un,,,,,,
+1428cd68-d960-44c9-9c7d-8fed429c471f,Placa 4x2 1 posto horizontal + suporte,Elétrica,35,10,un,,,,,,
+bf113a1d-f3d0-4b3f-b372-2b7ca4e3ca87,Disjuntor bipolar 25A,Elétrica,15,10,un,,,,,,
+81d26a0a-db7d-4619-9d95-c85ad48a05ec,DPS - dispositivo protetor de surto,Elétrica,10,10,un,,,,,,
+78eff7e7-7920-4c5f-90f8-fa0be3b9895f,Caixas c/ 10x tomadas 2P+T 10A,Elétrica,20,10,un,,,,,,
+7b695a1b-dd5e-496d-ad99-fdc1437360e8,Tomadas soquete porcelana 10A,Elétrica,320,10,un,,,,,,
+445b43c9-cf3d-4ebc-ab30-8a5df733c4be,Lanternins 3 postos,Elétrica,23,10,un,,,,,,
+b41fe200-a670-4fa2-8b80-047521a54bd3,Lanternim 1 posto vertical,Elétrica,75,10,un,,,,,,
+7e214b26-7952-48b4-afd7-5aa84cd02222,Tomadas c/ placa 20A,Elétrica,11,10,un,,,,,,
+id_wtp73b9ji_1789050996711,Registro de gaveta 80 mm – metal,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_nqdtozdzw_1789050996711,Registro de esfera 80 mm – metal,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_spj31u0ds_1789050996711,Registro de esfera 50 mm – metal,Hidráulica,9,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_14rbgoncs_1789050996711,Registro de esfera 40 mm – metal,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_4cy3zhor0_1789050996711,Registro de gaveta 50 mm – metal,Hidráulica,14,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_b4a2khlao_1789050996711,Registro de gaveta 32 mm – metal,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_i1dqkyoev_1789050996711,Redução 100 mm x 50 mm – branca,Hidráulica,88,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_gpnmsx40e_1789050996711,Conexão tipo T 50 mm – descida branca,Hidráulica,6,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_ljurry4li_1789050996711,Conexão tipo Y 75 mm – descida branca,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_vctqobuf3_1789050996711,Conexão tipo T 25 mm – descida branca,Hidráulica,13,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_d6j8gkxx7_1789050996711,Conexão tipo Y 100 mm x 75 mm x 100 mm – descida branca,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_rot2bfjxt_1789050996712,Conexão tipo Y 100 mm – branca,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_63nlm6cz3_1789050996712,Luva correr 100 mm – branca,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_uodhjctka_1789050996712,Luva lisa 100 mm – branca,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_ervxld19u_1789050996712,Curva 75 mm – branca,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_bu5cozngg_1789050996712,Conexão tipo T 85 mm – marrom,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_ee5b28m75_1789050996712,Conexão tipo T 85 mm x 60 mm – marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_magopvm0e_1789050996712,Conexão tipo T 75 mm x 50 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_8i6xxa09h_1789050996712,Cotovelo 110 mm – marrom,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_z53yx2rcr_1789050996712,Luva correr 110 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_yergrubhy_1789050996712,União 85 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_cqlbltacm_1789050996712,Conexão 50 mm x 25 mm,Hidráulica,45,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_6vs7bdqkt_1789050996712,Curva 50 mm – marrom,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_qims6jqc3_1789050996712,Curva 45° de 50 mm – marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_mnzidw4l1_1789050996712,Cotovelo 45° de 75 mm – marrom,Hidráulica,4,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_vwthv09jb_1789050996712,Cotovelo 60 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_uhac222qw_1789050996712,Cotovelo 75 mm – marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_z4owseewq_1789050996712,Cotovelo 85 mm – marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_og6eovo1b_1789050996712,Conexão tipo T 60 mm – marrom,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_rse1t967x_1789050996712,Luva correr 60 mm – marrom,Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_0vixd9g2o_1789050996712,"Cotovelo 22 mm x 1/2"" com rosca branco",Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_qwtk91eis_1789050996712,Luva 22 mm branca,Hidráulica,7,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_y8zhcjs3l_1789050996712,Cotovelo 22 mm branco,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_zhjod3ryl_1789050996712,"Conexão 22 mm x 3/4"" com rosca branco",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_796p12x8y_1789050996712,"Conector tipo T 25 mm x 1/2"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_b3ms1zyct_1789050996712,"Conector tipo T 3/4"" com rosca branco",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_fb24b8pr8_1789050996712,"Cotovelo 3/4"" com rosca branco",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_mzijawsmy_1789050996712,"Cotovelo 25 mm x 3/4"" com rosca azul",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_89n8gv5te_1789050996712,"Luva 25 mm x 3/4"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_e578pm82n_1789050996712,"Luva 25 mm x 1/2"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_uwbe7j79p_1789050996712,"Niple 1/2"" branco",Hidráulica,7,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_2br0cv6jz_1789050996712,"Bucha metálica 3/4"" x 1/2""",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_tcgshl4bd_1789050996712,"Bucha PVC 3/4"" x 1/2""",Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_ycuidjfub_1789050996712,"Tampão 1/2"" com rosca branco",Hidráulica,23,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_dn721slm5_1789050996712,Tampão 22 mm branco liso,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_duvet5hw8_1789050996712,Tampão 20 mm marrom liso,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_f3h3aljgz_1789050996712,"Tampão 3/4"" com rosca interna branco",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_ldxq5hk4m_1789050996712,"Luva 25 mm x 3/4"" com rosca marrom",Hidráulica,6,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_qqpxw9ve9_1789050996712,Luva 25 mm marrom,Hidráulica,90,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_d3dnxaxcv_1789050996712,Cotovelo 32 mm marrom,Hidráulica,4,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_k6i013py2_1789050996712,Conexão tipo T marrom 32 mm,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_tggmb5pex_1789050996712,Luva de correr 32 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_cpvfhmiud_1789050996712,Engate 40 cm,Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_annz5za2y_1789050996712,Cotovelo 40 mm branco,Hidráulica,20,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_b5peuxcdp_1789050996712,Spud sanfonado,Hidráulica,25,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_h2mhigfir_1789050996712,Prego 18 x 24,Construção,45,,pct,,2026-09-10,2026-09-10,2026-09-10,,
+id_ttfm8u3jo_1789050996712,Arame recozido – 2 kg,Construção,2,,rolos,,2026-09-10,2026-09-10,2026-09-10,,
+id_0t1jduc29_1789050996712,Cola para tubos e conexões,Hidráulica,13,,tubos,,2026-09-10,2026-09-10,2026-09-10,,
+id_3h4tvagyh_1789050996712,Anel de vedação 100 mm – 20 un./pacote,Hidráulica,7,,pct,,2026-09-10,2026-09-10,2026-09-10,,
+id_zbs2z6354_1789050996712,Cotovelo azul 40 mm,Hidráulica,12,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_z3trzq8hc_1789050996712,Cotovelo 45° 40 mm branco,Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_rjdev9hsh_1789050996712,Cotovelo 50 mm marrom,Hidráulica,7,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_m4q8bxj58_1789050996712,Cotovelo 45° 50 mm marrom,Hidráulica,4,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_w4negckat_1789050996712,Conexão tipo T 50 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_o5r1sei3j_1789050996712,Luva com rosca 50 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_mqp52jfjx_1789050996712,Cotovelo 40 mm marrom,Hidráulica,14,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_ilwfq2u0e_1789050996712,Tampão 40 mm marrom,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_2b48xrdu1_1789050996712,Conexão tipo T de 40 x 25 mm marrom,Hidráulica,8,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_it5s8lsjp_1789050996712,Conexão tipo T 40 mm marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_bzgo8d5tj_1789050996712,Luva com rosca 40 mm marrom,Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_jk97avpqa_1789050996712,Redução de 50 mm para 25 mm marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_qhquslh6b_1789050996712,Redução de 50 mm para 32 mm marrom,Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_z9aa40j2f_1789050996712,Conexão tipo T 40 mm branca,Hidráulica,6,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_as64t2xls_1789050996712,Luva 40 mm branca,Hidráulica,5,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_hqohqesod_1789050996712,Luva com rosca 20 mm marrom,Hidráulica,269,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_fjwo3rlz5_1789050996712,"Luva conexão 22 x 1/2"" branca com rosca",Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_zvbvreas1_1789050996712,Conexão tipo T 20 mm marrom,Hidráulica,31,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_2t0ecp30n_1789050996712,Cotovelo 20 mm marrom,Hidráulica,34,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_xumgioxgv_1789050996712,"Cotovelo 25 x 1/2"" com rosca azul",Hidráulica,14,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_yh73idrwg_1789050996712,"Cotovelo 20 mm x 1/2"" com rosca azul",Hidráulica,1,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_4mjp9xxhh_1789050996712,"Conexão tipo T 20 mm x 1/2"" com rosca azul",Hidráulica,3,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_yej1thxay_1789050996712,"Luva conexão 25 mm x 1/2"" com rosca azul",Hidráulica,10,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_fbqg13gd3_1789050996712,"Niple paralelo com rosca 3/4"" branco",Hidráulica,2,,un,,2026-09-10,2026-09-10,2026-09-10,,
+id_oztlxfq6k_1789050996712,Conexão tipo T 22 mm branca,Hidráulica,9,,un,,2026-09-10,2026-09-10,2026-09-10,,

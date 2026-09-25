@@ -1,11 +1,1 @@
 id,nome,cnpj,telefone,email,contato,categoria,endereco,status
-1,Leroy Merlin,12.345.678/0001-90,(14) 3403-1000,marilia@leroymerlin.com.br,João Silva,Hidráulica/Elétrica/Construção,R. Tupã 1200,Ativo
-2,Eletrorocha Materiais Elétricos,98.765.432/0001-21,(14) 3433-4455,eletrorocha@terra.com.br,Ana Paula,Elétrica,Av. das Esmeraldas 850,Ativo
-3,Soldatudo Equipamentos,11.222.333/0001-44,(14) 3477-8899,contato@soldatudo.com.br,Carlos Souza,Serralheria/Mecânica,R. Princesa Isabel 400,Ativo
-4,Tramontina Center,22.333.444/0001-55,(14) 3400-1234,tramontinamarilia@gmail.com,Marcos Lima,Ferramenta Manual,Mall Avenida,Ativo
-5,Makita do Brasil,33.444.555/0001-66,(11) 4003-2233,vendas@makita.com.br,Pedro Santos,Ferramenta Elétrica,Distribuidor Regional,Ativo
-6,Bosch Ferramentas,44.555.666/0001-77,(11) 4003-3344,comercial@bosch.com.br,Fernanda Dias,Ferramenta Elétrica,Distribuidor Regional,Ativo
-7,Casa do Construtor,55.666.777/0001-88,(14) 3456-7890,contato@casadoconstrutor.com.br,Roberto Alves,Construção/Alvenaria,Av. Brasil 2500,Ativo
-8,Depósito do Pintor,66.777.888/0001-99,(14) 3422-1122,vendas@depopintor.com.br,Lúcia Costa,Pintura/Limpeza,R. XV de Novembro 180,Ativo
-9,Agropecuária Marília,77.888.999/0001-00,(14) 3411-5566,agropec@uol.com.br,Antônio Rocha,Jardinagem,Av. Café 300,Ativo
-10,InfoHouse Informática,88.999.000/0001-11,(14) 3488-7766,infohouse@hotmail.com,Bruna Mendes,Informática,Shopping União,Ativo

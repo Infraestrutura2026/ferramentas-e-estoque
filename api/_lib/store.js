@@ -11,10 +11,13 @@
  *
  * Contrato (idêntico ao Apps Script em apps-script/Code.gs):
  *   list(aba)            → [{...}]                (ordem de inserção)
- *   add(aba, obj)        → {ok, id}               (gera id/createdAt)
+ *   add(aba, obj)        → {ok, id}               (gera id/createdAt; nunca descarta
+ *                                                  um cadastro por colisão de chave)
  *   update(aba, obj)     → {ok, id, upserted}     (mescla; cria se não existir)
  *   remove(aba, id)      → {ok, id}               (ou lança 'não encontrado')
- *   ensureReady()        → cria tabelas + seed dos CSVs (idempotente)
+ *   ensureReady()        → cria tabelas + seed dos CSVs, UMA única vez por aba:
+ *                          tabela esvaziada pelo usuário é preservada vazia
+ *                          (só ?force=1 / ?migrate=1 voltam a inserir o seed)
  */
 
 'use strict';
@@ -70,12 +73,40 @@ class NeonStore {
     const forcar = opcoes && opcoes.force;
     const mesclar = opcoes && opcoes.merge;
     if (!forcar && !mesclar && this._pronto) return this._pronto;
-    this._pronto = this._setup({ merge: mesclar }).catch (e => { this._pronto = null; throw e; });
+    this._pronto = this._setup({ force: forcar, merge: mesclar }).catch (e => { this._pronto = null; throw e; });
     return this._pronto;
+  }
+
+  /**
+   * Marcadores da carga inicial (tabela _setup):
+   *   • 'seed:abas'  → lista das abas que já receberam o seed
+   *   • 'seeded_at'  → marcador legado (desde v2.6.0); se existe, o seed já
+   *                    rodou uma vez para todas as abas
+   * Sem tabela _setup (ou sem leitura) assume "nunca semeadas" — comportamento
+   * de primeira execução.
+   */
+  async _marcadoresSeed() {
+    const vazio = { legado: false, abas: new Set() };
+    let rows;
+    try {
+      ({ rows } = await this.query(`SELECT "key", "value" FROM "_setup"`));
+    } catch (e) {
+      return vazio;
+    }
+    for (const linha of rows || []) {
+      const chave = texto(Array.isArray(linha) ? linha[0] : linha.key);
+      const valor = texto(Array.isArray(linha) ? linha[1] : linha.value);
+      if (chave === 'seeded_at') vazio.legado = true;
+      else if (chave === 'seed:abas') {
+        valor.split(',').map(s => s.trim()).filter(Boolean).forEach(a => vazio.abas.add(a));
+      }
+    }
+    return vazio;
   }
 
   async _setup(opcoes) {
     const mesclar = !!(opcoes && opcoes.merge);
+    const forcar = !!(opcoes && opcoes.force);
     // 1) Tabelas (IF NOT EXISTS + ADD COLUMN IF NOT EXISTS p/ evolução segura)
     for (const aba of ABAS_VALIDAS) {
       const pk = pkDa(aba);
@@ -93,21 +124,46 @@ class NeonStore {
     }
     await this.query(`CREATE TABLE IF NOT EXISTS "_setup" ("key" TEXT PRIMARY KEY, "value" TEXT NOT NULL DEFAULT '')`);
 
-    // 2) Seed: apenas tabelas vazias ou merge em lotes (idempotente; ON CONFLICT protege de corridas)
+    // 2) Seed: apenas tabelas NUNCA semeadas, ou merge explícito (?migrate=1).
+    //    A guarda do marcador é essencial: sem ela, uma aba esvaziada pelo
+    //    usuário (ex.: excluir TODOS os fornecedores) recebia o seed do bundle
+    //    no primeiro cold start seguinte e os registros "voltavam".
     const carga = this._cargaInicial();
     const resumo = {};
+    const jaSemeado = await this._marcadoresSeed();
+    const abasSemeadas = new Set(jaSemeado.abas);
+    if (jaSemeado.legado) ABAS_VALIDAS.forEach(aba => abasSemeadas.add(aba));
+
     for (const aba of ABAS_VALIDAS) {
       const { rows } = await this.query(`SELECT COUNT(*)::int AS n FROM ${ident(aba)}`);
       const existentes = (rows[0] && rows[0][0]) || 0;
-      if (existentes > 0 && !mesclar) { resumo[aba] = { existentes, inseridos: 0 }; continue; }
+      if (existentes > 0 && !mesclar) {
+        abasSemeadas.add(aba);
+        resumo[aba] = { existentes, inseridos: 0 };
+        continue;
+      }
+      const semAntes = jaSemeado.legado || jaSemeado.abas.has(aba);
+      if (semAntes && !forcar && !mesclar) {
+        // Tabela vazia de propósito: nada a fazer — o banco manda, o seed não.
+        resumo[aba] = { existentes: 0, inseridos: 0, preservada: true };
+        continue;
+      }
       const registros = carga[aba] || [];
       const inseridos = await this._inserirEmLote(aba, registros);
+      abasSemeadas.add(aba);
       resumo[aba] = { existentes, inseridos };
     }
+    // Marcadores gravados com valores parametrizados (regra da casa: nada de
+    // literal dentro do SQL) — a próxima execução lê daqui e não semeia de novo.
     await this.query(
-      `INSERT INTO "_setup" ("key", "value") VALUES ('seeded_at', $1)
+      `INSERT INTO "_setup" ("key", "value") VALUES ($1, $2)
        ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value"`,
-      [agoraISO()]
+      ['seeded_at', agoraISO()]
+    );
+    await this.query(
+      `INSERT INTO "_setup" ("key", "value") VALUES ($1, $2)
+       ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value"`,
+      ['seed:abas', Array.from(abasSemeadas).join(',')]
     );
     return resumo;
   }
@@ -191,6 +247,19 @@ class NeonStore {
     });
   }
 
+  /** INSERT com a chave primária já resolvida. Retorna quantas linhas entraram. */
+  async _inserir(aba, registro) {
+    const pk = pkDa(aba);
+    const colunas = colunasDa(aba);
+    const placeholders = colunas.map((_, i) => `$${i + 1}`).join(', ');
+    const { rows } = await this.query(
+      `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')}) VALUES (${placeholders})
+       ON CONFLICT (${ident(pk)}) DO NOTHING RETURNING 1`,
+      colunas.map(c => texto(registro[c]))
+    );
+    return (rows && rows.length) || 0;
+  }
+
   async add(aba, payload) {
     this._exigirAba(aba);
     await this.ensureReady();
@@ -203,13 +272,25 @@ class NeonStore {
     if (colunas.includes('createdAt') && !registro.createdAt) registro.createdAt = agoraISO();
     if (colunas.includes('updatedAt') && !registro.updatedAt) registro.updatedAt = registro.createdAt || agoraISO();
 
-    const placeholders = colunas.map((_, i) => `$${i + 1}`).join(', ');
-    await this.query(
-      `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')}) VALUES (${placeholders})
-       ON CONFLICT (${ident(pk)}) DO NOTHING`,
-      colunas.map(c => registro[c])
-    );
-    return { ok: true, id: registro[pk] };
+    const chave = texto(registro[pk]);
+    const inseridos = await this._inserir(aba, registro);
+    if (inseridos > 0) return { ok: true, id: chave };
+
+    /* Conflito de chave: o cadastro NÃO pode ser descartado em silêncio
+       (era assim que um fornecedor novo "sumia" — ON CONFLICT DO NOTHING sem
+       retorno). Em usuarios a chave é o login e duplicá-lo corromperia o
+       login, então ali o erro é explícito; nas demais abas geramos um id
+       único e gravamos, devolvendo o id efetivamente usado. */
+    if (pk === 'usuario') {
+      // Erro de domínio → HTTP 200 + success:false (mesma paridade do Apps
+      // Script), para o frontend conseguir mostrar a mensagem em vez de "HTTP 409".
+      const e = new Error(`Já existe um usuário com o login "${chave}".`);
+      e.status = 200;
+      throw e;
+    }
+    registro[pk] = gerarId();
+    await this._inserir(aba, registro);
+    return { ok: true, id: registro[pk], idRegenerado: true };
   }
 
   async update(aba, payload) {
@@ -230,12 +311,7 @@ class NeonStore {
       registro[pk] = chave;
       if (colunas.includes('createdAt') && !registro.createdAt) registro.createdAt = agoraISO();
       if (colunas.includes('updatedAt')) registro.updatedAt = agoraISO();
-      const placeholders = colunas.map((_, i) => `$${i + 1}`).join(', ');
-      await this.query(
-        `INSERT INTO ${ident(aba)} (${colunas.map(ident).join(', ')}) VALUES (${placeholders})
-         ON CONFLICT (${ident(pk)}) DO NOTHING`,
-        colunas.map(c => registro[c])
-      );
+      await this._inserir(aba, registro);
       return { ok: true, id: chave, upserted: true };
     }
 
@@ -361,8 +437,21 @@ class MemoryStore {
     if (!texto(registro[pk])) registro[pk] = pk === 'usuario' ? gerarUsuario() : gerarId();
     if (colunas.includes('createdAt') && !registro.createdAt) registro.createdAt = agoraISO();
     if (colunas.includes('updatedAt') && !registro.updatedAt) registro.updatedAt = registro.createdAt || agoraISO();
-    this._dados[aba].push(registro);
-    return { ok: true, id: registro[pk] };
+
+    // Mesma política do NeonStore: chave repetida nunca descarta o cadastro.
+    const linha = this._dados[aba] || (this._dados[aba] = []);
+    const chave = texto(registro[pk]);
+    const conflito = linha.some(r => texto(r[pk]) === chave);
+    if (conflito && pk === 'usuario') {
+      // Erro de domínio → HTTP 200 + success:false (mesma paridade do Apps
+      // Script), para o frontend conseguir mostrar a mensagem em vez de "HTTP 409".
+      const e = new Error(`Já existe um usuário com o login "${chave}".`);
+      e.status = 200;
+      throw e;
+    }
+    if (conflito) registro[pk] = gerarId(); // id único evita perder o cadastro
+    linha.push(registro);
+    return { ok: true, id: registro[pk], idRegenerado: conflito };
   }
 
   async update(aba, payload) {

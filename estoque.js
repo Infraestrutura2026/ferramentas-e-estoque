@@ -32,6 +32,12 @@ const estoqueModule = {
               <option value="critico">⚠ Crítico</option>
               <option value="zerado">✕ Esgotado</option>
             </select>
+            ${this._fornecedores().length ? `
+            <select id="estoqueFiltroFornecedor" onchange="estoqueModule.filtrar()"
+              class="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none max-w-56">
+              <option value="">Todos os fornecedores</option>
+              ${this._fornecedores().map(f => `<option value="${utils.escapeHtml(f)}">${utils.escapeHtml(f)}</option>`).join('')}
+            </select>` : ''}
           </div>
           <button onclick="estoqueModule.abrirModalAdicionar()" 
             class="app-button px-4 py-2 text-sm bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 shadow shadow-black/20 transition">
@@ -50,6 +56,8 @@ const estoqueModule = {
                   <th class="px-4 py-3 text-center font-semibold text-slate-600">Qtd. Atual</th>
                   <th class="px-4 py-3 text-center font-semibold text-slate-600">Mínimo</th>
                   <th class="px-4 py-3 text-center font-semibold text-slate-600">Status</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-600">Fornecedor</th>
+                  <th class="px-4 py-3 text-right font-semibold text-slate-600">Valor Unit.</th>
                   <th class="px-4 py-3 text-left font-semibold text-slate-600">Local</th>
                   <th class="px-4 py-3 text-center font-semibold text-slate-600">Ações</th>
                 </tr>
@@ -70,7 +78,7 @@ const estoqueModule = {
 
   renderRows(items) {
     if (!items.length) {
-      return `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Nenhum item cadastrado.</td></tr>`;
+      return `<tr><td colspan="9" class="px-4 py-8 text-center text-slate-500">Nenhum item cadastrado.</td></tr>`;
     }
     return items.map(item => {
       const qtd = parseFloat(item.quantidadeAtual) || 0;
@@ -85,14 +93,22 @@ const estoqueModule = {
       }
 
       const catBadge = utils.categoriaBadge(item.categoria);
+      // Valor unitário (novo) aceita vírgula ou ponto; sem valor informado mostra '—'.
+      const valorUnit = utils.valorNumerico(item.valorUnitario);
+      const valorUnitario = valorUnit > 0 ? utils.moedaBR(valorUnit) : '—';
+      const saldo = valorUnit > 0 ? utils.moedaBR(valorUnit * qtd) : '—';
+      const fornecedor = item.fornecedor ? utils.escapeHtml(item.fornecedor) : '—';
 
       return `
-        <tr class="border-b border-slate-100 hover:bg-slate-50 transition" data-id="${utils.escapeHtml(item.id)}">
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition" data-id="${utils.escapeHtml(item.id)}"
+          title="${saldo !== '—' ? `Saldo do item: ${qtd} × ${utils.moedaBR(valorUnit)} = ${saldo}` : ''}">
           <td class="px-4 py-3 font-medium text-slate-900">${utils.escapeHtml(item.nome || item.item || '—')}</td>
           <td class="px-4 py-3">${catBadge}</td>
           <td class="px-4 py-3 text-center font-semibold">${qtd}</td>
           <td class="px-4 py-3 text-center text-slate-500">${min > 0 ? min : '—'}</td>
           <td class="px-4 py-3 text-center">${statusBadge}</td>
+          <td class="px-4 py-3 text-slate-600">${fornecedor}</td>
+          <td class="px-4 py-3 text-right whitespace-nowrap text-slate-700">${valorUnitario}</td>
           <td class="px-4 py-3 text-slate-600">${utils.escapeHtml(item.local || '—')}</td>
           <td class="px-4 py-3 text-center">
             <button onclick="estoqueModule.editar('${utils.escapeHtml(item.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
@@ -107,14 +123,21 @@ const estoqueModule = {
     const search = document.getElementById('estoqueSearch')?.value || '';
     const cat = document.getElementById('estoqueFiltroCategoria')?.value || '';
     const status = document.getElementById('estoqueFiltroStatus')?.value || '';
+    const fornecedor = document.getElementById('estoqueFiltroFornecedor')?.value || '';
 
     let items = app.data.estoque || [];
 
     if (search) {
-      items = items.filter(i => utils.normalize(i.nome || i.item).includes(utils.normalize(search)));
+      const termo = utils.normalize(search);
+      items = items.filter(i => utils.normalize(i.nome || i.item).includes(termo)
+        // buscar também pelo fornecedor: "quem me vende este item?"
+        || utils.normalize(i.fornecedor || '').includes(termo));
     }
     if (cat) {
       items = items.filter(i => i.categoria === cat);
+    }
+    if (fornecedor) {
+      items = items.filter(i => String(i.fornecedor || '') === fornecedor);
     }
     if (status) {
       items = items.filter(i => {
@@ -136,6 +159,7 @@ const estoqueModule = {
   abrirModalAdicionar() {
     const categorias = [...new Set((app.data.estoque || []).map(i => i.categoria).filter(Boolean))].sort();
     const catOptions = categorias.map(c => `<option value="${utils.escapeHtml(c)}">${utils.escapeHtml(c)}</option>`).join('');
+    const dlForn = this._datalistFornecedores('dlFornecedoresNovo');
 
     const html = `
       <div class="space-y-4">
@@ -172,6 +196,20 @@ const estoqueModule = {
             <input id="inpUnidade" type="text" value="un" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
         </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Fornecedor</label>
+            <input id="inpFornecedor" type="text" list="dlFornecedoresNovo" autocomplete="off"
+              placeholder="${this._fornecedores().length ? 'Selecione ou digite...' : 'Cadastre em Fornecedores'}"
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
+            ${dlForn}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Valor Unitário (R$)</label>
+            <input id="inpValorUnitario" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00 (aceita vírgula ou ponto)"
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
+          </div>
+        </div>
       </div>
     `;
 
@@ -187,6 +225,46 @@ const estoqueModule = {
     });
   },
 
+  /* ── Fornecedores cadastrados (fonte do datalist e do filtro) ──
+     Vêm da aba `fornecedores` já sincronizada pelo app; nomes repetidos no
+     cadastro antigo são agrupados, e itens com fornecedor livre (digitado à
+     mão) também entram, para o filtro nunca "esquecer" um item. */
+  _fornecedores(itensExtras = []) {
+    const nomes = new Set();
+    (app.data.fornecedores || []).forEach(f => { if (f && f.nome) nomes.add(String(f.nome).trim()); });
+    (app.data.estoque || []).concat(itensExtras).forEach(i => { if (i && i.fornecedor) nomes.add(String(i.fornecedor).trim()); });
+    return [...nomes].filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  },
+
+  _datalistFornecedores(id) {
+    const opcoes = this._fornecedores().map(f => `<option value="${utils.escapeHtml(f)}"></option>`).join('');
+    return `<datalist id="${id}">${opcoes}</datalist>`;
+  },
+
+  /** Valor guardado (string/number) -> texto do campo de edição em padrão pt-BR. */
+  _valorParaEdicao(v) {
+    const n = utils.valorNumerico(v);
+    return n ? n.toFixed(2).replace('.', ',') : '';
+  },
+
+  /** Texto do campo do modal. Sem o campo (modal antigo), preserva `atual`. */
+  _campoTexto(id, atual = '') {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : String(atual ?? '');
+  },
+
+  /** Valor monetário do campo, aceitando vírgula ou ponto. '12,5' → '12.50'. */
+  _campoValor(id, atual = '') {
+    const el = document.getElementById(id);
+    if (!el) return String(atual ?? '');
+    const bruto = el.value.trim();
+    if (!bruto) return '';
+    const n = utils.valorNumerico(bruto);
+    // Duas casas decimais fixas: o backend é TEXT e o espelho Sheets precisa
+    // receber um número estável ('12.50', não '12,5' nem '12.5').
+    return isFinite(n) ? n.toFixed(2) : bruto;
+  },
+
   async salvar() {
     const nome = document.getElementById('inpNome')?.value.trim();
     let categoria = document.getElementById('inpCategoria')?.value;
@@ -195,6 +273,8 @@ const estoqueModule = {
     const qtd = parseFloat(document.getElementById('inpQtd')?.value) || 0;
     const min = parseFloat(document.getElementById('inpMin')?.value) || 0;
     const unidade = document.getElementById('inpUnidade')?.value.trim() || 'un';
+    const fornecedor = this._campoTexto('inpFornecedor');
+    const valorUnitario = this._campoValor('inpValorUnitario');
 
     if (!nome) { app.showToast('Informe o nome do item.', 'error'); return; }
     if (categoria === '__nova__') {
@@ -211,6 +291,8 @@ const estoqueModule = {
       quantidadeAtual: qtd,
       quantidadeMinima: min,
       unidade,
+      fornecedor,
+      valorUnitario,
       data: new Date().toISOString().split('T')[0]
     };
 
@@ -282,6 +364,21 @@ const estoqueModule = {
             <input id="editUnidade" type="text" value="${utils.escapeHtml(item.unidade || 'un')}" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
           </div>
         </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Fornecedor</label>
+            <input id="editFornecedor" type="text" list="dlFornecedoresEdicao" autocomplete="off"
+              value="${utils.escapeHtml(item.fornecedor || '')}" placeholder="Selecione ou digite..."
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
+            ${this._datalistFornecedores('dlFornecedoresEdicao')}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Valor Unitário (R$)</label>
+            <input id="editValorUnitario" type="text" inputmode="decimal" autocomplete="off"
+              value="${utils.escapeHtml(this._valorParaEdicao(item.valorUnitario))}" placeholder="0,00 (aceita vírgula ou ponto)"
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none">
+          </div>
+        </div>
       </div>
     `;
 
@@ -315,6 +412,10 @@ const estoqueModule = {
       quantidadeAtual: parseFloat(document.getElementById('editQtd')?.value) || item.quantidadeAtual,
       quantidadeMinima: parseFloat(document.getElementById('editMin')?.value) || item.quantidadeMinima,
       unidade: document.getElementById('editUnidade')?.value.trim() || item.unidade,
+      // Fornecedor/valor unitário: campo vazio apaga o valor (diferente das
+      // demais chaves, que caem no "ou item.x" para não zerar o que não veio).
+      fornecedor: this._campoTexto('editFornecedor', item.fornecedor),
+      valorUnitario: this._campoValor('editValorUnitario', item.valorUnitario),
       updatedAt: new Date().toISOString()
     };
 

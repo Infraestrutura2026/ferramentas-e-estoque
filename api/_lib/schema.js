@@ -13,7 +13,9 @@
 const ABAS = {
   estoque: {
     pk: 'id',
-    colunas: ['id', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'local', 'data', 'createdAt', 'updatedAt'],
+    // fornecedor/valorUnitario entram no fim (mesma ordem do ALTER TABLE ADD
+    // COLUMN aplicado num banco já existente) — ver CHANGELOG [Não publicado].
+    colunas: ['id', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'local', 'data', 'createdAt', 'updatedAt', 'fornecedor', 'valorUnitario'],
   },
   ferramentas: {
     pk: 'id',
