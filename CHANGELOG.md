@@ -10,7 +10,7 @@
   função da Vercel, os 10 fornecedores de demonstração voltavam e a tela "atualizava e trazia
   tudo de volta".
 - A carga inicial passou a ser **uma vez por aba**: a API grava `seed:abas` (e mantém
-  `seeded_at`) na tabela `_setup` e não semeia de novo uma aba já semeadas, ainda que vazia.
+  `seeded_at`) na tabela `_setup` e não semeia de novo uma aba já semeada, ainda que vazia.
   `?force=1` e `?migrate=1` continuam repopulando/trazendo chaves ausentes, agora de forma
   explícita.
 - `data/fornecedores.csv` ficou **somente com o cabeçalho** e o `seed-data.js` foi regenerado
