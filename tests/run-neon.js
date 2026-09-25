@@ -38,6 +38,11 @@ function criarExecutorFalso() {
 
   function garantirTabela(nome) {
     if (!tabelas[nome]) {
+      if (nome === '_setup') {
+        // tabela interna de marcadores: chave/valor (sem schema de aba)
+        tabelas._setup = { colunas: ['key', 'value'], pk: 'key', rows: new Map() };
+        return tabelas._setup;
+      }
       const { colunasDa, pkDa } = require('../api/_lib/schema');
       tabelas[nome] = { colunas: colunasDa(nome), pk: pkDa(nome), rows: new Map() };
     }
@@ -54,7 +59,14 @@ function criarExecutorFalso() {
       return { rows: [] };
     }
     if (s.startsWith('ALTER TABLE')) return { rows: [] };
-    if (s.startsWith('INSERT INTO "_SETUP"') || s.startsWith('INSERT INTO "_setup"')) return { rows: [] };
+    if (s.startsWith('INSERT INTO "_SETUP"') || s.startsWith('INSERT INTO "_setup"')) {
+      // INSERT ... ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value"
+      const t = garantirTabela('_setup');
+      const [chave, valor] = params.map(String);
+      for (const obj of t.rows.values()) { if (obj.key === chave) { obj.value = valor; return { rows: [] }; } }
+      t.rows.set(++seq, { key: chave, value: valor });
+      return { rows: [] };
+    }
 
     if (s.startsWith('SELECT COUNT(*)')) {
       const m = sql.match(/FROM "([a-z_]+)"/i);
@@ -175,7 +187,10 @@ function criarExecutorFalso() {
   fx2.log.length = 0;
   await store2.update('estoque', { id: 'est-x', quantidadeAtual: '25' });
   const upd = fx2.log.find(l => l.sql.startsWith('UPDATE "estoque"'));
-  ok('update() gera UPDATE parametrizado com todas as colunas', upd && upd.params.length === 11);
+  const colsEstoque = require('../api/_lib/schema').colunasDa('estoque');
+  ok('update() gera UPDATE parametrizado com todas as colunas',
+    upd && upd.params.length === colsEstoque.length + 1,
+    'esperado ' + (colsEstoque.length + 1) + ', veio ' + (upd ? upd.params.length : 'nada'));
   const selUpd = fx2.log.find(l => l.sql.startsWith('SELECT') && /WHERE "id" = \$1/.test(l.sql));
   ok('update() lê a linha atual antes de mesclar', !!selUpd);
 
@@ -220,6 +235,96 @@ function criarExecutorFalso() {
   const sqlInsLote = fxLote.log.filter(l => l.sql.startsWith('INSERT INTO "estoque"'));
   ok('_inserirEmLote dividiu 3 itens válidos em 2 queries com tamanhoLote=2', sqlInsLote.length === 2);
   ok('_inserirEmLote retorna 0 para lista vazia', (await storeLote._inserirEmLote('estoque', [])) === 0);
+
+  /* ── 1.11 REGRESSÃO: esvaziar uma tela não faz o seed "ressuscitar" registros ──
+   * O seed do bundle era reinserido sempre que a tabela aparecia vazia. Como a
+   * exclusão em massa deixa a tabela vazia, os 10 fornecedores de demonstração
+   * voltavam no primeiro cold start seguinte (relato: "já excluí todos, mas está
+   * atualizando e voltando"). A carga inicial passa a ser uma vez só por aba.
+   */
+  const fxRess = criarExecutorFalso();
+  const storeRess = new NeonStore(fxRess.exec);
+  await storeRess.ensureReady();
+  const antesDaLimpeza = await storeRess.list('historico');
+  for (const r of antesDaLimpeza) await storeRess.remove('historico', r.id);
+  ok('limpeza real esvaziou a aba de exemplo', (await storeRess.list('historico')).length === 0 && antesDaLimpeza.length > 0);
+
+  const storeRessFria = new NeonStore(fxRess.exec); // instância fria = novo cold start
+  ok('tabela esvaziada permanece vazia após cold start (seed não repete)',
+    (await storeRessFria.list('historico')).length === 0);
+  ok('seed marca as abas semeadas em _setup', fxRess.log.some(l =>
+    l.sql.includes('INSERT INTO "_setup"') && l.params[0] === 'seed:abas'));
+
+  const resumoForcado = await storeRessFria.ensureReady({ force: true });
+  ok('?force=1 continua capaz de repopular aba vazia (recuperação manual)',
+    resumoForcado.historico.inseridos === antesDaLimpeza.length,
+    JSON.stringify(resumoForcado.historico));
+
+  // Cadastro novo em aba vazia (o caso do usuário) entra e permanece.
+  const rFornNovo = await storeRessFria.add('fornecedores', { nome: 'Ferragens Marília', cnpj: '11.111.111/0001-11' });
+  const listaForn = await storeRessFria.list('fornecedores');
+  ok('novo fornecedor é gravado em cadastro vazio', listaForn.length === 1 && listaForn[0].nome === 'Ferragens Marília');
+  ok('add() devolve o id do registro criado', rFornNovo.ok && typeof rFornNovo.id === 'string' && rFornNovo.id.length > 0);
+
+  /* ── 1.12 REGRESSÃO: id repetido não descarta o cadastro ──
+   * O frontend usava `length + 1` como id; com o banco já contendo aquela
+   * chave, o INSERT `ON CONFLICT DO NOTHING` não gravava nada e a resposta
+   * continuava success:true — o cadastro sumia ao sincronizar.
+   */
+  const fxColisao = criarExecutorFalso();
+  const storeColisao = new NeonStore(fxColisao.exec);
+  await storeColisao.ensureReady();
+  await storeColisao.add('fornecedores', { id: '1', nome: 'Fornecedor Antigo' });
+  const rColisao = await storeColisao.add('fornecedores', { id: '1', nome: 'Fornecedor Novo' });
+  const listaColisao = await storeColisao.list('fornecedores');
+  ok('add com chave repetida ganha id novo em vez de perder o registro',
+    rColisao.idRegenerado === true && rColisao.id !== '1' && listaColisao.length === 2,
+    JSON.stringify({ id: rColisao.id, total: listaColisao.length }));
+  ok('nenhum registro existente é sobrescrito na colisão',
+    listaColisao.some(f => f.nome === 'Fornecedor Antigo') && listaColisao.some(f => f.nome === 'Fornecedor Novo'));
+
+  let usuarioDuplicado = null;
+  try { await storeColisao.add('usuarios', { usuario: 'admin', senha: 'x', nivel: 'admin', nome: 'Clone' }); }
+  catch (e) { usuarioDuplicado = e.message; }
+  ok('login duplicado é recusado com mensagem clara (não cria usuário fantasma)',
+    /já existe um usuário/i.test(String(usuarioDuplicado)), String(usuarioDuplicado));
+
+  // MemoryStore tem de responder igual (dev/server.js e testes de contrato).
+  const memColisao = new MemoryStore({});
+  await memColisao.add('fornecedores', { id: '1', nome: 'A' });
+  const rMem = await memColisao.add('fornecedores', { id: '1', nome: 'B' });
+  ok('MemoryStore segue a mesma regra de colisão (paridade com o Neon)',
+    rMem.idRegenerado === true && (await memColisao.list('fornecedores')).length === 2);
+
+  /* ── 1.13 Estoque: fornecedor + valor unitário no cadastro do produto ── */
+  const colsEstoqueSchema = require('../api/_lib/schema').colunasDa('estoque');
+  ok('schema de estoque traz fornecedor e valorUnitario',
+    ['fornecedor', 'valorUnitario'].every(c => colsEstoqueSchema.includes(c)), colsEstoqueSchema.join(','));
+  ok('CSV do estoque e seed têm as duas colunas novas',
+    Object.keys(ESTOQUE_CSV[0]).includes('fornecedor') && Object.keys(ESTOQUE_CSV[0]).includes('valorUnitario') &&
+    Object.keys(seedData.estoque[0]).includes('fornecedor'),
+    Object.keys(ESTOQUE_CSV[0]).join(','));
+
+  const rEst = await storeColisao.add('estoque', {
+    id: 'est-forn', nome: 'Cimento 50kg', categoria: 'Construção',
+    quantidadeAtual: '10', quantidadeMinima: '4', unidade: 'sc',
+    fornecedor: 'Casa do Construtor', valorUnitario: '45,90',
+  });
+  const estSalvo = (await storeColisao.list('estoque')).find(e => e.id === rEst.id) || {};
+  ok('estoque persiste fornecedor e valor unitário informados',
+    estSalvo.fornecedor === 'Casa do Construtor' && estSalvo.valorUnitario === '45,90',
+    JSON.stringify({ fornecedor: estSalvo.fornecedor, valorUnitario: estSalvo.valorUnitario }));
+
+  await storeColisao.update('estoque', { id: rEst.id, quantidadeAtual: '8' });
+  const estEditado = (await storeColisao.list('estoque')).find(e => e.id === rEst.id) || {};
+  ok('editar item não apaga fornecedor nem valor unitário',
+    estEditado.fornecedor === 'Casa do Construtor' && estEditado.valorUnitario === '45,90',
+    JSON.stringify({ fornecedor: estEditado.fornecedor, valorUnitario: estEditado.valorUnitario }));
+
+  /* ── 1.14 Seed de fornecedores começa limpo (sem demonstração) ── */
+  ok('seed não traz fornecedores de demonstração', (seedData.fornecedores || []).length === 0);
+  ok('data/fornecedores.csv tem só o cabeçalho (nada a semear)',
+    parseCSV(fs.readFileSync(path.join(ROOT, 'data', 'fornecedores.csv'), 'utf8')).length === 0);
 
   console.log('\n━━━ 2. Segurança ━━━');
 
@@ -355,7 +460,15 @@ function criarExecutorFalso() {
   const pAdd = await (await fetch(`${base}/api/fornecedores`, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'add', aba: 'fornecedores', nome: 'Loja do Parafuso', cnpj: '12.345.678/0001-90' }) })).json();
   ok('HTTP POST text/plain (mesmo Content-Type do frontend) → add OK', pAdd.success === true);
   const gForn = await (await fetch(`${base}/api/fornecedores`)).json();
-  ok('fornecedor aparece (10 seed + 1 novo = 11)', gForn.length === 11 && gForn[10].nome === 'Loja do Parafuso');
+  const seedForn = (seedData.fornecedores || []).length;
+  ok(`fornecedor novo aparece no fim da lista (seed ${seedForn} + 1)`,
+    gForn.length === seedForn + 1 && gForn[gForn.length - 1].nome === 'Loja do Parafuso',
+    'veio ' + JSON.stringify(gForn.map(f => f.nome)));
+  // Excluir tudo tem de permanecer vazio (contrato delete → list)
+  await fetch(`${base}/api/fornecedores?action=delete&id=${encodeURIComponent(gForn[gForn.length - 1].id)}`);
+  const gFornVazio = await (await fetch(`${base}/api/fornecedores`)).json();
+  ok('após excluir os fornecedores restantes a lista fica vazia de fato',
+    Array.isArray(gFornVazio) && gFornVazio.length === seedForn, 'veio ' + gFornVazio.length);
   const gIndex = await fetch(`${base}/`);
   ok('frontend é servido (index.html 200 + text/html)', gIndex.status === 200 && (gIndex.headers.get('content-type') || '').includes('text/html'));
   const gConfig = await (await fetch(`${base}/config.js`)).text();

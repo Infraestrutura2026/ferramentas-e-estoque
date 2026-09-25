@@ -19,7 +19,9 @@ module.exports = {
       "local": "caixa na garagem da frota",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "3d5a28e3-ad9f-48bf-8",
@@ -31,7 +33,9 @@ module.exports = {
       "local": "caixa na garagem da frota",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "cab792e9-1030-4095-a",
@@ -43,7 +47,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "122e284f-09fa-449b-8",
@@ -55,7 +61,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "8c52e31b-61d3-4594-8",
@@ -67,7 +75,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "985be8c3-e9f3-4911-b",
@@ -79,7 +89,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "99074f4f-29e4-43cd-a",
@@ -91,7 +103,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "ae561657-af6d-4caa-a",
@@ -103,7 +117,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "fe4fb390-0e07-4e4c-a",
@@ -115,7 +131,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "a2c0fe4e-9219-42fe-a",
@@ -127,7 +145,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "47cbd190-9398-46a6-b",
@@ -139,7 +159,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "0d4febf9-363a-4a73-b",
@@ -151,7 +173,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "37bae24d-30f3-4370-9",
@@ -163,7 +187,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "38fc1b93-dee8-4067-8",
@@ -175,7 +201,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "f5f3787c-479f-4e7d-9",
@@ -187,7 +215,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "9d5ee2c8-5078-47b1-b",
@@ -199,7 +229,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "2dc1a25a-d7cb-46b5-b",
@@ -211,7 +243,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "1f7ba7d3-69b5-4878-a",
@@ -223,7 +257,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "ef4e6b20-af66-49af-8",
@@ -235,7 +271,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "4faa5492-b469-4f8f-9",
@@ -247,7 +285,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "6f1abc4f-3542-49ec-8",
@@ -259,7 +299,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "22677d70-adfe-4adc-9",
@@ -271,7 +313,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "7d3a90dc-a5b8-44be-8",
@@ -283,7 +327,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "8f8d66f6-ea4f-4534-9",
@@ -295,7 +341,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "ca9fdc7b-f0c1-4450-b",
@@ -307,7 +355,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "980a6efb-3de9-48da-9",
@@ -319,7 +369,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "79af884c-d245-4398-b",
@@ -331,7 +383,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "0d2a0b36-c0b1-4cab-b",
@@ -343,7 +397,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "d5792262-7422-4e87-9",
@@ -355,7 +411,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "ac35d98c-552e-4da4-9",
@@ -367,7 +425,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "eb988714-4afd-4cfc-b",
@@ -379,7 +439,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "22ef9840-3d6f-4aa2-b",
@@ -391,7 +453,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "4caadc9d-6a78-4aa7-8",
@@ -403,7 +467,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "d1d9c766-e470-45d8-8",
@@ -415,7 +481,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "4572bed0-a8a9-443b-9",
@@ -427,7 +495,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "baa084cc-09b0-49c3-a",
@@ -439,7 +509,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "76f6120c-ca71-44cb-9",
@@ -451,7 +523,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "2cceaf4f-6d1b-418c-a",
@@ -463,7 +537,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "cdb8740f-8990-4af0-a",
@@ -475,7 +551,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "2753eacf-ce8d-43db-b",
@@ -487,7 +565,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "68d8a244-0417-4ca1-9",
@@ -499,7 +579,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "1bb9956c-6a14-42af-a",
@@ -511,7 +593,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "91c3befd-3bc2-4934-b",
@@ -523,7 +607,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "492bc36e-5fc4-4bda-a",
@@ -535,7 +621,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "7ac50fd3-f325-4aba-8",
@@ -547,7 +635,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "89a49e24-2629-4fb6-b",
@@ -559,7 +649,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "f5685d1c-770c-490d-9",
@@ -571,7 +663,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "920e6450-837f-46a3-9",
@@ -583,7 +677,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "d5d11734-1555-4ec4-8",
@@ -595,7 +691,9 @@ module.exports = {
       "local": "",
       "data": "2026-07-24",
       "createdAt": "2026-07-24",
-      "updatedAt": "2026-07-24"
+      "updatedAt": "2026-07-24",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "c03c8734-d5da-4f1c-a70a-b1e5edc17d05",
@@ -607,7 +705,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "864f9069-6850-4b1c-95f2-fcbc7feef964",
@@ -619,7 +719,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "5f767ecc-aea9-458d-9910-fd705821e68b",
@@ -631,7 +733,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "601b57cf-5f0d-4783-8394-8ebde3753848",
@@ -643,7 +747,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "888c0f96-58d1-4c38-843d-d407f40f822f",
@@ -655,7 +761,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "fb668a6b-52b6-4675-858c-868ba94d4436",
@@ -667,7 +775,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "d6b09687-8686-4c32-95f9-6db40fd62067",
@@ -679,7 +789,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "cbd60682-f61c-489f-974c-e16e5b28ff87",
@@ -691,7 +803,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "78e133f7-8c24-44f7-aaa4-ed0e78b9f0a4",
@@ -703,7 +817,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "367a6558-7fb7-4199-97ec-fcad5feb97fc",
@@ -715,7 +831,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "17e5addb-757d-495f-8ab0-8fc9f838090c",
@@ -727,7 +845,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "5c8c6559-b1d0-43bd-948c-d1291e8ed037",
@@ -739,7 +859,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "feb43f39-ec7c-4845-93d4-d4a4745ee7c8",
@@ -751,7 +873,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "e54f5d1b-90c7-4fea-97fb-8f03573dc79c",
@@ -763,7 +887,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "03e12d56-1797-4000-9d73-72ca675338c6",
@@ -775,7 +901,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "cce02b0b-1f45-4081-b12c-9b84ecb17c77",
@@ -787,7 +915,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "db7321b6-fcf4-4a61-96fb-1586c191a8ac",
@@ -799,7 +929,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "4e0f697d-6ca8-4732-9310-0b4d8c404bae",
@@ -811,7 +943,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "1a333753-95c8-4817-a4b1-ea68a9e071e8",
@@ -823,7 +957,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "86fdbcf0-792a-40a1-8d8a-c070f560ead4",
@@ -835,7 +971,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "e6b81f24-56dd-4a26-98dd-aa151ad6cefc",
@@ -847,7 +985,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "f3038fcc-782d-4262-b8d4-c0839f29945c",
@@ -859,7 +999,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "3f73825b-7186-415a-a55d-dccd10d51118",
@@ -871,7 +1013,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "2e396a2c-2665-4b51-8820-eed400785c87",
@@ -883,7 +1027,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "0f7890cc-17bc-41d6-9349-72ab55fccd95",
@@ -895,7 +1041,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "a407790f-3ec7-4460-8a46-a5aa2196ad9b",
@@ -907,7 +1055,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "7b3c97ea-0ddc-4445-b46e-cd9886abf9d7",
@@ -919,7 +1069,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "1159c46a-38e1-4e35-8884-9c8e66da106c",
@@ -931,7 +1083,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "1428cd68-d960-44c9-9c7d-8fed429c471f",
@@ -943,7 +1097,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "bf113a1d-f3d0-4b3f-b372-2b7ca4e3ca87",
@@ -955,7 +1111,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "81d26a0a-db7d-4619-9d95-c85ad48a05ec",
@@ -967,7 +1125,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "78eff7e7-7920-4c5f-90f8-fa0be3b9895f",
@@ -979,7 +1139,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "7b695a1b-dd5e-496d-ad99-fdc1437360e8",
@@ -991,7 +1153,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "445b43c9-cf3d-4ebc-ab30-8a5df733c4be",
@@ -1003,7 +1167,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "b41fe200-a670-4fa2-8b80-047521a54bd3",
@@ -1015,7 +1181,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "7e214b26-7952-48b4-afd7-5aa84cd02222",
@@ -1027,7 +1195,9 @@ module.exports = {
       "local": "",
       "data": "",
       "createdAt": "",
-      "updatedAt": ""
+      "updatedAt": "",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_wtp73b9ji_1789050996711",
@@ -1039,7 +1209,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_nqdtozdzw_1789050996711",
@@ -1051,7 +1223,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_spj31u0ds_1789050996711",
@@ -1063,7 +1237,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_14rbgoncs_1789050996711",
@@ -1075,7 +1251,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_4cy3zhor0_1789050996711",
@@ -1087,7 +1265,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_b4a2khlao_1789050996711",
@@ -1099,7 +1279,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_i1dqkyoev_1789050996711",
@@ -1111,7 +1293,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_gpnmsx40e_1789050996711",
@@ -1123,7 +1307,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ljurry4li_1789050996711",
@@ -1135,7 +1321,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_vctqobuf3_1789050996711",
@@ -1147,7 +1335,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_d6j8gkxx7_1789050996711",
@@ -1159,7 +1349,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_rot2bfjxt_1789050996712",
@@ -1171,7 +1363,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_63nlm6cz3_1789050996712",
@@ -1183,7 +1377,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_uodhjctka_1789050996712",
@@ -1195,7 +1391,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ervxld19u_1789050996712",
@@ -1207,7 +1405,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_bu5cozngg_1789050996712",
@@ -1219,7 +1419,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ee5b28m75_1789050996712",
@@ -1231,7 +1433,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_magopvm0e_1789050996712",
@@ -1243,7 +1447,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_8i6xxa09h_1789050996712",
@@ -1255,7 +1461,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_z53yx2rcr_1789050996712",
@@ -1267,7 +1475,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_yergrubhy_1789050996712",
@@ -1279,7 +1489,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_cqlbltacm_1789050996712",
@@ -1291,7 +1503,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_6vs7bdqkt_1789050996712",
@@ -1303,7 +1517,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_qims6jqc3_1789050996712",
@@ -1315,7 +1531,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_mnzidw4l1_1789050996712",
@@ -1327,7 +1545,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_vwthv09jb_1789050996712",
@@ -1339,7 +1559,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_uhac222qw_1789050996712",
@@ -1351,7 +1573,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_z4owseewq_1789050996712",
@@ -1363,7 +1587,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_og6eovo1b_1789050996712",
@@ -1375,7 +1601,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_rse1t967x_1789050996712",
@@ -1387,7 +1615,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_0vixd9g2o_1789050996712",
@@ -1399,7 +1629,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_qwtk91eis_1789050996712",
@@ -1411,7 +1643,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_y8zhcjs3l_1789050996712",
@@ -1423,7 +1657,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_zhjod3ryl_1789050996712",
@@ -1435,7 +1671,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_796p12x8y_1789050996712",
@@ -1447,7 +1685,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_b3ms1zyct_1789050996712",
@@ -1459,7 +1699,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_fb24b8pr8_1789050996712",
@@ -1471,7 +1713,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_mzijawsmy_1789050996712",
@@ -1483,7 +1727,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_89n8gv5te_1789050996712",
@@ -1495,7 +1741,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_e578pm82n_1789050996712",
@@ -1507,7 +1755,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_uwbe7j79p_1789050996712",
@@ -1519,7 +1769,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_2br0cv6jz_1789050996712",
@@ -1531,7 +1783,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_tcgshl4bd_1789050996712",
@@ -1543,7 +1797,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ycuidjfub_1789050996712",
@@ -1555,7 +1811,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_dn721slm5_1789050996712",
@@ -1567,7 +1825,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_duvet5hw8_1789050996712",
@@ -1579,7 +1839,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_f3h3aljgz_1789050996712",
@@ -1591,7 +1853,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ldxq5hk4m_1789050996712",
@@ -1603,7 +1867,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_qqpxw9ve9_1789050996712",
@@ -1615,7 +1881,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_d3dnxaxcv_1789050996712",
@@ -1627,7 +1895,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_k6i013py2_1789050996712",
@@ -1639,7 +1909,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_tggmb5pex_1789050996712",
@@ -1651,7 +1923,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_cpvfhmiud_1789050996712",
@@ -1663,7 +1937,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_annz5za2y_1789050996712",
@@ -1675,7 +1951,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_b5peuxcdp_1789050996712",
@@ -1687,7 +1965,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_h2mhigfir_1789050996712",
@@ -1699,7 +1979,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ttfm8u3jo_1789050996712",
@@ -1711,7 +1993,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_0t1jduc29_1789050996712",
@@ -1723,7 +2007,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_3h4tvagyh_1789050996712",
@@ -1735,7 +2021,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_zbs2z6354_1789050996712",
@@ -1747,7 +2035,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_z3trzq8hc_1789050996712",
@@ -1759,7 +2049,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_rjdev9hsh_1789050996712",
@@ -1771,7 +2063,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_m4q8bxj58_1789050996712",
@@ -1783,7 +2077,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_w4negckat_1789050996712",
@@ -1795,7 +2091,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_o5r1sei3j_1789050996712",
@@ -1807,7 +2105,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_mqp52jfjx_1789050996712",
@@ -1819,7 +2119,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_ilwfq2u0e_1789050996712",
@@ -1831,7 +2133,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_2b48xrdu1_1789050996712",
@@ -1843,7 +2147,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_it5s8lsjp_1789050996712",
@@ -1855,7 +2161,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_bzgo8d5tj_1789050996712",
@@ -1867,7 +2175,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_jk97avpqa_1789050996712",
@@ -1879,7 +2189,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_qhquslh6b_1789050996712",
@@ -1891,7 +2203,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_z9aa40j2f_1789050996712",
@@ -1903,7 +2217,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_as64t2xls_1789050996712",
@@ -1915,7 +2231,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_hqohqesod_1789050996712",
@@ -1927,7 +2245,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_fjwo3rlz5_1789050996712",
@@ -1939,7 +2259,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_zvbvreas1_1789050996712",
@@ -1951,7 +2273,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_2t0ecp30n_1789050996712",
@@ -1963,7 +2287,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_xumgioxgv_1789050996712",
@@ -1975,7 +2301,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_yh73idrwg_1789050996712",
@@ -1987,7 +2315,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_4mjp9xxhh_1789050996712",
@@ -1999,7 +2329,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_yej1thxay_1789050996712",
@@ -2011,7 +2343,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_fbqg13gd3_1789050996712",
@@ -2023,7 +2357,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     },
     {
       "id": "id_oztlxfq6k_1789050996712",
@@ -2035,7 +2371,9 @@ module.exports = {
       "local": "",
       "data": "2026-09-10",
       "createdAt": "2026-09-10",
-      "updatedAt": "2026-09-10"
+      "updatedAt": "2026-09-10",
+      "fornecedor": "",
+      "valorUnitario": ""
     }
   ],
   "ferramentas": [
@@ -2947,118 +3285,7 @@ module.exports = {
     }
   ],
   "emprestimos": [],
-  "fornecedores": [
-    {
-      "id": "1",
-      "nome": "Leroy Merlin",
-      "cnpj": "12.345.678/0001-90",
-      "telefone": "(14) 3403-1000",
-      "email": "marilia@leroymerlin.com.br",
-      "contato": "João Silva",
-      "categoria": "Hidráulica/Elétrica/Construção",
-      "endereco": "R. Tupã 1200",
-      "status": "Ativo"
-    },
-    {
-      "id": "2",
-      "nome": "Eletrorocha Materiais Elétricos",
-      "cnpj": "98.765.432/0001-21",
-      "telefone": "(14) 3433-4455",
-      "email": "eletrorocha@terra.com.br",
-      "contato": "Ana Paula",
-      "categoria": "Elétrica",
-      "endereco": "Av. das Esmeraldas 850",
-      "status": "Ativo"
-    },
-    {
-      "id": "3",
-      "nome": "Soldatudo Equipamentos",
-      "cnpj": "11.222.333/0001-44",
-      "telefone": "(14) 3477-8899",
-      "email": "contato@soldatudo.com.br",
-      "contato": "Carlos Souza",
-      "categoria": "Serralheria/Mecânica",
-      "endereco": "R. Princesa Isabel 400",
-      "status": "Ativo"
-    },
-    {
-      "id": "4",
-      "nome": "Tramontina Center",
-      "cnpj": "22.333.444/0001-55",
-      "telefone": "(14) 3400-1234",
-      "email": "tramontinamarilia@gmail.com",
-      "contato": "Marcos Lima",
-      "categoria": "Ferramenta Manual",
-      "endereco": "Mall Avenida",
-      "status": "Ativo"
-    },
-    {
-      "id": "5",
-      "nome": "Makita do Brasil",
-      "cnpj": "33.444.555/0001-66",
-      "telefone": "(11) 4003-2233",
-      "email": "vendas@makita.com.br",
-      "contato": "Pedro Santos",
-      "categoria": "Ferramenta Elétrica",
-      "endereco": "Distribuidor Regional",
-      "status": "Ativo"
-    },
-    {
-      "id": "6",
-      "nome": "Bosch Ferramentas",
-      "cnpj": "44.555.666/0001-77",
-      "telefone": "(11) 4003-3344",
-      "email": "comercial@bosch.com.br",
-      "contato": "Fernanda Dias",
-      "categoria": "Ferramenta Elétrica",
-      "endereco": "Distribuidor Regional",
-      "status": "Ativo"
-    },
-    {
-      "id": "7",
-      "nome": "Casa do Construtor",
-      "cnpj": "55.666.777/0001-88",
-      "telefone": "(14) 3456-7890",
-      "email": "contato@casadoconstrutor.com.br",
-      "contato": "Roberto Alves",
-      "categoria": "Construção/Alvenaria",
-      "endereco": "Av. Brasil 2500",
-      "status": "Ativo"
-    },
-    {
-      "id": "8",
-      "nome": "Depósito do Pintor",
-      "cnpj": "66.777.888/0001-99",
-      "telefone": "(14) 3422-1122",
-      "email": "vendas@depopintor.com.br",
-      "contato": "Lúcia Costa",
-      "categoria": "Pintura/Limpeza",
-      "endereco": "R. XV de Novembro 180",
-      "status": "Ativo"
-    },
-    {
-      "id": "9",
-      "nome": "Agropecuária Marília",
-      "cnpj": "77.888.999/0001-00",
-      "telefone": "(14) 3411-5566",
-      "email": "agropec@uol.com.br",
-      "contato": "Antônio Rocha",
-      "categoria": "Jardinagem",
-      "endereco": "Av. Café 300",
-      "status": "Ativo"
-    },
-    {
-      "id": "10",
-      "nome": "InfoHouse Informática",
-      "cnpj": "88.999.000/0001-11",
-      "telefone": "(14) 3488-7766",
-      "email": "infohouse@hotmail.com",
-      "contato": "Bruna Mendes",
-      "categoria": "Informática",
-      "endereco": "Shopping União",
-      "status": "Ativo"
-    }
-  ],
+  "fornecedores": [],
   "pedidos": [],
   "usuarios": [
     {

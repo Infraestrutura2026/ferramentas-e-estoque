@@ -2,6 +2,52 @@
 
 ## [Não publicado]
 
+### Fornecedores: cadastro limpo que fica limpo (2026-09-25)
+
+- **Os fornecedores excluídos voltavam.** O seed embutido no bundle (`api/_lib/seed-data.js`,
+  gerado de `data/*.csv`) era reinserido **toda vez que uma tabela aparecia vazia** — e uma
+  tabela fica vazia justamente quando o usuário exclui tudo. No primeiro cold start seguinte da
+  função da Vercel, os 10 fornecedores de demonstração voltavam e a tela "atualizava e trazia
+  tudo de volta".
+- A carga inicial passou a ser **uma vez por aba**: a API grava `seed:abas` (e mantém
+  `seeded_at`) na tabela `_setup` e não semeia de novo uma aba já semeada, ainda que vazia.
+  `?force=1` e `?migrate=1` continuam repopulando/trazendo chaves ausentes, agora de forma
+  explícita.
+- `data/fornecedores.csv` ficou **somente com o cabeçalho** e o `seed-data.js` foi regenerado
+  (`npm run gen`): nada de fornecedor de demonstração volta a ser criado em banco novo ou num
+  `migrate=1` futuro.
+- **Novo fornecedor não era salvo.** A tela gerava o id como `nº de itens + 1`; com o banco
+  já contendo aquela chave, o `INSERT ... ON CONFLICT DO NOTHING` descartava o registro em
+  silêncio e o cadastro sumia ao sincronizar. Agora o id é único (`utils.generateId()`) e o
+  `add` do backend, se receber chave repetida, **gera um id novo em vez de perder o registro**
+  (resposta: *"Adicionado (novo id gerado pelo servidor)"*). Login duplicado em `usuarios`
+  continua sendo recusado, agora com mensagem.
+- Nova ação **"Limpar cadastro"** na tela de Fornecedores: exclui todos os registros pelo
+  mesmo contrato `delete` item a item (serve para Neon e para o espelho Apps Script),
+  relê a lista no fim e avisa se algo voltar.
+- Recusa do servidor mantém o modal de cadastro aberto (não se perde o que foi digitado);
+  a tela vazia agora orienta a usar o botão **Novo**.
+
+### Estoque: fornecedor e valor unitário no cadastro do produto (2026-09-25)
+
+- O cadastro de item de estoque (novo e edição) ganhou **Fornecedor** e **Valor Unitário (R$)**.
+  Fornecedor tem autocomplete com os fornecedores cadastrados (datalist) e aceita texto livre,
+  para não travar quem compra de quem ainda não está no cadastro.
+- `schema.js` (Neon) ganhou as colunas `fornecedor` e `valorUnitario` em `estoque` — o
+  `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` do setup cria as colunas no deploy, sem
+  migração manual; `HEADERS_PADRAO` do Apps Script e `data/estoque.csv`/`seed-data.js` foram
+  atualizados na mesma ordem.
+- Tabela do Estoque: novas colunas **Fornecedor** e **Valor Unit.** (formato `R$ 1.234,56`);
+  a dica da linha traz o saldo do item (`qtd × valor unitário`). Busca também encontra item
+  pelo nome do fornecedor e há um filtro **Todos os fornecedores**.
+- Relatório gerencial **Estoque Atual** (prévia, CSV `;`, Excel e impressão) passou a incluir
+  fornecedor e valor unitário — o que se vê na tela é o que se exporta.
+- `utils.valorNumerico()` e `utils.moedaBR()`: parsing tolerante ('48,90', '1.234,56',
+  '1,234.56', 'R$ 12,00') e formatação pt-BR com duas casas, sem depender de locale/ICU.
+- `tests/run-cadastro.js` (40 testes): executa `estoque.js` + `cadastros.js` num sandbox com
+  `app` falso — campos dos modais, payload enviado ao backend, colisão de id, limpeza em lote,
+  formatação e filtros. Suite completa: **355 testes** (era 295).
+
 ### Botão "Sair" no topo, ao lado do usuário logado (2026-09-12)
 
 - O botão de sair do sistema saiu do rodapé do menu lateral e foi para a barra

@@ -37,6 +37,11 @@ const fornecedoresModule = {
                 class="pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none w-56"
                 oninput="fornecedoresModule.setBusca(this.value)">
             </div>
+            ${this._totalCadastrados() > 0 ? `
+            <button onclick="fornecedoresModule.limparTudo()" class="app-button px-3 py-2 text-sm bg-red-50 hover:bg-red-100 text-red-700 font-semibold border border-red-200 rounded-lg transition"
+              title="Excluir todos os ${this._totalCadastrados()} fornecedores cadastrados">
+              <i class="fas fa-broom mr-1"></i> Limpar cadastro
+            </button>` : ''}
             <button onclick="fornecedoresModule.abrirModal()" class="app-button px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
               <i class="fas fa-plus mr-1"></i> Novo
             </button>
@@ -70,7 +75,11 @@ const fornecedoresModule = {
                     <button onclick="fornecedoresModule.abrirModal('${utils.escapeHtml(f.id)}')" class="icon-action icon-action-edit text-blue-600 hover:text-blue-700 mx-1" title="Editar"><i class="fas fa-edit"></i></button>
                     <button onclick="fornecedoresModule.excluir('${utils.escapeHtml(f.id)}')" class="icon-action icon-action-danger text-red-600 hover:text-red-700 mx-1" title="Excluir"><i class="fas fa-trash-alt"></i></button>
                   </td>
-                </tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Nenhum fornecedor encontrado.</td></tr>'}
+                </tr>`).join('') || `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">
+                  ${this._totalCadastrados() === 0
+                    ? 'Nenhum fornecedor cadastrado. Use <strong>Novo</strong> para cadastrar o primeiro.'
+                    : 'Nenhum fornecedor encontrado para esta busca.'}
+                </td></tr>`}
             </tbody>
           </table>
         </div>
@@ -81,6 +90,9 @@ const fornecedoresModule = {
 
   setBusca(v) { this.busca = v; this.pagina = 1; this.render(document.getElementById('main-content')); },
   setPage(p) { this.pagina = p; this.render(document.getElementById('main-content')); },
+
+  /** Total real de fornecedores (ignora a busca) — usado no rodapé e no "Limpar cadastro". */
+  _totalCadastrados() { return (app.data[this.ABA] || []).length; },
 
   _fields(item = {}) {
     return [
@@ -103,6 +115,14 @@ const fornecedoresModule = {
       () => this.salvar(fields, item), 'Salvar');
   },
 
+  /* Grava um fornecedor.
+   *
+   * Id: sempre `utils.generateId()` para registros novos. Antes era usado
+   * `String(lista.length + 1)`, que repetia chaves já existentes no banco (por
+   * exemplo "1" depois de excluir tudo, ou o mesmo número em dois computadores).
+   * A chave repetida fazia o INSERT ser ignorado em silêncio — o cadastro
+   * "sumia" no primeiro sincronizar. O servidor devolve o id efetivamente
+   * usado, e é ele que guardamos. */
   async salvar(fields, item) {
     const v = utils.readForm(fields);
     const erro = utils.validateForm(fields, v);
@@ -110,17 +130,30 @@ const fornecedoresModule = {
 
     const payload = {
       ...(item || {}),
-      id: item?.id || String((app.data[this.ABA] || []).length + 1),
+      id: item?.id || utils.generateId(),
       ...v,
       updatedAt: utils.now()
     };
 
     let sheetsOk = false;
+    let recusa = '';
     try {
       const res = await app.post(CONFIG.SHEETS[this.ABA], item ? 'update' : 'add', payload);
-      sheetsOk = Boolean(res && res.success !== false);
+      if (res && res.success === false) recusa = res.error || 'o servidor recusou o registro';
+      else {
+        sheetsOk = true;
+        if (!item && res && res.id) payload.id = String(res.id);
+      }
     } catch (e) {
       console.warn('[FORNECEDORES] Falha no Sheets:', e.message);
+    }
+
+    /* O servidor respondeu e recusou: mantém o modal aberto (não se perde o
+       que foi digitado). Sem resposta do servidor vale o comportamento de
+       sempre — grava na memória e avisa que é modo offline. */
+    if (recusa) {
+      app.showToast(`Não foi possível salvar: ${recusa}`, 'error');
+      return;
     }
 
     if (item) Object.assign(item, payload);
@@ -140,6 +173,46 @@ const fornecedoresModule = {
     app.data[this.ABA] = (app.data[this.ABA] || []).filter(f => f.id !== id);
     app.showToast('Fornecedor removido.', 'success');
     await app.refreshAba(this.ABA);
+  },
+
+  /* Limpa o cadastro inteiro de uma vez, excluindo registro por registro pelo
+   * mesmo contrato do botão de lixeira (GET ?action=delete&id=…) — vale tanto
+   * para o banco Neon quanto para o espelho Apps Script, sem endpoint novo.
+   * Ao final a lista é relida do servidor: se algo ainda aparecer, é porque o
+   * banco tem linhas que esta tela não conhece (e o toast avisa). */
+  async limparTudo() {
+    const itens = (app.data[this.ABA] || []).slice();
+    if (!itens.length) { app.showToast('Não há fornecedores cadastrados.', 'info'); return; }
+    const ok = confirm(
+      `Excluir TODOS os ${itens.length} fornecedores cadastrados?\n\n` +
+      'A exclusão é definitiva e vale para todos os computadores. ' +
+      'Os itens de estoque que citam esses fornecedores não são alterados.'
+    );
+    if (!ok) return;
+
+    let falhas = 0;
+    for (const f of itens) {
+      if (!f.id) { falhas++; continue; } // sem chave não há como excluir remotamente
+      try {
+        const res = await app.get(CONFIG.SHEETS[this.ABA], 'delete', { id: f.id });
+        // 'Registro não encontrado' é sucesso para nossos fins (já estava fora).
+        if (res && res.success === false && !/n[oã]o encontrado/i.test(String(res.error || ''))) falhas++;
+      } catch (e) {
+        falhas++;
+      }
+    }
+
+    app.data[this.ABA] = [];
+    await app.refreshAba(this.ABA);
+
+    const restantes = (app.data[this.ABA] || []).length;
+    if (restantes > 0) {
+      app.showToast(`⚠️ ${restantes} fornecedor(es) voltaram ao sincronizar — verifique a conexão com o servidor.`, 'warning');
+    } else if (falhas > 0) {
+      app.showToast(`Cadastro limpo, mas ${falhas} exclusão(ões) não confirmaram.`, 'warning');
+    } else {
+      app.showToast(`✅ ${itens.length} fornecedor(es) removidos. Cadastro vazio.`, 'success');
+    }
   }
 };
 

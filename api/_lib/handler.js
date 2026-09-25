@@ -100,7 +100,14 @@ function criarHandler(storeFactory) {
 
         if (action === 'add') {
           const r = await store.add(abaFinal, payload);
-          return enviarJSON(res, 200, { success: true, message: 'Adicionado', id: r.id, aba: abaFinal });
+          return enviarJSON(res, 200, {
+            success: true,
+            // idRegenerado: a chave enviada já existia — o servidor trocou por um
+            // id único em vez de descartar o cadastro (nada é perdido em silêncio).
+            message: r.idRegenerado ? 'Adicionado (novo id gerado pelo servidor)' : 'Adicionado',
+            id: r.id,
+            aba: abaFinal,
+          });
         }
         if (action === 'update') {
           const r = await store.update(abaFinal, payload);

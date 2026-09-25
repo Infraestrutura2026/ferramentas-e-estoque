@@ -36,7 +36,7 @@ var ABAS_ESPERADAS = [
 ];
 
 var HEADERS_PADRAO = {
-  estoque:       ['id','nome','categoria','quantidadeAtual','quantidadeMinima','unidade','local','data','createdAt','updatedAt'],
+  estoque:       ['id','nome','categoria','quantidadeAtual','quantidadeMinima','unidade','local','data','createdAt','updatedAt','fornecedor','valorUnitario'],
   ferramentas:   ['id','nome','codigo','categoria','descricao','estado','local','responsavel','createdAt','updatedAt'],
   movimentacoes: ['id','data','tipo','item','quantidade','local','usuario','observacao'],
   emprestimos:   ['id','ferramentaId','nomeFerramenta','responsavel','setor','local','quantidade','status','dataEmprestimo','previsaoDevolucao','dataDevolucao','motivo','createdAt','updatedAt'],

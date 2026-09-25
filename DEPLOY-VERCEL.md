@@ -95,8 +95,14 @@ DRY_RUN=1 npm run migrate:online
 
 ## 🔁 Reexecutar a carga inicial
 
-`https://<projeto>.vercel.app/api/setup?force=1` — recria tabelas ausentes e
-popula **apenas as que estiverem vazias** (nunca apaga dados existentes).
+A carga inicial (seed dos CSVs) roda **uma única vez por aba**: a API grava os
+marcadores `seeded_at` / `seed:abas` na tabela `_setup`. Uma aba que foi
+esvaziada pela equipe (por exemplo, excluir todos os fornecedores) permanece
+vazia nos próximos cold starts — o seed não "ressuscita" registros apagados.
+
+Para repopular de propósito:
+`https://<projeto>.vercel.app/api/setup?force=1` — recria tabelas/colunas
+ausentes e popula as abas vazias (nunca apaga nem sobrescreve dados existentes).
 
 Para levar uma versão atualizada dos CSVs a um ambiente que já contém dados,
 use `npm run migrate:online` conforme os comandos acima. A migração é

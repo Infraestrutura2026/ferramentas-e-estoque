@@ -292,6 +292,42 @@ const utils = {
   },
 
   /**
+   * Valor monetário digitado → número. Aceita padrão pt-BR e padrão de código:
+   * '12,5' → 12.5 · '1.234,56' → 1234.56 · '1,234.56' → 1234.56 ·
+   * '1.234' → 1234 (grupo de milhar) · 'R$ 12,00' → 12 · inválido → 0.
+   */
+  valorNumerico(valor) {
+    if (typeof valor === 'number') return isFinite(valor) ? valor : 0;
+    const bruto = String(valor ?? '').trim().replace(/\u00A0/g, ' ').replace(/^r\$\s*/i, '');
+    const negativo = bruto.startsWith('-');
+    const corpo = bruto.replace(/[\s+-]/g, '');
+    if (!/^\d+([.,]\d+)*$/.test(corpo)) return 0;
+    // O último separador é o decimal, salvo quando forma um grupo de milhar
+    // exato (três dígitos no fim): '1.234' e '1,234' valem 1234.
+    const m = corpo.match(/^(.*?)([.,])(\d{1,})$/);
+    let normal = corpo;
+    if (m) {
+      const antes = m[1], depois = m[3];
+      const grupoDeMilhar = depois.length === 3 && (antes === '' || /^\d{1,3}([.,]\d{3})*$/.test(antes));
+      normal = grupoDeMilhar
+        ? corpo.replace(/[.,]/g, '')
+        : (antes.replace(/[.,]/g, '') || '0') + '.' + depois;
+    }
+    const numero = parseFloat(normal);
+    if (!isFinite(numero)) return 0;
+    return negativo ? -numero : numero;
+  },
+
+  /** 1234.5 → 'R$ 1.234,50' (padrão pt-BR, sempre duas casas). Vazio/inválido → ''. */
+  moedaBR(valor) {
+    const numero = typeof valor === 'number' ? valor : this.valorNumerico(valor);
+    if (!isFinite(numero)) return '';
+    const [inteiro, decimal] = Math.abs(numero).toFixed(2).split('.');
+    const comMilhar = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${numero < 0 ? '-' : ''}R$ ${comMilhar},${decimal}`;
+  },
+
+  /**
    * Quantidade pronta para exibição: número em padrão pt-BR, texto quando não é
    * número e '' quando o campo está vazio (a tela mostra '—').
    * '20' → '20' · '2.5' → '2,5' · 'caixa' → 'caixa' · '' → ''
@@ -378,6 +414,9 @@ const utils = {
       quantidadeMinima: this.quantidadeNumerica(item.quantidadeMinima),
       unidade: item.unidade || '',
       local: item.local || '',
+      fornecedor: item.fornecedor || '',
+      // sem valor informado a célula fica VAZIA (0 leria como "grátis")
+      valorUnitario: this.valorNumerico(item.valorUnitario) || '',
       status: this.statusEstoque(item)
     }));
     return this.buildReportDoc({
@@ -385,7 +424,7 @@ const utils = {
       titulo: 'Relatório Gerencial — Estoque Atual',
       usuario,
       dados,
-      colunas: ['codigo', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'local', 'status']
+      colunas: ['codigo', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'fornecedor', 'valorUnitario', 'local', 'status']
     });
   },
 
@@ -618,7 +657,8 @@ const utils = {
     nomeFerramenta: 'Ferramenta', dataEmprestimo: 'Data Empréstimo',
     previsaoDevolucao: 'Prev. Devolução', dataDevolucao: 'Devolução',
     solicitante: 'Solicitante', localUso: 'Local de Uso', cnpj: 'CNPJ', telefone: 'Telefone', email: 'E-mail',
-    contato: 'Contato', endereco: 'Endereço', valorUnitario: 'Valor Unit. (R$)',
+    contato: 'Contato', endereco: 'Endereço', fornecedor: 'Fornecedor',
+    valorUnitario: 'Valor Unit. (R$)',
     valorTotal: 'Valor Total (R$)', previsaoEntrega: 'Prev. Entrega',
     dataEntrega: 'Data Entrega',
     acao: 'Ação', detalhes: 'Detalhes', senha: 'Senha (hash)', nivel: 'Nível',
