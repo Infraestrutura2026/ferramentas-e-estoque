@@ -81,6 +81,7 @@ function buildConfig(base) {
       timestamp:     'cache_timestamp'
     },
     CACHE_TTL_MS: 5 * 60 * 1000,
+    // Consulta o servidor a cada minuto, independentemente do TTL do cache.
     AUTO_SYNC_INTERVAL_MS: 60 * 1000,
     TIMEOUT_MS:   15000,
 
