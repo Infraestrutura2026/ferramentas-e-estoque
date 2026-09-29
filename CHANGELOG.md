@@ -2,6 +2,21 @@
 
 ## [Não publicado]
 
+### Sincronização sem interromper o uso (2026-09-29)
+
+- Corrige a atualização visual recorrente: sincronizações sem mudança nos dados deixam de
+  reconstruir a página, preservando filtros, rolagem e estado da tela.
+- O intervalo automático fica em **1 minuto** e toda verificação força uma consulta ao servidor,
+  mesmo quando o cache local foi atualizado há pouco. Ao voltar para a aba, também sincroniza
+  imediatamente sem esperar o TTL de 5 minutos.
+- Removida uma segunda sincronização redundante 5 segundos após abrir o sistema. A sincronização
+  inicial e as automáticas são silenciosas; `Ctrl+R` continua forçando a atualização manual.
+- Se os dados mudarem enquanto há um campo ou modal em edição, a página espera a edição terminar
+  antes de redesenhar.
+- Cache-buster dos arquivos atualizado de `?v=3.1.4` para `?v=3.1.5`.
+- Testes de regressão cobrem ausência de redesenho quando os dados não mudam, alterações do
+  mesmo tamanho e o aviso da atualização manual.
+
 ### Fornecedores: cadastro limpo que fica limpo (2026-09-25)
 
 - **Os fornecedores excluídos voltavam.** O seed embutido no bundle (`api/_lib/seed-data.js`,

@@ -228,6 +228,7 @@ const app = {
   fetchSources: {},
   /** true enquanto pelo menos uma aba exibida NÃO veio do servidor (cache/CSV/local). */
   localOnly: false,
+  _pendingPageRefresh: false,
 
   /* ── Inicialização ── */
   async init() {
@@ -239,7 +240,7 @@ const app = {
     this._loadFromCache();
     await this._loadFallbackCSV();
     // Primeira sincronização força busca no Sheets para garantir dados atualizados
-    this.syncAll(true).catch(e => console.warn('[SYNC] Erro em segundo plano:', e));
+    this.syncAll(true, { quiet: true }).catch(e => console.warn('[SYNC] Erro em segundo plano:', e));
     this.navigate('dashboard');
     this._startAutoSync();
   },
@@ -279,7 +280,8 @@ const app = {
   },
 
   /* ── Sincronização (paralela) com suporte a auto-sync ── */
-  async syncAll(force = false) {
+  async syncAll(force = false, options = {}) {
+    const quiet = Boolean(options && options.quiet);
     if (this.isLoading) {
       console.log('[SYNC] Já em andamento, ignorando chamada concorrente.');
       return;
@@ -310,8 +312,10 @@ const app = {
       if (result.status === 'fulfilled' && Array.isArray(result.value) && (result.value.length > 0 || veioRemoto)) {
         // Aceita também resposta vazia legítima do servidor (limpa cache antigo)
         // Só considera mudança se tamanho ou conteúdo mudou (evita re-render desnecessário)
-        const prevLen = (this.data[aba] || []).length;
-        if (prevLen !== result.value.length) hasNewData = true;
+        const previous = this.data[aba] || [];
+        // APIs podem devolver mesmo tamanho com valores diferentes; compare o
+        // conteúdo real para atualizar a tela só quando algo realmente mudou.
+        if (JSON.stringify(previous) !== JSON.stringify(result.value)) hasNewData = true;
         this.data[aba] = result.value;
         localStorage.setItem(CONFIG.CACHE_KEYS[aba], JSON.stringify(result.value));
         console.log(`[SYNC] ✔ ${aba}: ${result.value.length} registros`);
@@ -348,33 +352,33 @@ const app = {
 
     if (this.syncErrors.length > 0) {
       console.warn('[SYNC] Erros:', this.syncErrors);
-      if (force) {
+      if (force && !quiet) {
         this.showToast(`⚠️ ${this.syncErrors.length} aba(s) não sincronizaram. Usando dados locais.`, 'warning');
       }
     } else if (locais.length > 0) {
       console.warn(`[SYNC] Sem resposta do servidor em: ${locais.join(', ')} — exibindo dados locais.`);
-      if (force) {
+      if (force && !quiet) {
         this.showToast(`⚠️ Sem acesso ao servidor em: ${locais.join(', ')} — exibindo dados locais.`, 'warning');
       }
-    } else if (force) {
-      if (hasNewData) {
-        this.showToast('✅ Dados atualizados com sucesso!', 'success');
-      } else {
-        this.showToast('✅ Sincronização concluída — dados já atualizados.', 'info');
-      }
+    } else if (force && !quiet && hasNewData) {
+      this.showToast('✅ Dados atualizados com sucesso!', 'success');
     }
 
-    this._refreshCurrentPage();
+    // Uma sincronização de rotina sem mudanças não deve reconstruir a tela:
+    // isso preserva filtros, rolagem e o estado visual do usuário.
+    if (hasNewData) this._refreshCurrentPage();
     console.log('[SYNC] Concluído.');
   },
 
   /* ── Re-sincroniza UMA aba (usada após gravações) ── */
   async refreshAba(aba) {
+    let changed = false;
     try {
       const data = await this._fetchAba(aba);
       const src = this.fetchSources[aba];
       const veioRemoto = src === 'remoto' || src === 'remoto-vazio';
       if (Array.isArray(data) && (data.length > 0 || veioRemoto)) {
+        changed = JSON.stringify(this.data[aba] || []) !== JSON.stringify(data);
         this.data[aba] = data;
         localStorage.setItem(CONFIG.CACHE_KEYS[aba], JSON.stringify(data));
       }
@@ -382,7 +386,7 @@ const app = {
       console.warn(`[SYNC] refreshAba(${aba}) falhou:`, e.message);
     }
     this._updateSyncBadge();
-    this._refreshCurrentPage();
+    if (changed) this._refreshCurrentPage();
   },
 
   /* ── Busca uma aba: Sheets → Cache → CSV Fallback ── */
@@ -549,7 +553,24 @@ const app = {
   },
 
   _refreshCurrentPage() {
+    const main = document.getElementById('main-content');
+    const active = document.activeElement;
+    const editing = document.getElementById('app-modal') || (
+      main && active && main.contains(active) && /^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName)
+    );
+    // Não desmonta formulários nem campos em uso por causa de uma sincronização.
+    if (editing) {
+      this._pendingPageRefresh = true;
+      return;
+    }
+    this._pendingPageRefresh = false;
     this.navigate(this.currentPage);
+  },
+
+  _flushPendingPageRefresh() {
+    if (this._pendingPageRefresh && !document.getElementById('app-modal')) {
+      this._refreshCurrentPage();
+    }
   },
 
   /* ── Layout base ── */
@@ -724,19 +745,24 @@ const app = {
   },
 
   _bindGlobalEvents() {
-    // Sincroniza quando a aba volta a ficar visível (forçado para garantir dados atuais)
+    // Ao voltar para a aba, consulta o servidor imediatamente, sem depender do TTL.
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        console.log('[AUTO-SYNC] Aba visível — sincronizando...');
-        this.syncAll(true).catch(e => console.warn('[AUTO-SYNC] Falha ao sincronizar na visibilidade:', e));
+        console.log('[AUTO-SYNC] Aba visível — sincronizando com o servidor...');
+        this.syncAll(true, { quiet: true }).catch(e => console.warn('[AUTO-SYNC] Falha ao sincronizar na visibilidade:', e));
       }
     });
 
-    // Sincroniza quando volta a ficar online
+    // Ao voltar à rede, busca os dados sem interromper a tela com notificações.
     window.addEventListener('online', () => {
       console.log('[AUTO-SYNC] Conexão restabelecida — sincronizando...');
-      this.showToast('🌐 Conexão restabelecida — sincronizando dados...', 'info');
-      this.syncAll(true).catch(e => console.warn('[AUTO-SYNC] Falha ao sincronizar online:', e));
+      this.syncAll(true, { quiet: true }).catch(e => console.warn('[AUTO-SYNC] Falha ao sincronizar online:', e));
+    });
+
+    // Se uma sincronização detectar mudanças enquanto há um campo em edição,
+    // aplica a atualização depois que o usuário sair do campo/modal.
+    document.addEventListener('focusout', () => {
+      setTimeout(() => this._flushPendingPageRefresh(), 0);
     });
 
     window.addEventListener('offline', () => {
@@ -762,17 +788,10 @@ const app = {
         console.log('[AUTO-SYNC] Offline — pulando sincronização automática');
         return;
       }
-      console.log('[AUTO-SYNC] Sincronização automática...');
-      this.syncAll(true).catch(e => console.warn('[AUTO-SYNC] Falha na sincronização automática:', e));
+      console.log('[AUTO-SYNC] Consultando o servidor automaticamente...');
+      // force=true ignora o TTL: consulta a fonte remota em toda verificação.
+      this.syncAll(true, { quiet: true }).catch(e => console.warn('[AUTO-SYNC] Falha na sincronização automática:', e));
     }, interval);
-
-    // Também agenda uma sincronização logo após 5s da inicialização (garante dados frescos após login)
-    setTimeout(() => {
-      if (document.visibilityState === 'visible' && navigator.onLine) {
-        console.log('[AUTO-SYNC] Sincronização pós-inicialização (5s)');
-        this.syncAll(true).catch(()=>{});
-      }
-    }, 5000);
   },
 
   _stopAutoSync() {
@@ -1246,6 +1265,7 @@ const app = {
   closeModal() {
     const modal = document.getElementById('app-modal');
     if (modal) modal.remove();
+    if (this._pendingPageRefresh) this._refreshCurrentPage();
   },
 
   /* ── Toast ── */
