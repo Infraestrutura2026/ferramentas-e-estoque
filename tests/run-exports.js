@@ -92,11 +92,18 @@ ok('categoriaResumo usa "Sem categoria" como fallback',
 
 /* ═══ 5. Contrato no app.js (exportação pela prévia do relatório) ═══ */
 const appJs = read('app.js');
-ok('app.js oferece os cinco relatórios gerenciais no seletor', ['estoque-atual', 'emprestimos-ativos', 'atrasados', 'historico', 'consolidado'].every(fonte => appJs.includes(`value="${fonte}"`)));
+ok('app.js oferece os relatórios gerenciais no seletor (v3.1 inclui reposição e ferramentas)',
+  ['estoque-atual', 'inventario-fisico', 'reposicao', 'consolidado', 'ferramentas', 'historico', 'emprestimos-ativos', 'atrasados'].every(fonte => appJs.includes(`value="${fonte}"`)));
+ok('app.js mostra a contagem de registros em cada opção do seletor (v3.1)', appJs.includes('rotuloOpcao(') && appJs.includes('contagensRelatorios'));
+ok('app.js desabilita opção sem registros e escolhe a primeira com base (v3.1)',
+  appJs.includes('desabilitado(') && appJs.includes('_primeiraFonteRelatorio') && appJs.includes("'disabled'"));
+ok('app.js tem filtro próprio por relatório (estoque, ferramentas e histórico)', appJs.includes('_alternarFiltroRelatorio()') && appJs.includes('rel-ferramentas-filtro') && appJs.includes('rel-estoque-filtro'));
+ok('app.js não encaminha mais o histórico só de movimentações', !appJs.includes('utils.historicoMovimentacao('));
 ok('app.js não tem lista hardcoded de 7 abas', !appJs.includes("['estoque', 'ferramentas', 'emprestimos', 'movimentacoes', 'historico', 'fornecedores', 'pedidos']"));
 ok('app.js gera CSV via utils.buildCSVBR (padrão pt-BR ";")', appJs.includes('utils.buildCSVBR('));
 ok('app.js não usa mais utils.buildCSV cru nas exportações', !appJs.includes('utils.buildCSV('));
-ok('app.js encaminha a prévia para as funções gerenciais padronizadas', ['relatorioEstoqueAtual', 'relatorioEmprestimosAtivos', 'relatorioAtrasados', 'historicoMovimentacao', 'docConsolidadoEstoque'].every(funcao => appJs.includes(`utils.${funcao}`)));
+ok('app.js encaminha a prévia para as funções gerenciais padronizadas (v3.1)',
+  ['relatorioEstoqueAtual', 'relatorioInventarioFisico', 'relatorioReposicao', 'relatorioConsolidado', 'relatorioFerramentas', 'relatorioHistorico', 'relatorioEmprestimosAtivos', 'relatorioAtrasados'].every(funcao => appJs.includes(`utils.${funcao}`)));
 ok('app.js adiciona BOM UTF-8 apenas no download', appJs.includes("new Blob(['\\uFEFF' + csv]"));
 ok('app.js restringe exportação de usuários a admin', appJs.includes('_podeExportar') && appJs.includes('usuarios') && appJs.includes('authModule.isAdmin()'));
 ok('app.js não expõe usuários no menu de relatórios gerenciais', !appJs.includes('value="usuarios"') && appJs.includes('_podeExportar'));
@@ -195,6 +202,8 @@ ok('app.js Excel sanitiza nomes de folha (31 chars, sem caracteres inválidos)',
 const html = read('index.html');
 ok('index.html carrega SheetJS (xlsx.full.min.js)', html.includes('cdn.sheetjs.com') && html.includes('xlsx.full.min.js'));
 ok('index.html tem raiz dedicada à impressão do relatório (#report-print-root)', html.includes('#report-print-root'));
+ok('index.html dá largura de escrita à coluna Contagem na tela e na impressão (v3.2.1)',
+  /#report-print-root \[data-col="contagem"\]/.test(html) && /min-width/.test(html));
 ok('index.html exibe v3.0.0', html.includes('v3.0.0'));
 ok('index.html login split-screen (painel institucional + card de acesso)', html.includes('login-brand') && html.includes('Acesse o sistema'));
 ok('index.html login mantém ids/contrato do authModule (login-user/login-pass/login-btn/login-error)', ['login-user', 'login-pass', 'login-btn', 'login-error', 'authModule.doLogin()'].every(id => html.includes(id)));
@@ -224,6 +233,300 @@ ok('app.js badge usa estado localOnly (Dados locais vs Sincronizado)', appJs.inc
 ok('app.js NÃO renova cache_timestamp no beforeunload (bug do TTL mascarando dados velhos)',
   !appJs.includes("window.addEventListener('beforeunload'"));
 ok('app.js só renova cache_timestamp quando alguma aba veio do servidor', appJs.includes('veioDoServidor'));
+
+
+/* ═══ 9. Relatórios essenciais (v3.1): filtros, reposição, ferramentas e histórico unificado ═══ */
+
+const estoqueV31 = [
+  { nome: 'Cimento CP-II 50kg', categoria: 'Construção', quantidadeAtual: '20', quantidadeMinima: '5', unidade: 'sc' },
+  { nome: 'Cimento CP-II 50kg', categoria: 'Construção', quantidadeAtual: '0', quantidadeMinima: '5', unidade: 'sc' },
+  { nome: 'Disjuntor 1x16A', categoria: 'Elétrica', quantidadeAtual: '4', quantidadeMinima: '4', unidade: 'un' },
+  { nome: 'Tubo PVC 25mm', categoria: 'Hidráulica', quantidadeAtual: '30', quantidadeMinima: '', unidade: 'm' },
+  { nome: 'Areia média', categoria: 'Construção', quantidadeAtual: '2', quantidadeMinima: '10', unidade: 'm³', fornecedor: 'Casa do Construtor', valorUnitario: '120,00' }
+];
+
+ok('filtrarEstoque todos devolve tudo', utils.filtrarEstoque(estoqueV31, 'todos').length === 5);
+ok('filtrarEstoque criticos pega esgotados + críticos', utils.filtrarEstoque(estoqueV31, 'criticos').length === 3);
+ok('filtrarEstoque reposicao exige mínimo cadastrado (não inclui "sem mínimo")',
+  utils.filtrarEstoque(estoqueV31, 'reposicao').length === 3 &&
+  utils.filtrarEstoque(estoqueV31, 'reposicao').every(i => utils.quantidadeNumerica(i.quantidadeMinima) > 0));
+ok('filtrarEstoque semMinimo lista quem está fora do alerta', utils.filtrarEstoque(estoqueV31, 'semMinimo').length === 1);
+ok('filtrarEstoque regulares lista o que está acima do mínimo', utils.filtrarEstoque(estoqueV31, 'regulares').length === 2);
+
+const docFiltrado = utils.relatorioEstoqueAtual(estoqueV31, 'admin', 'criticos');
+ok('relatorioEstoqueAtual aplica o filtro e registra no título',
+  docFiltrado.totalRegistros === 3 && docFiltrado.titulo.includes('Somente críticos e esgotados'));
+ok('relatorioEstoqueAtual sem filtro mantém todos os itens',
+  utils.relatorioEstoqueAtual(estoqueV31, 'admin').totalRegistros === 5);
+
+// Colunas 100% vazias saem do documento; a decisão usa a base COMPLETA (não o recorte filtrado)
+const docComLocal = utils.relatorioEstoqueAtual([
+  { nome: 'A', quantidadeAtual: '1', quantidadeMinima: '1', local: 'Depósito' },
+  { nome: 'B', quantidadeAtual: '9', quantidadeMinima: '1', local: '' }
+], 'admin');
+ok('buildReportDoc oculta coluna 100% vazia (fornecedor/valor unitário)',
+  !docComLocal.colunas.some(c => c.key === 'fornecedor') && !docComLocal.colunas.some(c => c.key === 'valorUnitario'));
+ok('buildReportDoc mantém coluna parcialmente preenchida (local em 1 de 2 itens)',
+  docComLocal.colunas.some(c => c.key === 'local'));
+ok('buildReportDoc com ocultarVazias:false mantém todas as colunas pedidas',
+  utils.buildReportDoc({ aba: 'x', dados: [{ a: '1', b: '' }], colunas: ['a', 'b'], ocultarVazias: false }).colunas.length === 2);
+
+// Demanda: saídas depois da última entrada (casa o nome ignorando acento/caixa/pontuação)
+const movV31 = [
+  { data: '2026-08-01', tipo: 'Entrada', item: 'CIMENTO CP-II 50KG', quantidade: '100' },
+  { data: '2026-08-10', tipo: 'Saída', item: 'Cimento CP-II 50kg', quantidade: '20' },
+  { data: '2026-08-20', tipo: 'Saída', item: 'cimento cp-ii 50 kg', quantidade: '5' },
+  { data: '2026-08-25', tipo: 'Saída', item: 'Areia média', quantidade: '8' },
+  { data: '2026-08-26', tipo: 'Entrada', item: 'Areia média', quantidade: '50' },
+  { data: '2026-08-27', tipo: 'Saída', item: 'Areia média', quantidade: '3' }
+];
+const demanda = utils.demandaDesdeUltimaEntrada(movV31);
+ok('demandaDesdeUltimaEntrada soma as saídas após a última entrada', demanda.cimentocpii50kg === 25 && demanda.areiamedia === 3);
+ok('demandaDesdeUltimaEntrada ignora movimentação sem item',
+  Object.keys(utils.demandaDesdeUltimaEntrada([{ tipo: 'Saída', quantidade: '2' }])).length === 0);
+
+const docRepos = utils.relatorioReposicao(estoqueV31, 'admin', movV31);
+ok('relatorioReposicao lista só itens no/abaixo do mínimo', docRepos.totalRegistros === 3 && docRepos.aba === 'reposicao');
+const linhaCimento = docRepos.linhasBR.find(l => l[0] === 'Cimento CP-II 50kg');
+const linhaDisjuntor = docRepos.linhasBR.find(l => l[0] === 'Disjuntor 1x16A');
+ok('relatorioReposicao sugere repor com base no consumo comprovado (mínimo 5 + 25 saídas − 0)',
+  linhaCimento.includes('30') && linhaCimento.includes('Saídas (25)'), linhaCimento.join(' | '));
+ok('relatorioReposicao NÃO inventa compra sem consumo registrado (origem "Mínimo", sugestão vazia)',
+  linhaDisjuntor.includes('Mínimo') && !linhaDisjuntor.includes('4') === false && linhaDisjuntor[5] === '', linhaDisjuntor.join(' | '));
+
+const { taxa, janelaMeses, fim, inicio } = utils.taxaConsumoMensal(movV31, 3, '2026-09-30');
+ok('taxaConsumoMensal soma o consumo da janela e divide pelos 3 meses',
+  Math.abs(taxa.cimentocpii50kg - 25 / 3) < 0.001 && Math.abs(taxa.areiamedia - 11 / 3) < 0.001);
+ok('taxaConsumoMensal ancora a janela na data mais recente conhecida (base parada não infla o consumo)',
+  janelaMeses === 3 && fim === '2026-09-30' && inicio === '2026-07-30');
+ok('taxaConsumoMensal ignora saída fora da janela (não infla a média)',
+  (utils.taxaConsumoMensal([
+    { data: '2026-01-05', tipo: 'Saída', item: 'Areia média', quantidade: '500' },
+    { data: '2026-08-25', tipo: 'Saída', item: 'Areia média', quantidade: '9' }
+  ], 3, '2026-08-25').taxa.areiamedia || 0) === 3);
+
+const ferramentasV31 = [
+  { codigo: 'F002', nome: 'Furadeira', categoria: 'Elétrica', estado: 'Disponível' },
+  { codigo: 'F001', nome: 'Lixadeira', categoria: 'Elétrica', estado: 'Manutenção' },
+  { codigo: 'F003', nome: 'Serra', categoria: 'Mecânica', estado: 'Defeito' },
+  { codigo: 'F004', nome: 'Chave', categoria: 'Mecânica', estado: 'Em uso' }
+];
+const docFerr = utils.relatorioFerramentas(ferramentasV31, 'admin');
+ok('relatorioFerramentas monta o inventário e prioriza o que exige ação',
+  docFerr.totalRegistros === 4 && docFerr.linhasBR[0][3] === 'Defeito' && docFerr.linhasBR[3][3] === 'Disponível');
+ok('relatorioFerramentas filtra por situação e registra no título',
+  utils.relatorioFerramentas(ferramentasV31, 'admin', 'manutencao').totalRegistros === 2 &&
+  utils.relatorioFerramentas(ferramentasV31, 'admin', 'manutencao').titulo.includes('Em manutenção ou com defeito') &&
+  utils.relatorioFerramentas(ferramentasV31, 'admin', 'disponiveis').totalRegistros === 1 &&
+  utils.relatorioFerramentas(ferramentasV31, 'admin', 'indisponiveis').totalRegistros === 3);
+ok('relatorioFerramentas oculta colunas vazias (local/responsável)',
+  !docFerr.colunas.some(c => c.key === 'local') && docFerr.colunas.some(c => c.key === 'codigo'));
+
+const resumoV31 = utils.resumoCategorias(estoqueV31);
+const construcao = resumoV31.find(c => c.categoria === 'Construção');
+ok('resumoCategorias soma críticos, esgotados e % do total',
+  construcao.itens === 3 && construcao.criticos === 1 && construcao.esgotados === 1 && construcao.percentual === '60%');
+ok('resumoCategorias conta itens sem mínimo (fora do alerta)', construcao.semMinimo === 0 && resumoV31.find(c => c.categoria === 'Hidráulica').semMinimo === 1);
+ok('resumoCategorias soma o valor em estoque quando há preço (2 × R$ 120,00)',
+  resumoV31.find(c => c.categoria === 'Construção').valor === 240 && resumoV31.find(c => c.categoria === 'Hidráulica').valor === 0);
+ok('resumoCategorias deixa o valor VAZIO quando nenhum item tem preço',
+  utils.resumoCategorias([{ categoria: 'X', quantidadeAtual: '2', quantidadeMinima: '1' }])[0].valor === '');
+const docConsolidadoV31 = utils.relatorioConsolidado(estoqueV31, 'admin');
+ok('relatorioConsolidado traz críticos, % do total e sem mínimo (esgotados deixam de ser a única leitura)',
+  docConsolidadoV31.aba === 'consolidado' &&
+  docConsolidadoV31.colunas.map(c => c.rotulo).includes('Críticos') &&
+  docConsolidadoV31.colunas.map(c => c.rotulo).includes('% do total') &&
+  docConsolidadoV31.colunas.map(c => c.rotulo).includes('Sem mínimo'));
+ok('relatorioConsolidado traz a coluna de valor quando há preço e a omite quando não há',
+  docConsolidadoV31.colunas.some(c => c.key === 'valor') &&
+  !utils.relatorioConsolidado([{ categoria: 'X', quantidadeAtual: '2', quantidadeMinima: '1' }], 'admin').colunas.some(c => c.key === 'valor'));
+
+/* ── Ficha de inventário físico (v3.2.1): coluna de contagem em branco para escrever à mão ── */
+const estoqueFicha = [
+  { nome: 'Zinco', categoria: 'Zeta', quantidadeAtual: '7', unidade: 'un' },
+  { nome: 'Ácido', categoria: 'Alfa', quantidadeAtual: '3', unidade: 'L' },
+  { nome: 'Base', categoria: 'Alfa', quantidadeAtual: '0', quantidadeMinima: '2', unidade: 'un' }
+];
+const docFicha = utils.relatorioInventarioFisico(estoqueFicha, 'admin');
+ok('ficha de inventário mantém a coluna Contagem MESMO vazia (é para preencher à mão)',
+  docFicha.colunas.some(c => c.key === 'contagem') && docFicha.colunas.map(c => c.rotulo).includes('Contagem'));
+ok('ficha de inventário sai com a coluna Contagem em branco em todas as linhas',
+  docFicha.linhasBR.every(l => l[docFicha.colunas.findIndex(c => c.key === 'contagem')] === '') &&
+  docFicha.linhasXLSX.every(l => l[docFicha.colunas.findIndex(c => c.key === 'contagem')] === ''));
+ok('ficha de inventário ordena por categoria e nome (acompanha a prateleira)',
+  JSON.stringify(docFicha.linhasBR.map(l => l[0])) === JSON.stringify(['Ácido', 'Base', 'Zinco']));
+ok('ficha de inventário mostra a Qtd. Sistema e omite o que está vazio (local)',
+  docFicha.linhasBR[0][docFicha.colunas.findIndex(c => c.key === 'quantidadeSistema')] === '3' &&
+  !docFicha.colunas.some(c => c.key === 'local'));
+ok('ficha de inventário traz instruções para imprimir no próprio documento',
+  /Contagem/.test(docFicha.instrucoes) && /Qtd\. Sistema/.test(docFicha.instrucoes));
+ok('ficha de inventário aceita o mesmo filtro de situação do estoque e registra no título',
+  utils.relatorioInventarioFisico(estoqueFicha, 'admin', 'criticos').totalRegistros === 1 &&
+  utils.relatorioInventarioFisico(estoqueFicha, 'admin', 'criticos').titulo.includes('Somente críticos e esgotados') &&
+  utils.relatorioInventarioFisico(estoqueFicha, 'admin', 'todos').totalRegistros === 3);
+ok('ficha de inventário com estoque vazio não quebra',
+  utils.relatorioInventarioFisico([], 'admin').totalRegistros === 0);
+ok('buildReportDoc sem manterVazias descarta coluna sem valor (comportamento preservado)',
+  !utils.buildReportDoc({ aba: 'x', dados: [{ a: '1', b: '' }], colunas: ['a', 'b'] }).colunas.some(c => c.key === 'b') &&
+  utils.buildReportDoc({ aba: 'x', dados: [{ a: '1', b: '' }], colunas: ['a', 'b'], manterVazias: ['b'] }).colunas.some(c => c.key === 'b'));
+ok('buildReportDoc com colunas fixas marca a coluna de contagem como text', (() => {
+  const d = utils.buildReportDoc({ aba: 'x', dados: [{ a: '1', b: '' }], colunas: ['a', 'b'], manterVazias: ['b'] });
+  return d.colunas[1].numerica === false && d.colunasOmitidas.length === 0;
+})());
+
+const dadosHist = {
+  historico: [{ data: '2026-07-24', acao: 'Manutenção', item: 'Lixadeira', detalhes: 'Trocar rolamento', responsavel: 'Infraestrutura' }],
+  movimentacoes: [
+    { data: '2026-08-05', tipo: 'Entrada', item: 'Cimento', quantidade: '20', usuario: 'admin' },
+    { data: '2026-08-03', tipo: 'Saída', item: 'Tinta', quantidade: '2', usuario: 'ana' }
+  ],
+  pedidos: [{ data: '2026-07-30', item: 'Broca', quantidade: '10', solicitante: 'Osvaldo', status: 'Pendente' }],
+  emprestimos: []
+};
+const docHistV31 = utils.relatorioHistorico(dadosHist, 'admin');
+ok('relatorioHistorico une as quatro fontes do menu Histórico (v3.1)', docHistV31.totalRegistros === 4);
+ok('relatorioHistorico mostra o rótulo amigável da origem, não a chave crua',
+  docHistV31.linhasBR.some(l => l.includes('Movimentações de Estoque')) && !docHistV31.linhasBR.some(l => l.includes('movimentacoes')));
+ok('relatorioHistorico filtra entradas/saídas/manutenções',
+  utils.relatorioHistorico(dadosHist, 'admin', 'entradas').totalRegistros === 1 &&
+  utils.relatorioHistorico(dadosHist, 'admin', 'saidas').totalRegistros === 2 &&
+  utils.relatorioHistorico(dadosHist, 'admin', 'manutencao').totalRegistros === 1);
+ok('categoriaMovimento classifica pedido/empréstimo como saída e manutenção à parte',
+  utils.categoriaMovimento({ acao: 'Pedido — Pendente' }) === 'saida' &&
+  utils.categoriaMovimento({ acao: 'Empréstimo' }) === 'saida' &&
+  utils.categoriaMovimento({ acao: 'Manutenção' }) === 'manutencao' &&
+  utils.categoriaMovimento({ acao: 'Devolução' }) === 'entrada');
+
+// Invariante: nenhum documento pode sair com linha de tamanho diferente das colunas
+// (a mesma lista alimenta tela, CSV, Excel e impressão).
+const emprestimosV31 = [{ nomeFerramenta: 'Furadeira', responsavel: 'Ana', setor: 'Oficina', quantidade: '1', status: 'Ativo', dataEmprestimo: '2026-08-01', previsaoDevolucao: '2026-08-10' }];
+const documentosV31 = [
+  utils.relatorioEstoqueAtual(estoqueV31, 'admin'),
+  utils.relatorioEstoqueAtual(estoqueV31, 'admin', 'reposicao'),
+  utils.relatorioReposicao(estoqueV31, 'admin', movV31),
+  utils.relatorioConsolidado(estoqueV31, 'admin'),
+  utils.relatorioFerramentas(ferramentasV31, 'admin'),
+  utils.relatorioFerramentas(ferramentasV31, 'admin', 'manutencao'),
+  utils.relatorioHistorico(dadosHist, 'admin', 'saidas'),
+  utils.relatorioEmprestimosAtivos(emprestimosV31, 'admin'),
+  utils.relatorioAtrasados(emprestimosV31, 'admin')
+];
+ok('todo documento sai com linhas do tamanho exato das colunas (tela, CSV e Excel)',
+  documentosV31.every(doc =>
+    doc.linhasBR.every(l => l.length === doc.colunas.length) &&
+    doc.linhasXLSX.every(l => l.length === doc.colunas.length) &&
+    doc.colunas.length > 0));
+ok('nenhum documento repete o identificador técnico nem vaza o id',
+  documentosV31.every(doc => !doc.colunas.some(c => c.key === 'id')));
+
+const contagensV31 = utils.contagensRelatorios({ estoque: estoqueV31, ferramentas: ferramentasV31, movimentacoes: movV31, historico: dadosHist.historico, pedidos: dadosHist.pedidos, emprestimos: [] });
+ok('contagensRelatorios informa o que cada opção tem hoje',
+  contagensV31['estoque-atual'] === 5 && contagensV31.reposicao === 3 && contagensV31.consolidado === 3 &&
+  contagensV31.ferramentas === 4 && contagensV31.historico === 8 && contagensV31['emprestimos-ativos'] === 0 && contagensV31.atrasados === 0 &&
+  contagensV31['inventario-fisico'] === 5 && contagensV31['estoque-atual'] === contagensV31['inventario-fisico']);
+
+
+/* ═══ 10. Tela de Relatórios renderizada (mesmo app.js do navegador) ═══ */
+{
+  const vm = require('vm');
+  const elementos = {};
+  const elStub = id => {
+    if (!elementos[id]) elementos[id] = { id, innerHTML: '', value: '', classList: { add() {}, remove() {}, toggle() {} }, scrollIntoView() {} };
+    return elementos[id];
+  };
+  const sandbox = {
+    console,
+    utils,
+    CONFIG: { ORGAO: 'COMPLEXO PENAL DE MARÍLIA — POLÍCIA PENAL', VERSAO: '3.0.0' },
+    document: {
+      addEventListener() {},
+      getElementById(id) { return /^rel-/.test(id) ? elStub(id) : null; },
+      querySelectorAll() { return []; },
+      readyState: 'complete'
+    },
+    window: { addEventListener() {} },
+    localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
+    sessionStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
+    fetch: () => Promise.reject(new Error('offline no teste')),
+    setTimeout, clearTimeout, setInterval: () => 0, clearInterval() {},
+    AbortController, URLSearchParams, TextEncoder, Date, confirm: () => true, alert() {}
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(appJs + '\n;this.app = app;', sandbox, { filename: 'app.js' });
+  const app = sandbox.app;
+  app.showToast = () => {};
+  app.data = {
+    estoque: [
+      { nome: 'Cimento', categoria: 'Construção', quantidadeAtual: '20', quantidadeMinima: '5', unidade: 'sc' },
+      { nome: 'Areia', categoria: 'Construção', quantidadeAtual: '2', quantidadeMinima: '10', unidade: 'm³' },
+      { nome: 'Zinco', categoria: 'Zeta', quantidadeAtual: '7', unidade: 'un' }
+    ],
+    ferramentas: [{ codigo: 'F001', nome: 'Lixadeira', categoria: 'Elétrica', estado: 'Manutenção' }],
+    movimentacoes: [{ data: '2026-08-10', tipo: 'Saída', item: 'Areia', quantidade: '4', usuario: 'ana' }],
+    emprestimos: [], pedidos: [], historico: []
+  };
+  const container = { innerHTML: '' };
+  app._renderRelatorios(container);
+  const telaHtml = container.innerHTML;
+
+  ok('tela de relatórios mostra a contagem de registros em cada opção',
+    telaHtml.includes('Estoque Atual (3 itens)') && telaHtml.includes('Histórico Unificado') &&
+    telaHtml.includes('Ficha de Inventário Físico — contagem no almoxarifado (3 itens)') &&
+    telaHtml.includes('Lista de Reposição — no/abaixo do mínimo (1)'));
+  ok('tela de relatórios desabilita a opção sem registros',
+    /<option value="emprestimos-ativos"[^>]*disabled/.test(telaHtml) && telaHtml.includes('Empréstimos Ativos — sem registros'));
+  ok('tela de relatórios traz os filtros de estoque, ferramentas e histórico',
+    telaHtml.includes('id="rel-estoque-filtro"') && telaHtml.includes('id="rel-ferramentas-filtro"') && telaHtml.includes('id="rel-historico-filtro"'));
+  ok('tela de relatórios abre no relatório com mais base', app._primeiraFonteRelatorio === 'estoque-atual');
+  ok('tabela de categorias da tela mostra críticos, % e sem mínimo (não só esgotados)',
+    telaHtml.includes('% do total') && telaHtml.includes('Sem mínimo') && telaHtml.includes('Sem mínimo definido'));
+
+  // Prévia: cada fonte gera o documento certo e o filtro escolhido é respeitado
+  elStub('rel-estoque-filtro').value = 'criticos';
+  elStub('rel-fonte').value = 'estoque-atual';
+  app._gerarPreviaRelatorio();
+  ok('prévia de Estoque Atual respeita o filtro de situação',
+    app._docPreviaAtual.totalRegistros === 1 && app._docPreviaAtual.titulo.includes('Somente críticos e esgotados'));
+
+  elStub('rel-fonte').value = 'reposicao';
+  app._gerarPreviaRelatorio();
+  ok('prévia da Lista de Reposição sai com a sugestão comprovada pela saída de estoque',
+    app._docPreviaAtual.aba === 'reposicao' && app._docPreviaAtual.linhasBR.some(l => l.includes('Saídas (4)')));
+
+  elStub('rel-fonte').value = 'ferramentas';
+  elStub('rel-ferramentas-filtro').value = 'manutencao';
+  app._gerarPreviaRelatorio();
+  ok('prévia de Ferramentas respeita o filtro de situação',
+    app._docPreviaAtual.totalRegistros === 1 && app._docPreviaAtual.titulo.includes('Em manutenção ou com defeito'));
+
+  elStub('rel-fonte').value = 'historico';
+  elStub('rel-historico-filtro').value = 'saidas';
+  app._gerarPreviaRelatorio();
+  ok('prévia do Histórico Unificado usa a lista unificada e o filtro',
+    app._docPreviaAtual.aba === 'historico_unificado' && app._docPreviaAtual.totalRegistros === 1);
+
+  // Ficha de inventário físico: contagem em branco, instruções impressas e largura de escrita
+  app.data.estoque = estoqueFicha;
+  elStub('rel-fonte').value = 'inventario-fisico';
+  elStub('rel-estoque-filtro').value = 'todos';
+  app._gerarPreviaRelatorio();
+  const fichaTela = elStub('rel-preview').innerHTML;
+  ok('prévia da ficha de inventário marca a coluna Contagem para escrita (data-col)',
+    fichaTela.includes('data-col="contagem"') && app._docPreviaAtual.colunas.some(c => c.key === 'contagem'));
+  ok('prévia da ficha de inventário imprime as instruções de preenchimento',
+    /Instruções:/.test(fichaTela) && /Contagem/.test(app._docPreviaAtual.instrucoes));
+  ok('prévia da ficha explica que a coluna sai em branco de propósito', /em branco de propósito/.test(fichaTela));
+  ok('ficha de inventário respeita o filtro de estoque escolhido na tela',
+    (() => { elStub('rel-estoque-filtro').value = 'criticos'; app._gerarPreviaRelatorio();
+      return app._docPreviaAtual.totalRegistros === 1 && app._docPreviaAtual.titulo.includes('Somente críticos'); })());
+
+  // Relatório vazio não deixa documento velho na tela
+  elStub('rel-preview').innerHTML = '<div>documento anterior</div>';
+  elStub('rel-fonte').value = 'emprestimos-ativos';
+  app._gerarPreviaRelatorio();
+  ok('prévia sem registros limpa a prévia anterior e não guarda documento obsoleto',
+    app._docPreviaAtual === null && elStub('rel-preview').innerHTML === '' && app._docPreviaAtual !== undefined);
+}
 
 console.log(`\n${'█'.repeat(46)}`);
 console.log(`  EXPORTS: ${passed} passaram, ${failed} falharam (${passed + failed} total)`);

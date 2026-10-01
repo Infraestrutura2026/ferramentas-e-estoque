@@ -26,7 +26,7 @@ Apps Script/CSV. Guia completo: **[DEPLOY-VERCEL.md](DEPLOY-VERCEL.md)**.
 | Fornecedores | CRUD completo + **limpar o cadastro inteiro** (exclusão em lote com confirmação) |
 | Pedidos | Pedidos de compra com valores, previsão de entrega e status |
 | Usuários | Gestão centralizada de acessos (somente admin) |
-| Relatórios | Totais por categoria + exportação CSV de todas as abas + impressão |
+| Relatórios | Painel gerencial + 8 relatórios padronizados com contagem de registros no seletor, filtros por relatório e exportação (prévia, CSV pt-BR, Excel e impressão fiel): Estoque Atual, **Ficha de Inventário Físico** (coluna Contagem em branco, para conferência no almoxarifado), Lista de Reposição, Consolidado por Categoria, Inventário de Ferramentas, Histórico Unificado e Empréstimos (ativo/atraso). Detalhes: **[RELATORIOS-ESSENCIAIS.md](RELATORIOS-ESSENCIAIS.md)** |
 
 ## 🔑 Login
 
@@ -210,6 +210,7 @@ api/              ★ v2.6.0 — Backend serverless Vercel + Neon
   _lib/seed-data.js Carga inicial embutida (gerada de data/*.csv)
 dev/server.js     Servidor local idêntico à produção (API em memória)
 scripts/gen-seed.js Regenera o seed-data.js após atualizar CSVs
+scripts/auditoria-relatorios.js Audita quais relatórios têm dados hoje (npm run auditoria)
 scripts/import-estoque.js Importa lista colada/CSV para data/estoque.csv
 scripts/migrate-online.js Migra data/*.csv para PostgreSQL ou API online
 vercel.json       Configuração das funções + headers CORS

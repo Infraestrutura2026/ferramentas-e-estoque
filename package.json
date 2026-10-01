@@ -13,6 +13,7 @@
     "test:import": "node tests/run-import.js",
     "import:estoque": "node scripts/import-estoque.js",
     "gen": "node scripts/gen-seed.js",
+    "auditoria": "node scripts/auditoria-relatorios.js",
     "migrate:online": "node scripts/migrate-online.js"
   },
   "repository": {
