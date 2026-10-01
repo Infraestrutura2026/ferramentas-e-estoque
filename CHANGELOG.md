@@ -2,6 +2,84 @@
 
 ## [Não publicado]
 
+### Ficha de inventário físico para contagem no almoxarifado (v3.2.1)
+
+- **Nova opção no menu Relatórios**: *Ficha de Inventário Físico — contagem no almoxarifado (169 itens)*,
+  folha para imprimir e conferir item por item, com 6 colunas
+  (**Nome · Categoria · Qtd. Sistema · Unid. · Local · Contagem**).
+- A coluna **Contagem sai em branco de propósito** para ser preenchida à mão. `buildReportDoc`
+  ganhou `manterVazias`: colunas nessa lista sobrevivem à ocultação de colunas vazias — sem isso
+  a própria coluna de contagem desapareceria do documento.
+- **Largura de escrita garantida** na tela e no papel: as células receberam `data-col` e o
+  `index.html` fixa `min-width: 6.5rem` com separador tracejado para a coluna Contagem.
+- **Ordem de prateleira** (categoria → nome) e cabeçalho de tabela repetido a cada página impressa.
+- **Instruções no próprio documento** (novo campo `instrucoes` do relatório, impresso logo abaixo
+  dos metadados): anotar a quantidade contada, comparar com a Qtd. Sistema e lançar divergências
+  no sistema.
+- **Contagem dirigida**: a ficha aceita os mesmos filtros do Estoque Atual — dá para imprimir só os
+  15 itens críticos ou os **84 sem quantidade mínima definida**, que hoje escapam de todo alerta.
+- CSV e Excel saem com a coluna Contagem vazia (não com “____”), para também digitar a contagem
+  na planilha e comparar.
+- Cache-buster dos arquivos atualizado de `?v=3.2.0` para `?v=3.2.1`.
+- Testes: `tests/run-exports.js` foi de 136 para **150 verificações** (coluna de contagem preservada
+  mesmo vazia, filtros, instruções, ordem e a ficha renderizada com o `app.js` real).
+
+### Relatórios essenciais: reposição, ferramentas, histórico unificado e filtros (2026-09-30)
+
+O menu Relatórios passou de 5 para **7 opções**, e agora **5 geram documento** com os dados
+alimentados (antes eram 3). Diagnóstico completo em [RELATORIOS-ESSENCIAIS.md](RELATORIOS-ESSENCIAIS.md).
+
+- **Seletor com a contagem real de cada relatório**: `Estoque Atual (169 itens)`,
+  `Histórico Unificado (30 registros)`, `Empréstimos Ativos — sem registros`. Opção sem
+  registros fica **desabilitada** e o menu abre no primeiro relatório com base.
+- **Filtro por relatório**: Estoque Atual (todos · críticos/esgotados · no/abaixo do mínimo ·
+  sem mínimo definido · regulares), Inventário de Ferramentas (todas · indisponíveis ·
+  em manutenção/defeito · disponíveis) e Histórico (todos · entradas · saídas · **manutenções**).
+  O filtro aplicado entra no **título do documento**, para o papel impresso não enganar.
+- **Colunas vazias saem do documento** (`ocultarVazias`): Fornecedor e Valor Unit. deixam de
+  imprimir uma faixa em branco (vazios em 169 de 169 itens). A decisão usa a base completa —
+  filtrar para “críticos” não apaga coluna que existe nos demais itens — e a prévia informa,
+  em tela, quais colunas foram omitidas.
+- **Nova Lista de Reposição**: itens no/abaixo do mínimo com **Origem da necessidade**
+  (`Saídas (n)`, `Saldo zerado`, `Mínimo`) e **Repor (sugerido)** = mínimo + consumo desde a
+  última entrada − saldo. A sugestão só sai quando a base comprova o consumo; sem saída
+  registrada a célula fica vazia e a tela explica o motivo — o sistema não converte mínimo de
+  cadastro em ordem de compra.
+- **Novo Inventário de Ferramentas** por estado/categoria, ordenado por prioridade de ação
+  (Defeito → Manutenção → Em uso → Disponível) — a lacuna mais barata do menu, já que a base
+  de 64 ferramentas estava completa e sem relatório.
+- **Consolidado por Categoria** deixa de depender da coluna “Esgotados” (0 em todas as linhas)
+  e passa a trazer **Itens · % do total · Qtd · Críticos · Esgotados · Sem mínimo** e, quando
+  houver preço, **Valor em estoque**. A tela ganhou as mesmas colunas e um card “Sem mínimo
+  definido” (hoje 84 itens fora do alerta por falta de mínimo cadastrado).
+- **Histórico Unificado no relatório**: antes alimentado só por `movimentacoes` (20 linhas);
+  agora usa `utils.historicoUnificado` (**30 linhas**) com a coluna **Origem** — paridade total
+  com o menu Histórico.
+- **Prévia vazia não deixa documento velho na tela**: relatório sem registros limpa a prévia
+  anterior e zera o documento guardado (nada de imprimir/baixar o relatório errado).
+- **Consumo ancorado na base, não no relógio**: a janela de 3 meses da taxa de consumo é
+  contada da data mais recente conhecida — a sugestão de reposição é a mesma hoje e daqui a
+  seis meses, e saída fora da janela não infla a média.
+- Cache-buster dos arquivos atualizado de `?v=3.1.5` para `?v=3.2.0`.
+- Testes: `tests/run-exports.js` foi de 88 para **134 verificações** (filtros, reposição com
+  demanda comprovada, ferramentas, consolidado, histórico unificado, contagens e a tela de
+  relatórios renderizada com o `app.js` real).
+
+### Auditoria do menu Relatórios (2026-09-30)
+
+- **Diagnóstico documentado em [RELATORIOS-ESSENCIAIS.md](RELATORIOS-ESSENCIAIS.md)**: com os
+  dados alimentados hoje, apenas **Estoque Atual (169 itens)**, **Consolidado por Categoria
+  (6)** e **Histórico de Movimentações (20 de 30 registros)** geram documento; *Empréstimos
+  Ativos* e *Empréstimos em Atraso* retornam zero registros e apenas avisam que não há dados.
+- **Novo `npm run auditoria`** (`scripts/auditoria-relatorios.js`): roda as mesmas funções
+  puras da prévia/CSV/Excel sobre `data/*.csv` e informa, sem tocar no banco, quantas linhas
+  cada relatório gera, o preenchimento de cada campo (mínimo 50%, local 1%, fornecedor e valor
+  unitário 0%) e os cruzamentos que comprometem relatórios (0 de 20 movimentações existem no
+  cadastro de estoque).
+- Nenhuma alteração de comportamento nas telas — entrega somente leitura (documento + script).
+- Próximos passos priorizados no documento: lista de reposição, relatório de ferramentas por
+  estado, histórico unificado no relatório e filtro de críticos no Estoque Atual.
+
 ### Sincronização sem interromper o uso (2026-09-29)
 
 - Corrige a atualização visual recorrente: sincronizações sem mudança nos dados deixam de

@@ -929,12 +929,14 @@ const app = {
     `;
   },
 
-  /* ── Relatórios gerenciais (v3.0.0) ── */
+  /* ── Relatórios gerenciais (v3.1) ── */
   _renderRelatorios(container) {
     const estoque = this.data.estoque || [];
     const emprestimos = this.data.emprestimos || [];
     const resumo = utils.indicadoresResumo(estoque, emprestimos);
-    const catMap = utils.categoriaResumo(estoque);
+    const catMap = utils.resumoCategorias(estoque);
+    const contagens = utils.contagensRelatorios(this.data || {});
+    const semMinimo = utils.filtrarEstoque(estoque, 'semMinimo').length;
     this._docPreviaAtual = null;
 
     const card = (titulo, valor, detalhe, cor) => `
@@ -943,6 +945,19 @@ const app = {
         <p class="text-2xl font-bold ${cor} mt-1">${valor}</p>
         <p class="text-[11px] text-slate-400 mt-1">${detalhe}</p>
       </div>`;
+
+    // v3.1: cada opção do seletor mostra quantos registros tem agora; o que está
+    // vazio fica desabilitado (mas se a base inteira estiver vazia, nada é
+    // desabilitado — senão o seletor ficaria sem opção selecionável).
+    const temBase = Object.keys(contagens).some(chave => contagens[chave] > 0);
+    const desabilitado = valor => temBase && (contagens[valor] || 0) === 0;
+    const rotuloOpcao = (valor, rotulo, unidade) => {
+      const total = contagens[valor] || 0;
+      if (!total) return `${rotulo} — sem registros`;
+      return `${rotulo} (${utils.numeroBR(total)}${unidade ? ' ' + unidade : ''})`;
+    };
+    this._primeiraFonteRelatorio = ['estoque-atual', 'inventario-fisico', 'reposicao', 'consolidado', 'ferramentas', 'historico', 'emprestimos-ativos', 'atrasados']
+      .find(valor => (contagens[valor] || 0) > 0) || 'estoque-atual';
 
     container.innerHTML = `
       <div class="space-y-6">
@@ -956,11 +971,12 @@ const app = {
               ${resumo.percentualAtencao}% dos itens exigem atenção
             </span>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
             ${card('Itens cadastrados', resumo.totalItens, `${utils.numeroBR(resumo.unidadesEmEstoque)} unidades em estoque`, 'text-slate-900')}
             ${card('Estoque regular', resumo.itensRegulares, 'Acima do nível mínimo', 'text-emerald-600')}
             ${card('Nível crítico', resumo.itensCriticos, 'Reposição deve ser avaliada', resumo.itensCriticos ? 'text-amber-600' : 'text-slate-900')}
             ${card('Esgotados', resumo.itensEsgotados, 'Sem saldo disponível', resumo.itensEsgotados ? 'text-red-600' : 'text-slate-900')}
+            ${card('Sem mínimo definido', semMinimo, 'Fora do alerta até cadastrar o mínimo', semMinimo ? 'text-amber-600' : 'text-slate-900')}
             ${card('Empréstimos', resumo.emprestimosAtivos, `${resumo.emprestimosAtrasados} em atraso`, resumo.emprestimosAtrasados ? 'text-red-600' : 'text-teal-700')}
           </div>
         </section>
@@ -977,20 +993,26 @@ const app = {
               <thead><tr class="bg-slate-50 border-b border-slate-200">
                 <th class="px-4 py-2.5 text-left font-semibold text-slate-600">Categoria</th>
                 <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Itens</th>
+                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">% do total</th>
                 <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Qtd. total</th>
-                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Esgotados</th>
+                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Críticos</th>
+                <th class="px-4 py-2.5 text-center font-semibold text-slate-600">Sem mínimo</th>
               </tr></thead>
               <tbody>
                 ${catMap.map(info => `
                   <tr class="border-b border-slate-100 hover:bg-slate-50">
                     <td class="px-4 py-2.5">${utils.categoriaBadge(info.categoria)}</td>
                     <td class="px-4 py-2.5 text-center font-medium">${utils.numeroBR(info.itens)}</td>
-                    <td class="px-4 py-2.5 text-center font-mono">${utils.numeroBR(info.qtdTotal)}</td>
+                    <td class="px-4 py-2.5 text-center font-mono text-slate-600">${utils.escapeHtml(info.percentual || '—')}</td>
+                    <td class="px-4 py-2.5 text-center font-mono">${utils.numeroBR(info.qtd)}</td>
                     <td class="px-4 py-2.5 text-center">
-                      ${info.esgotados > 0 ? `<span class="text-red-600 font-bold">${utils.numeroBR(info.esgotados)}</span>` : '<span class="text-slate-500">—</span>'}
+                      ${info.criticos > 0 ? `<span class="text-amber-600 font-bold">${utils.numeroBR(info.criticos)}</span>` : '<span class="text-slate-500">—</span>'}
+                    </td>
+                    <td class="px-4 py-2.5 text-center">
+                      ${info.semMinimo > 0 ? `<span class="text-amber-700">${utils.numeroBR(info.semMinimo)}</span>` : '<span class="text-slate-500">—</span>'}
                     </td>
                   </tr>
-                `).join('') || '<tr><td colspan="4" class="px-4 py-7 text-center text-slate-500">Sem dados de estoque.</td></tr>'}
+                `).join('') || '<tr><td colspan="6" class="px-4 py-7 text-center text-slate-500">Sem dados de estoque.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -998,24 +1020,37 @@ const app = {
 
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:p-6">
           <h3 class="text-sm font-bold text-slate-700 mb-1">🖥️ Relatórios para consulta e exportação</h3>
-          <p class="text-xs text-slate-400 mb-4">A prévia, o CSV, o Excel e a impressão usam o mesmo documento padronizado, com cabeçalho institucional e dados no formato pt-BR.</p>
+          <p class="text-xs text-slate-400 mb-4">A prévia, o CSV, o Excel e a impressão usam o mesmo documento padronizado, com cabeçalho institucional e dados no formato pt-BR. A quantidade entre parênteses é o que existe na base agora — relatório sem registros fica desabilitado.</p>
           <div class="flex flex-wrap items-end gap-3 mb-4 no-print">
-            <div class="min-w-[250px] flex-1 max-w-xl">
+            <div class="min-w-[280px] flex-1 max-w-xl">
               <label for="rel-fonte" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Relatório</label>
-              <select id="rel-fonte" onchange="app._alternarFiltroHistorico()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
-                <option value="estoque-atual">Estoque Atual</option>
-                <option value="emprestimos-ativos">Empréstimos Ativos</option>
-                <option value="atrasados">Empréstimos em Atraso</option>
-                <option value="historico">Histórico de Movimentações</option>
-                <option value="consolidado">Consolidado por Categoria</option>
+              <select id="rel-fonte" onchange="app._alternarFiltroRelatorio()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+                <option value="estoque-atual" ${desabilitado('estoque-atual') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('estoque-atual', 'Estoque Atual', 'itens'))}</option>
+                <option value="inventario-fisico" ${desabilitado('inventario-fisico') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('inventario-fisico', 'Ficha de Inventário Físico — contagem no almoxarifado', 'itens'))}</option>
+                <option value="reposicao" ${desabilitado('reposicao') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('reposicao', 'Lista de Reposição — no/abaixo do mínimo', ''))}</option>
+                <option value="consolidado" ${desabilitado('consolidado') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('consolidado', 'Consolidado por Categoria', 'categorias'))}</option>
+                <option value="ferramentas" ${desabilitado('ferramentas') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('ferramentas', 'Inventário de Ferramentas', 'ferramentas'))}</option>
+                <option value="historico" ${desabilitado('historico') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('historico', 'Histórico Unificado', 'registros'))}</option>
+                <option value="emprestimos-ativos" ${desabilitado('emprestimos-ativos') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('emprestimos-ativos', 'Empréstimos Ativos', 'em uso'))}</option>
+                <option value="atrasados" ${desabilitado('atrasados') ? 'disabled' : ''}>${utils.escapeHtml(rotuloOpcao('atrasados', 'Empréstimos em Atraso', 'atrasados'))}</option>
               </select>
             </div>
-            <div id="rel-historico-opcoes" class="hidden min-w-[190px]">
+            <div id="rel-estoque-opcoes" class="hidden min-w-[230px]">
+              <label for="rel-estoque-filtro" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Itens exibidos</label>
+              <select id="rel-estoque-filtro" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+                ${utils.FILTROS_ESTOQUE.map(f => `<option value="${f.valor}">${utils.escapeHtml(f.rotulo)}</option>`).join('')}
+              </select>
+            </div>
+            <div id="rel-ferramentas-opcoes" class="hidden min-w-[230px]">
+              <label for="rel-ferramentas-filtro" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Ferramentas exibidas</label>
+              <select id="rel-ferramentas-filtro" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
+                ${utils.FILTROS_FERRAMENTAS.map(f => `<option value="${f.valor}">${utils.escapeHtml(f.rotulo)}</option>`).join('')}
+              </select>
+            </div>
+            <div id="rel-historico-opcoes" class="hidden min-w-[210px]">
               <label for="rel-historico-filtro" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Exibir no histórico</label>
               <select id="rel-historico-filtro" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none">
-                <option value="todos">Todos os movimentos</option>
-                <option value="entradas">Somente entradas</option>
-                <option value="saidas">Somente saídas</option>
+                ${utils.FILTROS_HISTORICO.map(f => `<option value="${f.valor}">${utils.escapeHtml(f.rotulo)}</option>`).join('')}
               </select>
             </div>
             <button onclick="app._gerarPreviaRelatorio()" class="app-button px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition">
@@ -1026,13 +1061,28 @@ const app = {
         </section>
       </div>
     `;
+
+    // Abre no relatório com mais base e já exibe o filtro certo para ele.
+    const seletor = document.getElementById('rel-fonte');
+    if (seletor && this._primeiraFonteRelatorio) seletor.value = this._primeiraFonteRelatorio;
+    this._alternarFiltroRelatorio();
   },
 
-  /** Exibe as opções de filtro somente no relatório de histórico. */
-  _alternarFiltroHistorico() {
+  /** Mostra o filtro próprio apenas do relatório selecionado (v3.1). */
+  _alternarFiltroRelatorio() {
     const fonte = document.getElementById('rel-fonte');
-    const opcoes = document.getElementById('rel-historico-opcoes');
-    if (opcoes) opcoes.classList.toggle('hidden', !fonte || fonte.value !== 'historico');
+    const valor = fonte ? fonte.value : '';
+    const porRelatorio = {
+      'estoque-atual': 'rel-estoque-opcoes',
+      'inventario-fisico': 'rel-estoque-opcoes',
+      reposicao: 'rel-estoque-opcoes',
+      ferramentas: 'rel-ferramentas-opcoes',
+      historico: 'rel-historico-opcoes'
+    };
+    ['rel-estoque-opcoes', 'rel-ferramentas-opcoes', 'rel-historico-opcoes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden', porRelatorio[valor] !== id);
+    });
   },
 
   /* ── Prévia de relatório padronizado (v2.7.1) ── */
@@ -1041,23 +1091,44 @@ const app = {
   /** Gera a prévia do relatório gerencial selecionado. */
   _gerarPreviaRelatorio() {
     const fonte = document.getElementById('rel-fonte')?.value || 'estoque-atual';
+    const filtroEstoque = document.getElementById('rel-estoque-filtro')?.value || 'todos';
+    const filtroFerramentas = document.getElementById('rel-ferramentas-filtro')?.value || 'todas';
     const filtroHistorico = document.getElementById('rel-historico-filtro')?.value || 'todos';
     const usuario = (typeof authModule !== 'undefined' && authModule.getCurrentUser()) || 'sistema';
     const estoque = this.data.estoque || [];
     const emprestimos = this.data.emprestimos || [];
     const movimentacoes = this.data.movimentacoes || [];
+    const ferramentas = this.data.ferramentas || [];
     const titulos = {
       'estoque-atual': 'estoque atual',
-      'emprestimos-ativos': 'empréstimos ativos',
-      atrasados: 'empréstimos em atraso',
+      'inventario-fisico': 'ficha de inventário físico',
+      reposicao: 'lista de reposição',
+      consolidado: 'consolidado por categoria',
+      ferramentas: 'inventário de ferramentas',
       historico: 'histórico de movimentações',
-      consolidado: 'consolidado por categoria'
+      'emprestimos-ativos': 'empréstimos ativos',
+      atrasados: 'empréstimos em atraso'
     };
     let doc;
 
     switch (fonte) {
       case 'estoque-atual':
-        doc = utils.relatorioEstoqueAtual(estoque, usuario);
+        doc = utils.relatorioEstoqueAtual(estoque, usuario, filtroEstoque);
+        break;
+      case 'inventario-fisico':
+        doc = utils.relatorioInventarioFisico(estoque, usuario, filtroEstoque);
+        break;
+      case 'reposicao':
+        doc = utils.relatorioReposicao(estoque, usuario, movimentacoes);
+        break;
+      case 'consolidado':
+        doc = utils.relatorioConsolidado(estoque, usuario);
+        break;
+      case 'ferramentas':
+        doc = utils.relatorioFerramentas(ferramentas, usuario, filtroFerramentas);
+        break;
+      case 'historico':
+        doc = utils.relatorioHistorico(this.data, usuario, filtroHistorico);
         break;
       case 'emprestimos-ativos':
         doc = utils.relatorioEmprestimosAtivos(emprestimos, usuario);
@@ -1065,27 +1136,47 @@ const app = {
       case 'atrasados':
         doc = utils.relatorioAtrasados(emprestimos, usuario);
         break;
-      case 'historico':
-        doc = utils.historicoMovimentacao(movimentacoes, filtroHistorico, usuario);
-        break;
-      case 'consolidado':
-        doc = utils.docConsolidadoEstoque(estoque, usuario);
-        break;
       default:
         this.showToast('Selecione um relatório válido.', 'warning');
         return;
     }
 
+    const el = document.getElementById('rel-preview');
     if (!doc.totalRegistros) {
-      this.showToast(`Não há registros para o relatório de ${titulos[fonte] || 'dados selecionados'}.`, 'warning');
+      // Sem registros: a prévia anterior sai da tela — nada de documento velho
+      // no lugar do relatório que a pessoa acabou de pedir.
+      this._docPreviaAtual = null;
+      if (el) { el.innerHTML = ''; el.classList.add('hidden'); }
+      this.showToast(`Nenhum registro para ${titulos[fonte] || 'o relatório selecionado'} com o filtro atual — ajuste o filtro ou alimente os dados.`, 'warning');
       return;
     }
     this._docPreviaAtual = doc;
-    const el = document.getElementById('rel-preview');
     if (!el) return;
-    el.innerHTML = this._docHtml(doc);
+    el.innerHTML = this._docHtml(doc) + this._notaRelatorio(doc, fonte);
     el.classList.remove('hidden');
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+
+  /**
+   * Nota de rodapé da tela (não sai na impressão): explica o que os dados de
+   * hoje não permitem mostrar — melhor dizer o motivo do que entregar uma
+   * coluna vazia sem justificativa.
+   */
+  _notaRelatorio(doc, fonte) {
+    const avisos = [];
+    if (fonte === 'inventario-fisico' && doc.colunas.some(c => c.key === 'contagem')) {
+      avisos.push('A coluna Contagem sai em branco de propósito: imprima a ficha e preencha à mão no almoxarifado (a ordem é por categoria e nome, para acompanhar a prateleira).');
+    }
+    if (fonte === 'reposicao' && !doc.colunas.some(c => c.key === 'reposicao')) {
+      avisos.push('Nenhuma saída de estoque registrada para estes itens — por isso o sistema não sugere quantidade de compra (a coluna “Repor (sugerido)” aparece quando houver entradas e saídas em Movimentações).');
+    }
+    if (doc.colunasOmitidas && doc.colunasOmitidas.length) {
+      avisos.push(`Colunas sem nenhum valor na base foram omitidas: ${doc.colunasOmitidas.join(', ')}.`);
+    }
+    if (!avisos.length) return '';
+    return `<div class="mt-3 space-y-2 no-print">
+      ${avisos.map(a => `<p class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2"><i class="fas fa-info-circle mr-1"></i>${utils.escapeHtml(a)}</p>`).join('')}
+    </div>`;
   },
 
   /** HTML do documento padronizado (mesmo documento para tela, impressão, CSV e Excel). */
@@ -1110,16 +1201,21 @@ const app = {
           <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Registros</p><p class="font-semibold text-slate-700">${doc.totalRegistros}</p></div>
           <div class="bg-slate-50 px-3 py-2"><p class="text-slate-400 uppercase text-[10px]">Versão</p><p class="font-semibold text-slate-700">v${utils.escapeHtml(doc.versao || '-')}</p></div>
         </div>
+        ${doc.instrucoes ? `
+        <!-- Instruções do documento (saem na impressão: é a ficha de campo) -->
+        <div class="bg-slate-50 border-b border-slate-300 px-5 py-2">
+          <p class="text-[11px] text-slate-600"><strong class="text-slate-700">Instruções:</strong> ${utils.escapeHtml(doc.instrucoes)}</p>
+        </div>` : ''}
         <!-- Tabela -->
         <div class="overflow-x-auto max-h-[60vh] overflow-y-auto rel-scroll">
           <table class="w-full text-sm">
             <thead class="sticky top-0"><tr class="bg-slate-100 border-b border-slate-300">
-              ${doc.colunas.map(c => `<th class="px-3 py-2 ${c.numerica ? 'text-right' : 'text-left'} font-semibold text-slate-600 whitespace-nowrap">${utils.escapeHtml(c.rotulo)}</th>`).join('')}
+              ${doc.colunas.map(c => `<th data-col="${c.key}" class="px-3 py-2 ${c.numerica ? 'text-right' : 'text-left'} font-semibold text-slate-600 whitespace-nowrap">${utils.escapeHtml(c.rotulo)}</th>`).join('')}
             </tr></thead>
             <tbody>
               ${linhas.map((row, i) => `
                 <tr class="${i % 2 ? 'bg-slate-50' : 'bg-white'} border-b border-slate-100">
-                  ${row.map((cell, j) => `<td class="px-3 py-1.5 ${doc.colunas[j].numerica ? 'text-right font-mono' : 'text-left'}">${utils.escapeHtml(cell)}</td>`).join('')}
+                  ${row.map((cell, j) => `<td data-col="${doc.colunas[j].key}" class="px-3 py-1.5 ${doc.colunas[j].numerica ? 'text-right font-mono' : 'text-left'}">${utils.escapeHtml(cell)}</td>`).join('')}
                 </tr>`).join('') || `<tr><td colspan="${doc.colunas.length}" class="px-4 py-6 text-center text-slate-500">Sem registros.</td></tr>`}
             </tbody>
           </table>

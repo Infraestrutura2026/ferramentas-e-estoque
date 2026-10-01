@@ -404,9 +404,47 @@ const utils = {
     return 'Regular';
   },
 
-  /** Relatório operacional: situação atual de cada item de estoque. */
-  relatorioEstoqueAtual(estoque, usuario) {
-    const dados = (Array.isArray(estoque) ? estoque : []).map(item => ({
+  /* ── Filtros do relatório de Estoque Atual (v3.1) ────────────────── */
+
+  /** Opções de recorte do estoque (alimenta o seletor da tela de Relatórios). */
+  FILTROS_ESTOQUE: [
+    { valor: 'todos', rotulo: 'Todos os itens' },
+    { valor: 'criticos', rotulo: 'Somente críticos e esgotados' },
+    { valor: 'reposicao', rotulo: 'No/abaixo do mínimo (reposição)' },
+    { valor: 'semMinimo', rotulo: 'Sem quantidade mínima definida' },
+    { valor: 'regulares', rotulo: 'Somente regulares' }
+  ],
+
+  /** Filtra o estoque pela situação escolhida (ver FILTROS_ESTOQUE). */
+  filtrarEstoque(estoque, filtro = 'todos') {
+    const itens = Array.isArray(estoque) ? estoque : [];
+    switch (filtro) {
+      case 'criticos':
+        return itens.filter(item => this.statusEstoque(item) !== 'Regular');
+      case 'reposicao':
+        return itens.filter(item => {
+          const minimo = this.quantidadeNumerica(item.quantidadeMinima);
+          return minimo > 0 && this.quantidadeNumerica(item.quantidadeAtual) <= minimo;
+        });
+      case 'semMinimo':
+        return itens.filter(item => String(item.quantidadeMinima ?? '').trim() === '');
+      case 'regulares':
+        return itens.filter(item => this.statusEstoque(item) === 'Regular');
+      default:
+        return itens.slice();
+    }
+  },
+
+  /**
+   * Relatório operacional: situação atual de cada item de estoque.
+   * @param {string} filtro recorte de situação (ver FILTROS_ESTOQUE) — o título
+   *        do documento registra o filtro aplicado, para o papel não enganar.
+   */
+  relatorioEstoqueAtual(estoque, usuario, filtro = 'todos') {
+    const selecionados = this.filtrarEstoque(estoque, filtro);
+    const rotuloFiltro = (this.FILTROS_ESTOQUE.find(f => f.valor === filtro) || {}).rotulo || '';
+    const complemento = filtro && filtro !== 'todos' ? ` — ${rotuloFiltro}` : '';
+    const dados = selecionados.map(item => ({
       codigo: item.codigo || '',
       nome: item.nome || item.item || '',
       categoria: item.categoria || 'Sem categoria',
@@ -421,10 +459,11 @@ const utils = {
     }));
     return this.buildReportDoc({
       aba: 'estoque_atual',
-      titulo: 'Relatório Gerencial — Estoque Atual',
+      titulo: `Relatório Gerencial — Estoque Atual${complemento}`,
       usuario,
       dados,
-      colunas: ['codigo', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'fornecedor', 'valorUnitario', 'local', 'status']
+      colunas: ['codigo', 'nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'fornecedor', 'valorUnitario', 'local', 'status'],
+      ocultarVazias: true
     });
   },
 
@@ -480,6 +519,342 @@ const utils = {
       dados,
       colunas: ['ferramenta', 'responsavel', 'setor', 'quantidade', 'dataEmprestimo', 'previsaoDevolucao', 'diasAtraso', 'status']
     });
+  },
+
+  /* ══════════════════════════════════════════════════════════════════
+     RELATÓRIOS ESSENCIAIS (v3.1)
+     Lista de reposição, inventário de ferramentas, consolidado com
+     críticos e histórico unificado — mesmas funções puras da prévia,
+     do CSV e do Excel.
+     ══════════════════════════════════════════════════════════════════ */
+
+  /** Compara nomes ignorando acento, caixa e pontuação ("Tubo PVC 100mm" ≡ "tubo pvc 100 mm"). */
+  chaveTexto(valor) {
+    return this.normalize(valor).replace(/[^a-z0-9]+/g, '');
+  },
+
+  /**
+   * Soma das saídas por item depois da última entrada daquele item — mede o
+   * consumo que a posição atual não explica e serve de base para a sugestão
+   * de compra e para a taxa de consumo.
+   * @returns {Object<string, number>} chave do nome → quantidade consumida
+   */
+  demandaDesdeUltimaEntrada(movimentacoes) {
+    const porItem = {};
+    (Array.isArray(movimentacoes) ? movimentacoes : []).forEach(movimento => {
+      const chave = this.chaveTexto(movimento.item || movimento.itemNome || movimento.nome);
+      if (!chave) return;
+      const tipo = this.normalize(movimento.tipo || movimento.operacao || movimento.acao || '');
+      const entrada = /entrada|compra|receb|devolu|retorno/.test(tipo);
+      const saida = /saida|consumo|baixa|retirada|perda|descarte|uso/.test(tipo);
+      if (!entrada && !saida) return;
+      const data = String(movimento.data || movimento.dataHora || movimento.createdAt || '').slice(0, 10);
+      const registro = porItem[chave] || (porItem[chave] = { ultimaEntrada: '', saidas: [] });
+      if (entrada) {
+        if (!registro.ultimaEntrada || data > registro.ultimaEntrada) registro.ultimaEntrada = data;
+      } else {
+        registro.saidas.push({ data, quantidade: Math.abs(this.quantidadeNumerica(movimento.quantidade)) });
+      }
+    });
+    const demanda = {};
+    Object.keys(porItem).forEach(chave => {
+      const registro = porItem[chave];
+      const corte = registro.ultimaEntrada;
+      demanda[chave] = registro.saidas
+        .filter(s => !corte || s.data > corte)
+        .reduce((total, s) => total + s.quantidade, 0);
+    });
+    return demanda;
+  },
+
+  /** Meses de calendário entre duas datas ISO ('2026-07-01', '2026-09-30' → 2). */
+  mesesEntre(inicio, fim) {
+    const a = String(inicio || '').slice(0, 10).split('-').map(Number);
+    const b = String(fim || '').slice(0, 10).split('-').map(Number);
+    if (a.length !== 3 || b.length !== 3 || a.concat(b).some(isNaN)) return 0;
+    return (b[0] - a[0]) * 12 + (b[1] - a[1]);
+  },
+
+  /** Data ISO com meses de calendário subtraídos ('2026-09-30', 2 → '2026-07-30'). */
+  mesesAtras(dataISO, meses) {
+    const [ano, mes, dia] = String(dataISO || '').slice(0, 10).split('-').map(Number);
+    if ([ano, mes, dia].some(isNaN)) return String(dataISO || '');
+    const total = ano * 12 + (mes - 1) - (meses || 0);
+    const p = n => String(n).padStart(2, '0');
+    return `${Math.floor(total / 12)}-${p((total % 12 + 12) % 12 + 1)}-${p(dia || 1)}`;
+  },
+
+  /**
+   * Taxa de consumo mensal por item: média de saídas por mês numa janela de
+   * `meses` meses. A janela é ancorada na data mais recente conhecida (entre
+   * as movimentações e `hoje`) — nunca no relógio do aparelho — para o cálculo
+   * não escorregar quando a base fica parada: o relatório mostra a MESMA
+   * sugestão hoje e daqui a seis meses, sem inflar a compra.
+   * @returns {{taxa: Object<string, number>, janelaMeses: number, fim: string}}
+   */
+  taxaConsumoMensal(movimentacoes, meses = 3, hoje = this.today()) {
+    const janelaMeses = Math.max(1, meses > 0 ? meses : 1);
+    const datas = [String(hoje || '').slice(0, 10)];
+    (Array.isArray(movimentacoes) ? movimentacoes : []).forEach(movimento => {
+      const data = String(movimento.data || movimento.dataHora || movimento.createdAt || '').slice(0, 10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(data)) datas.push(data);
+    });
+    const fim = datas.sort().pop() || this.today();
+    const inicio = this.mesesAtras(fim, janelaMeses - 1);
+    const totalSaidas = {};
+    (Array.isArray(movimentacoes) ? movimentacoes : []).forEach(movimento => {
+      const tipo = this.normalize(movimento.tipo || movimento.operacao || movimento.acao || '');
+      if (!/saida|consumo|baixa|retirada|perda|descarte|uso/.test(tipo)) return;
+      const chave = this.chaveTexto(movimento.item || movimento.itemNome || movimento.nome);
+      const data = String(movimento.data || movimento.dataHora || movimento.createdAt || '').slice(0, 10);
+      // só o que está DENTRO da janela conta: saída antiga não infla a média
+      if (!chave || !/^\d{4}-\d{2}-\d{2}$/.test(data) || data < inicio || data > fim) return;
+      totalSaidas[chave] = (totalSaidas[chave] || 0) + Math.abs(this.quantidadeNumerica(movimento.quantidade));
+    });
+    const taxa = {};
+    Object.keys(totalSaidas).forEach(chave => { taxa[chave] = totalSaidas[chave] / janelaMeses; });
+    return { taxa, janelaMeses, fim, inicio };
+  },
+
+  /**
+   * Lista de reposição (v3.1): itens esgotados ou no/abaixo do mínimo.
+   * A coluna "Repor (sugerido)" só é preenchida quando a própria base
+   * comprova a necessidade — saída registrada desde a última entrada
+   * (origem "Saídas (n)") ou saldo zerado (origem "Saldo zerado"). Itens
+   * que estão no mínimo mas nunca foram usados saem com "Mínimo" na origem
+   * e sugestão vazia: a decisão de comprar é de quem lê o relatório, e o
+   * documento não transforma mínimo de cadastro em ordem de compra.
+   */
+  relatorioReposicao(estoque, usuario, movimentacoes) {
+    const demanda = this.demandaDesdeUltimaEntrada(movimentacoes);
+    const dados = this.filtrarEstoque(estoque, 'reposicao')
+      .map(item => {
+        const atual = this.quantidadeNumerica(item.quantidadeAtual);
+        const minimo = this.quantidadeNumerica(item.quantidadeMinima);
+        const consumo = demanda[this.chaveTexto(item.nome || item.item)] || 0;
+        const sugestao = Math.max(1, Math.ceil(Math.max(minimo, 1) + consumo - atual));
+        const comprovada = consumo >= 1 || atual <= 0;
+        return {
+          nome: item.nome || item.item || '',
+          categoria: item.categoria || 'Sem categoria',
+          quantidadeAtual: atual,
+          quantidadeMinima: minimo || '',
+          unidade: item.unidade || '',
+          reposicao: comprovada ? sugestao : '',
+          origem: consumo >= 1 ? `Saídas (${this.numeroBR(consumo)})` : (atual <= 0 ? 'Saldo zerado' : 'Mínimo'),
+          status: this.statusEstoque(item)
+        };
+      })
+      .sort((a, b) => (b.reposicao || 0) - (a.reposicao || 0)
+        || String(a.categoria).localeCompare(String(b.categoria), 'pt-BR')
+        || String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+    return this.buildReportDoc({
+      aba: 'reposicao',
+      titulo: 'Relatório Gerencial — Lista de Reposição (no/abaixo do mínimo)',
+      usuario,
+      dados,
+      colunas: ['nome', 'categoria', 'quantidadeAtual', 'quantidadeMinima', 'unidade', 'reposicao', 'origem', 'status']
+    });
+  },
+
+  /**
+   * Ficha de inventário físico (v3.2.1): lista para imprimir e conferir no
+   * almoxarifado, com a coluna **Contagem em branco** para preencher à mão.
+   * A coluna é mantida mesmo vazia (`manterVazias`) e a ordem é por categoria
+   * e nome — a mesma sequência em que se percorre a prateleira.
+   */
+  relatorioInventarioFisico(estoque, usuario, filtro = 'todos') {
+    const rotuloFiltro = (this.FILTROS_ESTOQUE.find(f => f.valor === filtro) || {}).rotulo || '';
+    const complemento = filtro && filtro !== 'todos' ? ` — ${rotuloFiltro}` : '';
+    const dados = this.filtrarEstoque(estoque, filtro)
+      .map(item => ({
+        nome: item.nome || item.item || '',
+        categoria: item.categoria || 'Sem categoria',
+        quantidadeSistema: this.quantidadeNumerica(item.quantidadeAtual),
+        unidade: item.unidade || '',
+        local: item.local || '',
+        contagem: ''
+      }))
+      .sort((a, b) => String(a.categoria).localeCompare(String(b.categoria), 'pt-BR')
+        || String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+    return this.buildReportDoc({
+      aba: 'inventario_fisico',
+      titulo: `Ficha de Inventário Físico${complemento}`,
+      usuario,
+      dados,
+      colunas: ['nome', 'categoria', 'quantidadeSistema', 'unidade', 'local', 'contagem'],
+      // a coluna de contagem existe para ser escrita à mão: fica mesmo em branco
+      manterVazias: ['contagem'],
+      instrucoes: 'Anote na coluna Contagem a quantidade encontrada e compare com a Qtd. Sistema: divergências devem ser lançadas no sistema (Movimentações) e itens não cadastrados registrados em Estoque.'
+    });
+  },
+
+  /** Opções do relatório de ferramentas (alimenta o seletor da tela). */
+  FILTROS_FERRAMENTAS: [
+    { valor: 'todas', rotulo: 'Todas as ferramentas' },
+    { valor: 'indisponiveis', rotulo: 'Indisponíveis (uso, manutenção ou defeito)' },
+    { valor: 'manutencao', rotulo: 'Em manutenção ou com defeito' },
+    { valor: 'disponiveis', rotulo: 'Somente disponíveis' }
+  ],
+
+  /** Filtra ferramentas pela situação escolhida (ver FILTROS_FERRAMENTAS). */
+  filtrarFerramentas(ferramentas, filtro = 'todas') {
+    const itens = Array.isArray(ferramentas) ? ferramentas : [];
+    const estado = f => this.normalize((f && (f.estado || f.status)) || '');
+    switch (filtro) {
+      case 'disponiveis':
+        return itens.filter(f => estado(f) === 'disponivel');
+      case 'manutencao':
+        return itens.filter(f => /manut|defeito/.test(estado(f)));
+      case 'indisponiveis':
+        return itens.filter(f => estado(f) && estado(f) !== 'disponivel');
+      default:
+        return itens.slice();
+    }
+  },
+
+  /** Ordem de prioridade dos estados no relatório (o que exige ação primeiro). */
+  ORDEM_ESTADO_FERRAMENTA: ['Defeito', 'Manutenção', 'Em uso', 'Disponível'],
+
+  /** Inventário de ferramentas por estado e categoria — documento padronizado. */
+  relatorioFerramentas(ferramentas, usuario, filtro = 'todas') {
+    const prioridade = estado => {
+      const indice = this.ORDEM_ESTADO_FERRAMENTA.findIndex(e => this.normalize(e) === this.normalize(estado));
+      return indice === -1 ? this.ORDEM_ESTADO_FERRAMENTA.length : indice;
+    };
+    const dados = this.filtrarFerramentas(ferramentas, filtro)
+      .map(f => ({
+        codigo: f.codigo || '',
+        nome: f.nome || f.item || '',
+        categoria: f.categoria || 'Sem categoria',
+        estado: f.estado || f.status || '',
+        descricao: f.descricao || '',
+        local: f.local || '',
+        responsavel: f.responsavel || ''
+      }))
+      .sort((a, b) => prioridade(a.estado) - prioridade(b.estado)
+        || String(a.categoria).localeCompare(String(b.categoria), 'pt-BR')
+        || String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+    const complemento = (this.FILTROS_FERRAMENTAS.find(f => f.valor === filtro) || {}).rotulo || '';
+    return this.buildReportDoc({
+      aba: 'ferramentas',
+      titulo: `Relatório Gerencial — Inventário de Ferramentas${filtro && filtro !== 'todas' ? ` — ${complemento}` : ''}`,
+      usuario,
+      dados,
+      colunas: ['codigo', 'nome', 'categoria', 'estado', 'descricao', 'local', 'responsavel'],
+      ocultarVazias: true
+    });
+  },
+
+  /**
+   * Resumo por categoria para a tela e para o relatório: itens, quantidade,
+   * críticos, esgotados, itens sem mínimo, participação e valor. A coluna de
+   * valor fica VAZIA quando nenhum item da base tem preço — melhor lacuna
+   * visível do que um "R$ 0,00" que passaria por estoque sem valor.
+   */
+  resumoCategorias(estoque) {
+    const itens = Array.isArray(estoque) ? estoque : [];
+    const temPreco = itens.some(item => this.valorNumerico(item.valorUnitario) > 0);
+    return this.categoriaResumo(itens).map(cat => {
+      const daCategoria = itens.filter(i => (i.categoria || 'Sem categoria') === cat.categoria);
+      const valor = daCategoria.reduce((total, item) =>
+        total + this.valorNumerico(item.valorUnitario) * this.quantidadeNumerica(item.quantidadeAtual), 0);
+      return {
+        categoria: cat.categoria,
+        itens: cat.itens,
+        percentual: itens.length ? `${Math.round((cat.itens / itens.length) * 100)}%` : '',
+        qtd: cat.qtdTotal,
+        criticos: daCategoria.filter(i => this.statusEstoque(i) === 'Crítico').length,
+        esgotados: cat.esgotados,
+        semMinimo: daCategoria.filter(i => String(i.quantidadeMinima ?? '').trim() === '').length,
+        valor: temPreco ? valor : ''
+      };
+    });
+  },
+
+  /** Relatório consolidado por categoria — agora com críticos, % e valor (v3.1). */
+  relatorioConsolidado(estoque, usuario) {
+    return this.buildReportDoc({
+      aba: 'consolidado',
+      titulo: 'Relatório Gerencial — Consolidado por Categoria',
+      usuario,
+      dados: this.resumoCategorias(estoque),
+      colunas: ['categoria', 'itens', 'percentual', 'qtd', 'criticos', 'esgotados', 'semMinimo', 'valor'],
+      ocultarVazias: true
+    });
+  },
+
+  /** Opções de recorte do relatório de histórico (alimenta o seletor da tela). */
+  FILTROS_HISTORICO: [
+    { valor: 'todos', rotulo: 'Todos os movimentos' },
+    { valor: 'entradas', rotulo: 'Somente entradas' },
+    { valor: 'saidas', rotulo: 'Somente saídas' },
+    { valor: 'manutencao', rotulo: 'Somente manutenções' }
+  ],
+
+  /** Classifica a linha do histórico unificado: entrada, saída ou manutenção. */
+  categoriaMovimento(linha) {
+    const acao = this.normalize(linha && linha.acao);
+    if (/manut|defeito|avaria|conserto|calibra/.test(acao)) return 'manutencao';
+    if (/entrada|compra|receb|devolu|retorno/.test(acao)) return 'entrada';
+    if (/saida|retirada|baixa|consumo|perda|descarte|emprest|pedido|solicita/.test(acao)) return 'saida';
+    return 'outro';
+  },
+
+  /**
+   * Relatório do Histórico Unificado (v3.1): a mesma lista do menu Histórico
+   * (registros, movimentações, pedidos e empréstimos) com a origem de cada
+   * linha — antes o relatório mostrava apenas as movimentações de estoque e
+   * deixava de fora manutenções e demais registros.
+   */
+  relatorioHistorico(dados, usuario, filtro = 'todos') {
+    const linhas = this.historicoUnificado(dados || {});
+    const recorte = opcao => linhas.filter(l => this.categoriaMovimento(l) === opcao);
+    const filtradas = filtro === 'entradas' ? recorte('entrada')
+      : filtro === 'saidas' ? recorte('saida')
+        : filtro === 'manutencao' ? recorte('manutencao')
+          : linhas;
+    const rotulos = { entradas: 'Entradas', saidas: 'Saídas', manutencao: 'Manutenções' };
+    return this.buildReportDoc({
+      aba: 'historico_unificado',
+      titulo: `Relatório Gerencial — Histórico de Movimentações${rotulos[filtro] ? ` — ${rotulos[filtro]}` : ''}`,
+      usuario,
+      dados: filtradas.map(l => ({
+        data: l.data,
+        // a tela mostra o rótulo ("Movimentações de Estoque"), não a chave crua
+        fonte: (this.FONTES_HISTORICO.find(f => f.valor === l.fonte) || {}).rotulo || l.fonte,
+        acao: l.acao,
+        item: l.item,
+        quantidade: l.quantidade,
+        solicitante: l.solicitante,
+        responsavel: l.responsavel,
+        detalhes: l.detalhes
+      })),
+      colunas: ['data', 'fonte', 'acao', 'item', 'quantidade', 'solicitante', 'responsavel', 'detalhes'],
+      ocultarVazias: true
+    });
+  },
+
+  /**
+   * Quantos registros cada opção do menu Relatórios tem para mostrar agora.
+   * O seletor exibe essas contagens: dá para ver o que está alimentado antes
+   * de gerar a prévia — e as opções vazias ficam desabilitadas.
+   */
+  contagensRelatorios(dados) {
+    const d = dados || {};
+    const estoque = Array.isArray(d.estoque) ? d.estoque : [];
+    const emprestimos = Array.isArray(d.emprestimos) ? d.emprestimos : [];
+    const ativos = emprestimos.filter(e => !this.emprestimoDevolvido(e));
+    return {
+      'estoque-atual': estoque.length,
+      'inventario-fisico': estoque.length,
+      reposicao: this.filtrarEstoque(estoque, 'reposicao').length,
+      consolidado: this.categoriaResumo(estoque).length,
+      ferramentas: Array.isArray(d.ferramentas) ? d.ferramentas.length : 0,
+      historico: this.historicoUnificado(d).length,
+      'emprestimos-ativos': ativos.length,
+      atrasados: ativos.filter(e => this.diasAtraso(e.previsaoDevolucao) > 0).length
+    };
   },
 
   /** Indicadores consolidados para o painel de gestão e para tomada de decisão. */
@@ -639,7 +1014,8 @@ const utils = {
   ROTULOS_ABAS: {
     estoque: 'Estoque', ferramentas: 'Ferramentas', emprestimos: 'Empréstimos de Ferramentas',
     movimentacoes: 'Movimentações de Estoque', historico: 'Histórico', fornecedores: 'Fornecedores',
-    pedidos: 'Pedidos de Compra', usuarios: 'Usuários'
+    pedidos: 'Pedidos de Compra', usuarios: 'Usuários', reposicao: 'Lista de Reposição',
+    historico_unificado: 'Histórico Unificado', inventario_fisico: 'Ficha de Inventário Físico'
   },
 
   rotuloAba(aba) {
@@ -662,7 +1038,10 @@ const utils = {
     valorTotal: 'Valor Total (R$)', previsaoEntrega: 'Prev. Entrega',
     dataEntrega: 'Data Entrega',
     acao: 'Ação', detalhes: 'Detalhes', senha: 'Senha (hash)', nivel: 'Nível',
-    createdAt: 'Criado em', updatedAt: 'Atualizado em'
+    createdAt: 'Criado em', updatedAt: 'Atualizado em',
+    reposicao: 'Repor (sugerido)', origem: 'Origem da necessidade', fonte: 'Origem',
+    criticos: 'Críticos', semMinimo: 'Sem mínimo', percentual: '% do total', valor: 'Valor em estoque (R$)',
+    contagem: 'Contagem', quantidadeSistema: 'Qtd. Sistema'
   },
 
   /** Colunas que são texto por natureza, mesmo quando só têm dígitos (sem ponto de milhar jamais!). */
@@ -740,13 +1119,23 @@ const utils = {
    * Documento de relatório padronizado — único para prévia em tela, CSV e Excel.
    * @returns {{colunas:[{key,rotulo,numerica}], linhasBR:string[][], linhasXLSX:Array[], ...}}
    */
-  buildReportDoc({ aba, titulo, usuario, dados, colunas }) {
+  buildReportDoc({ aba, titulo, usuario, dados, colunas, ocultarVazias = true, manterVazias = [], instrucoes = '' }) {
     const cfg = (typeof CONFIG !== 'undefined') ? CONFIG : {};
     const linhas = Array.isArray(dados) ? dados : [];
     // v2.7.2: a coluna ID (identificador técnico) fica oculta em todos os relatórios
     const chaves = (colunas || (linhas.length ? Object.keys(linhas[0]) : []))
       .filter(key => !this.COLUNAS_OCULTAS_RELATORIO.includes(key));
-    const cols = chaves.map(key => {
+    // v3.1: colunas sem NENHUM valor saem do documento (ex.: Fornecedor e Valor
+    // Unit. enquanto ninguém preencheu preço). A lista de colunas é decidida
+    // sobre a base COMPLETA — um recorte filtrado não apaga uma coluna que a
+    // base tem, para o mesmo documento nunca mudar de forma por causa do filtro.
+    // Colunas em `manterVazias` são mantidas mesmo sem valor: a ficha de
+    // inventário físico precisa da coluna Contagem em branco para escrever à mão.
+    const visiveis = (ocultarVazias && linhas.length)
+      ? chaves.filter(key => manterVazias.includes(key) || linhas.some(r => String(r[key] ?? '').trim() !== ''))
+      : chaves;
+    const omitidas = chaves.filter(key => !visiveis.includes(key));
+    const cols = visiveis.map(key => {
       const numerica = linhas.some(r => r[key] !== '' && r[key] !== null && r[key] !== undefined)
         && linhas.every(r => r[key] === '' || r[key] === null || r[key] === undefined || this.ehNumeroRelatorio(r[key], key));
       return { key, rotulo: this.rotuloColuna(key), numerica };
@@ -762,7 +1151,10 @@ const utils = {
       geradoEmBR: this.dataHoraBR(new Date()),
       geradoPor: usuario || 'sistema',
       totalRegistros: linhas.length,
+      instrucoes: instrucoes || '',
       colunas: cols,
+      /** Colunas que ficaram fora do documento por não terem nenhum valor. */
+      colunasOmitidas: omitidas.map(key => this.rotuloColuna(key)),
       /** Valores para tela/CSV: strings pt-BR (datas dd/mm/aaaa, números com vírgula). */
       linhasBR: linhas.map(r => cols.map(c => this.formatCellBR(r[c.key], c.key))),
       /** Valores para Excel: números como Number (alinham/calculam), datas como texto pt-BR. */
